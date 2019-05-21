@@ -1,0 +1,264 @@
+import datetime
+import os.path
+import inspect
+
+from kivy.config import Config
+from kivy.logger import Logger
+Config.set('kivy', 'log_level', 'debug')
+
+
+class UtilityMethods():
+    '''Used to extend the Kivy Screen widgets found in kv_screens.py and main_widgets.kv'''
+
+    def resetTextInputs(self):
+        '''Reset the text input fields for this screen'''
+        for widget in self.widgets['TextInputs']:
+            self.widgets['TextInputs'][widget].text = ''
+
+
+class LogMethods():
+    def __initLog__(self, file_str='', class_str=''):
+        ''' It looksl like Kivy has it's own implementation of logging.  Instead of creating a custom
+            logger, scroll to the bottom of this doc string.
+
+        Resources:
+            https://docs.python.org/3/library/logging.html
+            Log to a terminal and file:
+                https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
+            DictConfig dictionary example:
+                https://stackoverflow.com/questions/7507825/...
+                ...where-is-a-complete-example-of-logging-config-dictconfig
+
+        Logging Levels:
+            Debug:  Detailed information for debugging purposes
+            Info:  Confirmation that things are working as expected
+            Warning:  Indication that something unexpected happened or there is a potential
+                      problem in the future: Disk space low
+            Error:  Due to a serious problem, the software failed to complete a function
+            Critical:  A problem likely to cause the program to stop working
+
+        Formatting Parameters:
+            name –
+                The name of the logger used to log the event represented by this LogRecord.
+                Note that this name will always have this value, even though it may be emitted
+                by a handler attached to a different (ancestor) logger.
+            level –
+                The numeric level of the logging event (one of DEBUG, INFO etc.) Note that this
+                is converted to two attributes of the LogRecord: levelno for the numeric value
+                and levelname for the corresponding level name.
+            pathname –
+                The full pathname of the source file where the logging call was made.
+            lineno –
+                The line number in the source file where the logging call was made.
+            msg –
+                The event description message, possibly a format string with placeholders for
+                variable data.
+            args –
+                Variable data to merge into the msg argument to obtain the event description.
+            exc_info –
+                An exception tuple with the current exception information, or None if no exception
+                information is available.
+            func –
+                The name of the function or method from which the logging call was invoked.
+            sinfo –
+                A text string representing stack information from the base of the stack in the
+                current thread, up to the logging call.
+
+        ---------- SAMPLE CODE -----------
+        # Get a datetime object so we can access the current time
+        now = datetime.datetime.now()
+
+        # Get the absolute path to the current file
+        # Resource:
+        # https://stackoverflow.com/questions/17249701/...
+        #     ...how-can-i-find-the-currently-executing-script-file-and-path-in-python
+        file_path = os.path.dirname(os.path.abspath(__file__))
+
+        # Append a '..' to jump up a directory and the rest of the path and filename to the log file
+        file_path += f'/../logs/inventory.{now.day}.{now.month}.{now.year}.log'
+
+        # Set formatting for the Formatter instances
+        log_format = '%(levelname)s:%(filename)s:%(name)s:%(funcName)s:%(lineno)s'
+        log_format += f'\n\t{now.hour}:{now.minute}:{now.second}    >>>    %(message)s\n'
+
+        # See resource above
+        log_dict_config = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'standard': {
+                    'format': log_format
+                }
+            },
+            #    - the corresponding value will be a dict in which each key is a formatter id
+            #      and each value is a dict describing how to configure the corresponding Formatter
+            #      instance.
+            # 'filters': {},
+            #    - the corresponding value will be a dict in which each key is a filter id and each
+            #      value is a dict describing how to configure the corresponding Filter instance.
+            'handlers': {
+                'default': {
+                    'level': 'DEBUG',
+                    'formatter': 'standard',
+                    'class': 'logging.StreamHandler',
+                    'stream': 'ext://sys.stdout'
+                },
+                'log_filer': {
+                    'level': 'WARNING',
+                    'formatter': 'standard',
+                    'class': 'logging.FileHandler',
+                    'filename': file_path
+                }
+            },
+            #    - the corresponding value will be a dict in which each key is a handler id and each
+            #      value is a dict describing how to configure the corresponding Handler instance.
+            #      The configuring dict is searched for the following keys:
+            # class (mandatory). This is the fully qualified name of the handler class.
+            # level (optional). The level of the handler.
+            # formatter (optional). The id of the formatter for this handler.
+            # filters (optional). A list of ids of the filters for this handler.
+            'loggers': {
+                '': {  # Root logger. Additional loggers inherit from this instance.
+                    'handlers': ['default', 'log_filer'],
+                    'level': 'INFO',
+                    'propogate': True
+                }
+            }
+
+            # The configuring dict is searched for the key name (defaulting to the empty string)
+            # and this is used to construct a logging.Filter instance.
+
+
+            # The configuring dict is searched for keys format and datefmt (with defaults of None)
+            # and these are used to construct a Formatter instance.
+        }
+
+        # Tried this from the following resource, but it didn't work
+        # https://stackoverflow.com/questions/36785002/basic-logging-dictconfig-in-python?noredirect=1
+        # ...It looks like Kivy overrides the Python logging module with it's own custome implementation
+        # Using the Python implementation is beyond my skill at this point.
+        logging.config.dictConfig(log_dict_config)
+
+        # Get the name of the logger or create the logger with the name __name__
+        self.log = logging.getLogger(__name__)
+
+        # # Set the level of logging information to be written to the file.
+        # self.log.setLevel(logging.WARNING)
+
+        # # Create a FileHandler object that will write to the file and format everything
+        # file_handler = logging.FileHandler(file_path)
+
+        # file_handler.setFormatter(
+        #     logging.Formatter(
+        #         log_format
+        #     )
+        # )
+
+        # # Add the FileHandler to the log
+        # self.log.addHandler(file_handler)
+        '''
+
+        self.file = file_str
+        self.calling_class = class_str
+
+        # Get a datetime object so we can access the current time
+        # Use this for writing to log files
+        now = datetime.datetime.now()
+
+    def logDebug(self, category, message, newline=''):
+        '''category -> string
+           message -> string'''
+        caller = inspect.stack()[1]
+        filename = self._getFileNameFromPath(caller[1])
+        lineno = caller[2]
+        function = caller[3]
+        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str += f' {message}\n'
+        Logger.debug(log_str)
+
+    def logInfo(self, category, message, newline=''):
+        '''category -> string
+           message -> string'''
+        caller = inspect.stack()[1]
+        filename = self._getFileNameFromPath(caller[1])
+        lineno = caller[2]
+        function = caller[3]
+        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str += f' {message}\n'
+        Logger.info(log_str)
+
+    def logWarning(self, category, message, newline=''):
+        '''category -> string
+           message -> string'''
+        caller = inspect.stack()[1]
+        filename = self._getFileNameFromPath(caller[1])
+        lineno = caller[2]
+        function = caller[3]
+        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str += f' {message}\n'
+        Logger.warning(log_str)
+
+    def logError(self, category, message, newline=''):
+        '''category -> string
+           message -> string'''
+        caller = inspect.stack()[1]
+        filename = self._getFileNameFromPath(caller[1])
+        lineno = caller[2]
+        function = caller[3]
+        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str += f' {message}\n'
+        Logger.error(log_str)
+
+    def logCritical(self, category, message, newline=''):
+        '''category -> string
+           message -> string'''
+        caller = inspect.stack()[1]
+        filename = self._getFileNameFromPath(caller[1])
+        lineno = caller[2]
+        function = caller[3]
+        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str += f' {message}\n'
+        Logger.critical(log_str)
+
+    def logTrace(self, category, message, newline=''):
+        '''category -> string
+           message -> string'''
+        caller = inspect.stack()[1]
+        filename = self._getFileNameFromPath(caller[1])
+        lineno = caller[2]
+        function = caller[3]
+        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str += f' {message}\n'
+        Logger.trace(log_str)
+
+    def _getFileNameFromPath(self, file_path):
+        end_folders = file_path.rfind('\\')
+        file_name = file_path[end_folders + 1:]
+        return file_name
+
+
+class WindowKeyboard():
+    def __init__(self):
+        '''Essentially this allows the init method of both inherited classes by LoginWindow
+           to execute.  If we didn't call this, Screen's init method would be the only init
+           method to execute on top of LoginWindow's init method.  This ensures that all
+           three execute.
+           https://stackoverflow.com/questions/
+           3277367/how-does-pythons-super-work-with-multiple-inheritance'''
+        super(WindowKeyboard, self).__init__()
+
+    def _on_keyboard_down(self, instance, keyboard, keycode, text, modifiers):
+        ''' Check if a popup is open so we don't keep opening popups.
+            -- Need to fix:
+                - enter only executes buttonPressLogin().  Need to make it handle
+                  executing different functions.'''
+
+        if keycode == 40:  # 40 - Enter key pressed
+            self.log.debug(f'The enter key pressed (keycode 40)')
+            # Check if a popup is open already.  If so, close it.
+            if isinstance(App.get_running_app().root_window.children[0], Popup):
+                App.get_running_app().root_window.children[0].dismiss()
+
+            # Otherwise, execute the following function
+            else:
+                self.buttonPress()

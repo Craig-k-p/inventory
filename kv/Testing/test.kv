@@ -1,0 +1,49 @@
+<ScreenOne>:
+    box: box
+    BoxLayout:
+        id: box
+        Button:
+            text: 'Big Button'
+
+<SpeacialLabel@FloatLayout>:
+    sub_lab: sub_lab
+    size_hint: (1, 1)
+    Label:
+        id: sub_lab
+        text: 'Hello again!'
+
+    
+
+
+
+<Widgets>
+    # GridLayout:
+    cols: 1
+    id: homey
+    lab1: lab1
+    lab2: lab2
+
+    # FloatLayout:
+        # height: 30
+    BoxLayout:
+        padding: 10
+        spacing: 10
+        height: 50
+        orientation: 'horizontal'
+        # size_hint: (None, .2)
+        pos_hint: {'x': 0, 'y': 0}
+        # size_hint: (.5, .5)
+
+        Button:
+        Button:
+        Button:
+            text: 'Press me'
+            on_release:
+                root.change_text()
+
+    SpeacialLabel:
+        id: lab1
+
+    SpeacialLabel:
+        id: lab2
+        pos_hint: {'left': .1, 'bottom': -1}

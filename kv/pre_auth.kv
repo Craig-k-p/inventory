@@ -1,0 +1,181 @@
+# Found in showcase kivy example program
+# Import syntax is as follows:
+#    #:<command> <alias-(required)> <package>
+
+# https://www.youtube.com/watch?v=xaYn4XdieCs
+# Set custom attributes for all instances of the TextInput class
+#    Ensure that tab moves the cursor to the next input
+#    Don't allow multiline text input
+    
+
+# Set custom fonts for Buttons, TextInputs, and Labels
+<Button>:
+    # These settings affect all Buttons in every file unless overridden
+    font_name: 'arial'
+    bold: True
+<TextInput>:
+    font_name: 'arial'
+    bold: True
+    write_tab: False
+    multiline: False
+    color: app.kv_settings['text color']
+
+<Label>:
+    font_name: 'arial'
+    bold: True
+    color: app.kv_settings['text color']
+
+# Custom TextInput class for authorization screens
+<AuthTextInput@TextInput>:
+    size_hint: (.4, .1)
+    # Doesn't appear to do anything:
+    height: self.minimum_height
+    multiline: False
+    font_size: (root.width**2 + root.height**2) / 9**4
+
+<Title@Label>:
+    font_size: (root.width**2 + root.height**2) / 11.5**4
+    font_name: 'segoesc'
+
+# Custom authorization screen labels
+<AuthLabel@Label>:
+    font_size: (root.width**2 + root.height**2) / 8**4
+    size_hint: 0.35, 0.15
+
+# Primary buttons that are a bit larger
+<PrimaryButton@Button>:
+    size_hint: (.35, .1)
+    font_size: (root.width**2 + root.height**2) / 8**4
+
+# Smaller buttons
+<SecondaryButton@Button>:
+    size_hint: (.2, .05)
+    font_size: (root.width**2 + root.height**2) / 7**4
+
+# <ToolbarButton@Button>:
+#     width: 10
+#     height: 10
+#     size_hint: (None, None)
+
+
+
+# Login screen for the user with labels, textinput and buttons
+# This is a class, automatically bound to the class declaration with the same name
+# in the inventory.py file.  Class declarations that must be bound to .py files must
+# not inherit from another class.  The following would overwrite the LoginWindow declaration
+# in Inventory.py instead of binding it: <LoginWindow@FloatLayout>:
+<LoginScreen>:
+    name: 'login'
+
+    account: account
+    pswd: pswd
+
+    FloatLayout:
+
+        Title:
+            text: 'My Inventory Login'
+            color: (1, .7, .25, 1)
+            pos_hint: {'center_x': .5, 'center_y': .9}
+
+        # Email or username Label/Input pair
+        AuthLabel:
+            text: 'Email/Username'
+            pos_hint: {'center_x':.3, 'center_y':.7}
+        AuthTextInput:
+            id: account
+            hint_text: 'Enter username or email here'
+            pos_hint: {'center_x':.67, 'center_y':.7}
+            
+        # Password Label/TextInput pair
+        AuthLabel:
+            text: 'Password'
+            pos_hint: {'center_x':.3, 'center_y':.5}
+        AuthTextInput:
+            id: pswd
+            hint_text: 'Enter password here'
+            password: True
+            password_mask: '?'
+            pos_hint: {'center_x':.67, 'center_y':.5}
+
+        # Login button
+        PrimaryButton:
+            text: 'Login'
+            pos_hint: {'center_x': .5, 'center_y':.2}
+            on_release: 
+                app.buttonPress(call='login', screen='account', direction='down')
+        # Create account screen Button
+        SecondaryButton:
+            text: 'Create an account'
+            pos_hint: {'center_x': .5, 'center_y': .1}
+            on_release:
+                app.buttonPress(call='changeScreen', screen='create account', direction='left')
+
+# Create account window for new users
+<CreateAccountScreen>:
+    name: 'create account'
+
+    username: username
+    email: email
+    pswd: pswd
+    pswdrpt: pswdrpt
+
+    FloatLayout:
+
+        Title:
+            text: 'Create an Inventory'
+            color: (1, .7, .25, 1)
+            pos_hint: {'center_x': .5, 'center_y': .9}
+
+        # Username Label/Input pair
+        AuthLabel:
+            text: 'Username'
+            pos_hint: {'center_x':.3, 'center_y':.7}
+        AuthTextInput:
+            id: username
+            hint_text: 'Enter username here'
+            pos_hint: {'center_x':.67, 'center_y':.7}
+
+        # Email Label/Input pair
+        AuthLabel:
+            text: 'Email'
+            pos_hint: {'center_x':.3, 'center_y':.6}
+        AuthTextInput:
+            id: email
+            hint_text: 'Enter email here'
+            pos_hint: {'center_x':.67, 'center_y':.6}
+            
+        # Password Label/TextInput pair
+        AuthLabel:
+            text: 'Password'
+            pos_hint: {'center_x':.3, 'center_y':.45}
+        AuthTextInput:
+            id: pswd
+            hint_text: 'Enter password here'
+            password: True
+            password_mask: '?'
+            pos_hint: {'center_x':.67, 'center_y':.45}
+
+        # Repeat passwrod prompt
+        AuthLabel:
+            text: 'Repeat Password'
+            pos_hint: {'center_x':.3, 'center_y':.35}
+        AuthTextInput:
+            id: pswdrpt
+            hint_text: 'Enter password here'
+            password: True
+            password_mask: '?'
+            pos_hint: {'center_x':.67, 'center_y':.35}
+
+        # Create Account button
+        PrimaryButton:
+            text: 'Create Account'
+            pos_hint: {'center_x': .5, 'center_y':.2}
+            on_release: 
+                app.buttonPress(call='createAccount', screen='account', direction='down')
+
+        # Login screen Button
+        SecondaryButton:
+            text: 'Login'
+            pos_hint: {'center_x': .5, 'center_y': .1}
+            on_release:
+                app.buttonPress(call='changeScreen', screen='login', direction='right')

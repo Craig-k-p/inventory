@@ -1,0 +1,87 @@
+<ToolbarButton@Button>:
+    size: ('40px', '30px')
+    size_hint: (None, None)
+
+
+<ToolbarInner@BoxLayout>:
+    spacing: 5
+    padding: 5
+
+
+<Toolbar@BoxLayout>:
+    size_hint_y: None  # Prevents the Box layout from taking up 50% of the screen
+    height: '50px'     # Sets the height of the toolbar to a fixed number of pixels
+    orientation: 'horizontal'
+    # Background color for the toolbar
+    canvas:
+        Color:
+            rgba: .8,1,.8,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    # Left side
+    ToolbarInner:
+        direction: 'right'
+        ToolbarButton:
+            pos_hint: {'center_x': .25, 'center_y': .5}
+        ToolbarButton:
+            pos_hint: {'center_x': .25, 'center_y': .5}
+        ToolbarButton:
+            pos_hint: {'center_x': .25, 'center_y': .5}
+        Widget:
+
+    # Right side
+    ToolbarInner:
+        direction: 'right'
+        # Pushes all widgets to the side!  Since the other widgets below have a fixed size,
+        # this fills the rest of the space.
+        Widget:
+        ToolbarButton:
+            pos_hint: {'center_y': .5}
+        ToolbarButton:
+            pos_hint: {'center_y': .5}
+
+        # Log out button
+        ToolbarButton:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            size: ('70px', '30px')
+            pos_hint: {'x': .7, 'center_y':.5}
+            text: 'Log Out'
+            on_press:
+                app.sm.transition.direction = 'up'
+                app.sm.current: 'login window'
+
+
+<AccountWindow@BoxLayout>:
+    # Allows the ScreenManager instance to refer to this screen
+    name: 'account window'
+    orientation: 'vertical'
+
+    # This enables something to go above or under the toolbar.
+    # 'rows' allows for things to go on top or bottom rather than left or right
+    GridLayout:
+        rows: 2
+        spacing: 10
+
+        # Toolbar goes on top
+        Toolbar:
+
+        # Account content
+        GridLayout:
+            # Space between widgets and borders of the layout
+            padding: 10
+            # Space between widgets inside the layout
+            spacing: 10
+            cols: 3
+            # Simulated content
+            Button:
+            Button:
+            Button:
+            Button:
+            Button:
+            Button:
+            Button:
+            Button:
+            Button:

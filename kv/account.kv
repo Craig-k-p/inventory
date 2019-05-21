@@ -1,0 +1,325 @@
+#: import random random
+
+<ToolbarButton@Button>:
+    size: ('40px', '30px')
+    size_hint: (None, None)
+
+
+<ToolbarInner@BoxLayout>:
+    spacing: 5
+    padding: 5
+
+
+<Toolbar@BoxLayout>:
+    size_hint_y: None  # Prevents the Box layout from taking up 50% of the screen
+    height: '50px'     # Sets the height of the toolbar to a fixed number of pixels
+    orientation: 'horizontal'
+    # Background color for the toolbar
+    canvas:
+        Color:
+            rgba: .8, 1, .8, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+        # Left side
+    ToolbarInner:
+        direction: 'right'
+        ToolbarButton:
+            pos_hint: {'center_x': .25, 'center_y': .5}
+        ToolbarButton:
+            pos_hint: {'center_x': .25, 'center_y': .5}
+        ToolbarButton:
+            pos_hint: {'center_x': .25, 'center_y': .5}
+        Widget:
+
+            # Right side
+    ToolbarInner:
+        direction: 'right'
+        # Pushes all widgets to the side!  Since the other widgets below have a fixed size,
+        # this fills the rest of the space.
+        Widget:
+        ToolbarButton:
+            # Centers the widget on the y-axis
+            pos_hint: {'center_y': .5}
+            # text: '+T'
+            # on_release:
+            #     app.buttonPress('changeScreen', 'create thing', 'down')
+        ToolbarButton:
+            # Centers the widget on the y-axis
+            pos_hint: {'center_y': .5}
+            text: '+C'
+            on_release:
+                app.buttonPress('changeScreen', 'create container', 'down')
+
+        # Log out button
+        ToolbarButton:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            size: ('70px', '30px')
+            pos_hint: {'x': .7, 'center_y': .5}
+            text: 'Log Out'
+            on_release:
+                # When referencing instances from .py files, '=' must be used for assignment
+                app.buttonPress('changeScreen', 'login', 'up')
+
+
+<ObjectField@AnchorLayout>:
+    label: label
+    # Fit the text into its box:
+    #     https://kivy.org/doc/stable/api-kivy.core.text.html
+    # AnchorLayout allows me to allign text to one side or the other of it's field
+    # width: 40
+    anchor_x: 'left'
+    anchor_y: 'center'  # Has no effect if size_hint_y is 1
+    size_hint: (1, 1)
+    canvas:
+        Color:
+            rgba: random.random(), random.random(), random.random(), 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        id: label
+        text: 'Hard Drives, random capacities'
+        color: app.kv_settings['text color']
+        # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
+        # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
+        size_hint: (None, 1)
+        # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
+        # https://stackoverflow.com/questions/24803773/...
+        # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
+        size: (self.texture_size[0]+10, self.texture_size[1])
+        
+
+<WeightField@AnchorLayout>:
+    label: label
+    width: app.kv_settings['overview weight field width']
+    anchor_x: 'right'
+    size_hint: (None, 1)  # Allows setting the width of layout
+    canvas:
+        Color:
+            rgba: random.random(), random.random(), random.random(), 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        id: label
+        width: app.kv_settings['overview weight field width']
+        # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
+        text: f'{random.randint(1,1999)}'
+        # Allows anchoring to the sides
+        size_hint: (None, 1)
+        # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
+        # https://stackoverflow.com/questions/24803773/...
+        # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
+        size: (self.texture_size[0]+10, self.texture_size[1])
+
+<ValueField@AnchorLayout>:
+    label: label
+    width: label.width
+    anchor_x: 'right'
+    size_hint: (None, 1)  # Allows setting the width of layout
+    canvas:
+        Color:
+            rgba: random.random(), random.random(), random.random(), 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        id: label
+        # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
+        # Allows anchoring to the sides
+        size_hint: (None, 1)
+        # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
+        # https://stackoverflow.com/questions/...
+        # ...24803773/how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
+        size: (self.texture_size[0]+10, self.texture_size[1])
+
+<LocationField@AnchorLayout>:
+    # AnchorLayout allows me to allign text to one side or the other of it's field
+    label: label
+    anchor_x: 'left'
+    anchor_y: 'center'  # Has no effect if size_hint_y is 1
+    size_hint: (.5, 1)
+    canvas:
+        Color:
+            rgba: random.random(), random.random(), random.random(), 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        id: label
+        # text: 'South Dakota'
+        color: app.kv_settings['text color']
+        # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
+        # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
+        # as well as changing the widget's x size
+        size_hint: (None, 1)
+        # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
+        # https://stackoverflow.com/questions/24803773/...
+        # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
+        size: (self.texture_size[0]+10, self.texture_size[1])
+
+<TagButton@FloatLayout>:
+    button: button
+    width: 60
+    # Setting size_hint: (x=None, y) allows me to manually size the width of the Layout to 40
+    size_hint: (None, 1)
+    canvas:
+        Color:
+            rgba: random.random(), random.random(), random.random(), 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Button:
+        id: button
+        text: f'Tags: {random.randint(1,11)}'
+
+        pos_hint: {'x': 0, 'y': 0}
+
+<OptionButton@FloatLayout>:
+    button: button
+    width: app.kv_settings['overview options button width']
+    size_hint: app.kv_settings['overview options button size_hint']
+    canvas:
+        Color:
+            rgba: random.random(), random.random(), random.random(), 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Button:
+        id: button
+        text: 'S'
+
+        pos_hint: {'x': 0, 'y': 0}
+
+<InventoryHeadingRow>:
+    cols: 7
+    id: heading_row
+    # Link the ids to the kv_datagrid.py
+    container: container
+    weight: weight
+    val: val
+    loc: loc
+    tag: tag
+    opt: opt
+
+    # Add the widgets
+    ObjectField:
+        id: container
+    WeightField:
+        id: weight
+    ValueField:
+        id: val
+    LocationField:
+        id: loc
+    TagButton:
+        id: tag
+    OptionButton:
+        id: opt
+
+
+<InventoryDataRow>:
+    cols: 7
+    # TextEntry on click
+    container: container
+    weight: weight
+    val: val
+    # Location field should be a dropdown of all locations typed by user with the option to add one
+    loc: loc
+    # Tag field should be a dropdown of all locations typed by user with the option to add one
+    tag_but: tag_but
+    opt_but: opt_but
+
+    # Add the widgets
+    ObjectField:
+        id: container
+    WeightField:
+        id: weight
+    ValueField:
+        id: val
+    LocationField:
+        id: loc
+    TagButton:
+        id: tag_but
+    OptionButton:
+        id: opt_but
+
+<BoxDataRow>:
+    # TextEntry on click
+    thing: thing
+    # TextEntry on click
+    weight: weight
+    # TextEntry on click
+    val: val
+    # Tags field should be a dropdown box of some sort.  Tags field will show number of tags only.
+    # On click it will open a dropdown with the option to type in a new tag and a list of existing tags
+    tags: tags
+
+<DataGrid>:
+    id: child_layout
+    cols: 1
+    size_hint_y: None  # Allow scrollview to scroll
+    row_default_height: '40dp'
+    row_force_default: True
+    # Space between widgets and borders of the layout
+    padding: 0
+    # Space between widgets inside the layout (x,y)
+    spacing: (0, 1)
+    # Allows the ScrollView to scroll
+    height: self.minimum_height
+
+    # InventoryHeadingRow:
+    #     id: heading
+
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+    # InventoryDataRow:
+
+
+
+<AccountOverviewScreen>:
+    name: 'account'
+    # Pass these back to the class variable definitions that = ObjectProperty(None)
+    # toolbar: toolbar
+    # parent_layout: parent_layout
+
+    BoxLayout:
+        # Allows the ScreenManager instance to refer to this screen
+        id: parent_layout
+        orientation: 'vertical'
+
+        # Toolbar goes on top
+        Toolbar:
+            id: toolbar
+
+        ScrollView:
+            DataGrid:
+
+
+
+<BoxOverviewScreen>
+    name: 'container'
+
+<ThingOverviewScreen>
+    name: 'thing'

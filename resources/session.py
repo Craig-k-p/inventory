@@ -1,0 +1,239 @@
+import datetime
+import mongoengine
+# import pymongo
+from getpass import getpass
+
+''' To Do
+        -
+
+        '''
+
+
+class UserSession():
+
+    def __init__(self, user):
+        '''Start a session using the username and password of the user.  Define classes within the
+        __init__ function so we can use the user's name to assign custom privileges.  Store the class
+        definisions in Session.Thing, Session.Container'''
+
+        self.user = user
+
+        # Ask if this user already exists.  If not, create one
+        # ----- Replace with a check for the existence of the user ------
+        self.createUser()
+
+        print(f'--{self.user} login--')
+        # This actually creates a PyMongo.MongoClient instance
+        # The same as pymongo.MongoClient(f'mongodb://user:pwd@ip:port/db_name')
+        self.client = mongoengine.connect(db='inventory_app_db',
+                                          username=self.user,
+                                          password=getpass(),
+                                          host='10.0.0.8',
+                                          port=27017,
+                                          alias=f'{self.user} core'
+                                          )
+
+        class PropertyObject(mongoengine.Document):
+            '''Basic data that all inventory objects have'''
+            created_date = mongoengine.DateTimeField(default=datetime.datetime.now)
+            # acquired_date = mongoengine.DateTimeField(required=True)
+            owner = mongoengine.StringField(required=True)
+            # tags = mongoengine.ListField(mongoengine.StringField(max_length=25))
+            # weight = mongoengine.FloatField(required=True)
+            # value = mongoengine.FloatField(required=True)
+
+            meta = {
+                'abstract': True
+            }
+
+        # Validation:
+        # http://docs.mongoengine.org/guide/document-instances.html#pre-save-data-validation-and-cleaning
+        class Thing(PropertyObject):
+            '''Inherits from property object and adds other attributes to create a thing'''
+            name = mongoengine.StringField(required=True)
+            # box_id = mongoengine.ReferenceField('Container')
+            # attributes = mongoengine.ListField(mongoengine.StringField(max_length=25))
+            meta = {
+                'db_alias': f'{self.user} core',
+                'collection': f'inventory_of_{self.user}'
+            }
+
+        class Container(PropertyObject):
+            ''' container_type, thing_ids '''
+            container_type = mongoengine.StringField(required=True, max_length=30)
+            thing_ids = mongoengine.ListField(mongoengine.ReferenceField('Thing'))
+            user = mongoengine.StringField(required=True)
+            meta = {
+                'db_alias': 'core',
+                'collection': f'inventory_of_{user}',
+            }
+
+        # class UserInfoDoc(mongoengine.Document):
+        #     email = mongoengine.StringField()
+        #     username = mongoengine.StringField()
+        #     meta = {
+        #         'db_alias': 'core',
+        #         'collection': f'inventory_of_{user}',
+        #     }
+
+            self.Thing = Thing
+            self.Container = Container
+            # self.UserInfoDoc = UserInfoDoc
+
+    def createThing(self, **kwargs):
+        new_object = self.Thing(**kwargs)
+        new_object.save()
+
+    def createContainer(self, **kwargs):
+        new_object = self.Container(**kwargs)
+        new_object.save()
+
+    def createUser(self):
+        '''- use user_administrator with PyMongo.command() to create a user
+        - use user_administrator to create a new collection
+        - use user_administrator to create a role associated with that collection
+        - use appAdmin to assign the role to the user
+        Database requirements:
+          -A user on the inventory_app_db (not the admin database) with the “userAdmin”
+           role (note: This allows this user to set and increase their own permission levels)
+          -db.createUser({
+                user: "user_administrator",
+                pwd: "password",    # Find on LP
+                roles:       [         { role: "userAdmin", db: "inventory_app_db" }       ]  })
+
+        ---I think this method could be done by sending a request to a script running on the server
+        rather than giving user admin privilidges to the user in code form---
+
+        Collections cannot contain collections within them.  There is no tree structure like a file
+        system.  You can reference other collections
+
+        TO DO:
+            - Create new user and make sure that it is authorized to write to the database collection'''
+
+        print(f'\nIs {self.user} a new user?')
+        response = input(' [no] > ')
+
+        if response == 'y':
+
+            db = self._getUserAdminClient().inventory_app_db
+            print(db)
+
+            # --- check that the username doesn't already exitst! --- #
+
+            # Create a custom role for the user on his/her own collection
+            db.command('createRole',
+                       f'user_role_{self.user}',
+                       roles=[],
+                       privileges=[
+                           {
+                               'resource': {'db': 'inventory_app_db',
+                                            'collection': f'inventory_of_{self.user}'},
+                               'actions': [
+                                   'find',
+                                   'createCollection',
+                                   'dropCollection',
+                                   'insert',
+                                   'update',
+                                   'remove'
+                               ]
+                           }
+                       ]
+                       )
+
+            # Create the user and assign it the custom role
+            print(f'--{self.user} password creation--')
+            db.command('createUser',
+                       self.user,
+                       pwd=getpass(),
+                       roles=[
+                           {
+                               'role': f'user_role_{self.user}',
+                               'db': 'inventory_app_db'
+                           }
+                       ]
+                       )
+
+    def deleteUser(self):
+        '''Delete the user and it's collections'''
+
+        print('\nAre you sure you want to delete everything? [y/n]')
+        if input(' > ') is 'y':
+
+            # Raw MongoDB command: db.inventory_of_user.drop()
+            self.client.inventory_app_db[f'inventory_of_{self.user}'].drop()
+
+            client = self._getUserAdminClient()
+
+            # https://docs.mongodb.com/manual/reference/method/db.collection.drop/#db-collection-drop
+            # List of all commands: https://docs.mongodb.com/manual/reference/command/
+            # Delete the user's custome role
+            client.inventory_app_db.command(
+                'dropRole',
+                f'user_role_{self.user}'
+            )
+
+            # https://docs.mongodb.com/manual/reference/method/db.collection.drop/#db-collection-drop
+            # List of all commands: https://docs.mongodb.com/manual/reference/command/
+            # Delete the user
+            client.inventory_app_db.command(
+                'dropUser',
+                self.user
+            )
+
+    def _getUserAdminClient(self):
+
+        usern = 'user_administrator'
+        pswd = 'iamthecreatorandthedestroyerofyouraccess'
+        app_db = 'inventory_app_db'
+        db_ip = '10.0.0.8'
+        db_port = '27017'
+
+        '''
+        #https://docs.mongodb.com/manual/reference/built-in-roles/#userAdmin
+        #Create a role on the server for the user administrator:
+        db.createRole({role: 'inventoryAppUserAdmin',
+           roles: [{role: 'userAdmin', db: 'inventory_app_db'}],
+           privileges: [
+               {resource: {db: 'inventory_app_db', collection: ''}, actions: [
+                   'createCollection',
+                   'dropCollection',
+                   'insert']}
+           ]
+           }
+          )
+
+
+        #To revoke roles from the user:
+        db.runCommand({revokeRolesFromUser: 'user_administrator',
+                       roles: [
+                           {role: 'userAdmin', db: 'inventory_app_db'}
+                       ]
+                       }
+                      )
+
+        #To grant a role to an existing user use the following command:
+        db.grantRolesToUser(
+          "user_administrator",
+          [
+            { role: "userAdmin", db: "inventory_app_db" }
+          ]
+        )'''
+
+        # This can be used (PyMongo library):
+        # user_admin_client = pymongo.MongoClient(
+        #     f'mongodb://{usern}:{pswd}@10.0.0.8/inventory_app_db'
+        # )
+
+        user_admin_client = mongoengine.connect(
+            host=f'mongodb://{usern}:{pswd}@{db_ip}:{db_port}/{app_db}'
+        )
+        print(user_admin_client)
+
+        return user_admin_client
+
+
+if __name__ == '__main__':
+    a = UserSession(input('username: '))
+    a.createThing(name='hat', owner=a.user)
+    input('---continue---')
+    a.deleteUser()

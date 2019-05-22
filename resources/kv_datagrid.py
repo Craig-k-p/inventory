@@ -184,7 +184,7 @@ class DataGrid(GridLayout, WindowKeyboard, LogMethods):
             -tie into database functionality
         '''
         UID = self._getUID()
-        new_row = InventoryDataRow(row)
+        new_row = InventoryDataRow(UID)
         self.dataRows[UID] = new_row
         self.add_widget(self.dataRows[UID])
 

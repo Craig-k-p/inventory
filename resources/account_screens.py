@@ -10,7 +10,7 @@ from resources.utilities import UtilityMethods, WindowKeyboard, LogMethods
 class AccountOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
 
     parent_layout = ObjectProperty(None)
-    row_1 = ObjectProperty(None)
+    data_grid = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()

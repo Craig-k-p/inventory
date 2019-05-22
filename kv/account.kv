@@ -51,7 +51,7 @@
             text: '+C'
             on_release:
                 # app.buttonPress('changeScreen', 'create container', 'down')
-                data_row.parent.addRow()
+                app.sm.current_screen.data_grid.addDataRow()
 
         # Log out button
         ToolbarButton:
@@ -389,7 +389,8 @@
     name: 'account'
     # Pass these back to the class variable definitions that = ObjectProperty(None)
     # toolbar: toolbar
-    # parent_layout: parent_layout
+    parent_layout: parent_layout
+    data_grid: data_grid
 
     BoxLayout:
         # Allows the ScreenManager instance to refer to this screen
@@ -401,7 +402,9 @@
             id: toolbar
 
         ScrollView:
+            id: scroll_view
             DataGrid:
+                id: data_grid
 
 
 

@@ -1,11 +1,12 @@
 import pprint
+import random
 
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle
 from kivy.graphics.instructions import InstructionGroup
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 from resources.utilities import WindowKeyboard, LogMethods
 
 
@@ -28,6 +29,8 @@ class InventoryHeadingRow(GridLayout, LogMethods):
     tag = ObjectProperty(None)
     opt = ObjectProperty(None)
     my_text = StringProperty(None)
+    weight_col_width = NumericProperty(50)
+    val_col_width = NumericProperty(65)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -35,7 +38,7 @@ class InventoryHeadingRow(GridLayout, LogMethods):
             'kv_DG.py',
             'InventoryHeadingRow'
         )
-        self.my_text = '$$'
+        # self.my_text = '$$'
 
     def setHeadingText(self,
                        container='Container',
@@ -46,37 +49,67 @@ class InventoryHeadingRow(GridLayout, LogMethods):
                        options='Opts'
                        ):
         '''Set the heading text for each child widget Label'''
-        log = f'Setting heading Label text values to {container}, {weight}, {value}, {location}, {tags}, and {options}'
+        log = f'Setting heading Label text values to {container}, {weight}, {value}, '
+        log += f'{location}, {tags}, and {options}'
         self.logDebug('kvLogic', log)
         # self.logDebug('kvLogic', f'container.label = {self.container.label}')
-        self.logDebug('kvLogic', f'self.weight.label = {self.weight.label}')
+        self.logDebug('kvLogic', f'self.weight.label = {self.weight_label.text}')
 
-        self.container.label.text = 'HELP'
-        self.weight.label.text = weight
-        self.val.label.text = self.my_text
-        self.loc.label.text = location
-        self.tag.button.text = tags
-        self.opt.button.text = options
+        self.obj_label.text = 'HELP'
+        self.weight_label.text = weight
+        self.val_label.text = self.my_text
+        self.loc_label.text = location
+        self.tag_button.text = tags
+        self.opt_button.text = options
 
-        self.logDebug('kvLogic', f'container.label = {self.container.label.text}')
+        self.logDebug('kvLogic', f'container.label = {self.obj_label.text}')
 
-        log = f'Values: {self.container.label.text}, {self.weight.label.text}, {self.val.label.text}'
+        log = f'Values: {self.obj_label.text}, {self.weight_label.text}, {self.val_label.text}'
         self.logDebug('kvLogic', log)
 
 
 class InventoryDataRow(GridLayout, WindowKeyboard, LogMethods):
 
-    obj = ObjectProperty(None)
-    weight = ObjectProperty(None)
-    val = ObjectProperty(None)
-    loc = ObjectProperty(None)
-    tag_but = ObjectProperty(None)
-    opt_but = ObjectProperty(None)
+    obj_label = ObjectProperty(None)
+    weight_label = ObjectProperty(None)
+    val_label = ObjectProperty(None)
+    loc_label = ObjectProperty(None)
+    tag_button = ObjectProperty(None)
+    opt_button = ObjectProperty(None)
+    weight_col_width = NumericProperty(50)
+    val_col_width = NumericProperty(65)
 
-    def __init__(self, **kwargs):
+    def __init__(self, UID, **kwargs):
         '''Get the information from database to put into the label widgets'''
         super().__init__(**kwargs)
         # self.data = data
+        self.__initLog__(
+            'kv_DG.py',
+            'InvDataRow'
+        )
+
+        self.UID = UID
+
+        self.value_col_width = 70
+        self.weight_col_width = 50
+
+        self.choices = ['ice cream', 'coffee', 'turnips', 'beans', 'lice', 'panzerfaust', 'crossiant']
+        self.locations = ['home', 'cabin', 'bottom of the lake', 'New York', 'gf house', 'grandmas house']
+        self.randomValues()
+
+    def randomValues(self):
+        '''Set the heading text for each child widget Label'''
+
+        objs = [self.obj_label, self.loc_label]
+
+        # Choose a random string value for the text attribute
+        for obj in objs:
+            obj.text = random.choice(self.choices)
+
+        self.obj_label.text = random.choice(self.choices)
+        self.loc_label.text = random.choice(self.locations)
+        self.val_label.text = f'{random.randint(0,99)}.{random.randint(10,99)}'
+        self.weight_label.text = f'{random.randint(0,99)}.{random.randint(0,9)}'
 
 
 class DataGrid(GridLayout, WindowKeyboard, LogMethods):
@@ -90,26 +123,33 @@ class DataGrid(GridLayout, WindowKeyboard, LogMethods):
             file_str='kv_DG.py',
             class_str='DataGrid'
         )
-        print(__file__)
 
-        # self.logInfo('kv_ops', f'Creating DataGrid instance {title}...')
-        # Create reference to the app
-        # self.app = app
+        self.logInfo('kv_ops', f'Creating DataGrid instance')
 
-        # Title for this "spreadsheet" of information
-        # self.title = title
+        self.UIDs = 0
 
         # Create the heading widgets used to label the top of the data fields
         self.headings = InventoryHeadingRow()
-        # Assign heading text
-        self.headings.setHeadingText()
         self.add_widget(self.headings)
 
-        self.dataRows = []
-        self.dataRows.append(InventoryDataRow())
+        # Store the InventoryDataRow instances here
+        self.dataRows = {}
 
+        # Add some data rows for testing
+        for n in range(1, 7):
+            # Get the row ID
+            UID = self._getUID()
+            # Create the row instance
+            row = InventoryDataRow(UID)
+
+            # Add the row to the dictionary
+            self.dataRows[UID] = row
+
+        self._assignColumnWidths()
+
+        # Add them to the screen to be drawn
         for data in self.dataRows:
-            self.add_widget(data)
+            self.add_widget(self.dataRows[data])
 
         # Lists of widgets for each row, in order
         # self.rows = {}
@@ -137,19 +177,46 @@ class DataGrid(GridLayout, WindowKeyboard, LogMethods):
 
         # self._createHeadings()
 
-    def addDataRow(self, data):
-        '''Add a row of fields to the GridLayout with the given data'''
+    def addDataRow(self):
+        '''Add a row of fields to the GridLayout with the given data
+        Future:
+            -tie each dataRow to it's actual container object
+            -tie into database functionality
+        '''
+        UID = self._getUID()
+        new_row = InventoryDataRow(row)
+        self.dataRows[UID] = new_row
+        self.add_widget(self.dataRows[UID])
 
-    def removeDataFields(self, field):
-        '''Remove a row of fields from the GridLayout'''
+    def removeDataRow(self, UID):
+        '''Remove a row of fields from the GridLayout
+        Future:
+            -confirm?
+            -delete associated row with click
+            -tie into database functionality
+        '''
+        self.remove_widget(self.dataRows.pop(UID))
 
-    def _assignMaxWidth(self):
-        '''Loop thru each child widget that needs a fixed width and set its width'''
+    def _assignColumnWidths(self):
+        '''Loop thru each child widget that needs a fixed width and set its width.  This
+           makes sure that each row has a uniform width.
+        Comments:
+            Not working.  Recieving 0 and 10 for x and y not matter the actual size
+        Future maybe's:
+            -Set the column width to the minimum needed width to fit the values
+           '''
+        for row in self.dataRows:
+            tex_width = self.dataRows[row].val_lo.width
+            self.logDebug('kvLogic', f'Label size: {tex_width}')
+            # tex_width = row.val_lo.texture_size
+            # self.logDebug('kvLogic', f'Label size: {tex_width}')
 
     def _createHeadings(self):
-        '''Loop through the data dict and create some heading widgets, starting with an AnchorLayout and finishing with
-           a Label as a child.'''
-
+        '''Loop through the data dict and create some heading widgets, starting with an AnchorLayout and 
+           finishing with a Label as a child.
+        Future:
+            -To be removed
+        '''
         self.logDebug('kv_ops', 'Creating headings')
 
         # Add the canvas grpahics instructions to the anchor
@@ -175,6 +242,11 @@ class DataGrid(GridLayout, WindowKeyboard, LogMethods):
 
     def _formatFields(self):
         pass
+
+    def _getUID(self):
+        '''Increment self.UIDs and return the value'''
+        self.UIDs += 1
+        return self.UIDs
 
     def _setDataDictDefaults(self):
         '''Go through the provided dictionary and set default values if none are found'''

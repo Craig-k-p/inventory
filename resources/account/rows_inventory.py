@@ -1,8 +1,9 @@
 import random
 
 from kivy.uix.gridlayout import GridLayout
-from resources.utilities import LogMethods, WindowKeyboard
+from kivy.graphics import Color
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty
+from resources.utilities import LogMethods, WindowKeyboard
 
 
 class InventoryHeadingRow(GridLayout, LogMethods):
@@ -15,6 +16,10 @@ class InventoryHeadingRow(GridLayout, LogMethods):
     my_text = StringProperty(None)
     weight_col_width = NumericProperty(50)
     val_col_width = NumericProperty(65)
+
+    settings = {
+        'heading_color': Color(.1, .1, .1, 0.2)
+    }
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -62,6 +67,11 @@ class InventoryDataRow(GridLayout, WindowKeyboard, LogMethods):
     opt_button = ObjectProperty(None)
     weight_col_width = NumericProperty(50)
     val_col_width = NumericProperty(65)
+
+    settings = {
+        'row_1_color': Color(.1, .1, .1, 0.2),
+        'row_2_color': Color(.1, .1, .1, 0.2)
+    }
 
     def __init__(self, UID, **kwargs):
         '''Get the information from database to put into the label widgets'''

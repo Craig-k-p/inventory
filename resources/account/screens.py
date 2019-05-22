@@ -24,6 +24,7 @@ class AccountOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
             'TextInputs': {}
         }
         self.logDebug('KvLogic', f'Created AccountOverviewScreen instance')
+        self.data_grid.setObjectCategory('containers')
 
     def initDefaultPopupText(self):
         '''Set the default text to be displayed in certain situations'''

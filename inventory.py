@@ -28,9 +28,9 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
 
-from resources.account_screens import AccountOverviewScreen
-from resources.pre_auth_screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
-from resources.kv_datagrid import DataGrid, InventoryHeadingRow
+from resources.account.screens import AccountOverviewScreen
+from resources.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
+from resources.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.me_extensions import MongoEngineExtensions
 from resources.utilities import LogMethods
@@ -58,7 +58,7 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
             'startup transition': NoTransition(),
             'app transition type': SlideTransition(), }
         self.kv_settings = {
-            'startup kv files': ['kv/pre_auth.kv', 'kv/account.kv'],
+            'startup kv files': ['kv/pre_auth.kv', 'kv/account/screens.kv'],
             'overview options button size_hint': (None, 1),
             'overview options button width': 35,
             'overview weight field width': 60,

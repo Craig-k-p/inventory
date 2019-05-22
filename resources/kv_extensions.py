@@ -6,7 +6,7 @@ from kivy.uix.popup import Popup
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Rectangle
 
-from resources.kv_popup import PopupContent
+from resources.pre_auth.popup import PopupContent
 
 
 class KivyExtensions():

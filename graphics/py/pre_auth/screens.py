@@ -1,10 +1,10 @@
 import pprint
 
-from resources.utilities import UtilityMethods, WindowKeyboard, LogMethods
-
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import ObjectProperty
+
+from resources.utilities import UtilityMethods, WindowKeyboard, LogMethods
 
 
 class LoginScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
@@ -127,13 +127,13 @@ class CreateAccountScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
            after the app is instantiated so we can access app.settings.'''
         self.popup_text = {
             'messages': {
-                'invalid username length': 'Username should be at least ' + \
-                                           f'{self.manager.app.settings["username min length"]} ' + \
-                                            'characters long',
+                'invalid username length': 'Username should be at least ' +
+                                           f'{self.manager.app.settings["username min length"]} ' +
+                'characters long',
                 'invalid email': 'The email must be a properly formatted email.',
                 'password mismatch': 'The passwords do not match.',
-                'password length': f'Your password must be at least ' + \
-                                    f'{self.manager.app.settings["password min length"]} characters long',
+                'password length': f'Your password must be at least ' +
+                f'{self.manager.app.settings["password min length"]} characters long',
                 'footer': 'Please try again.'
             },
             'button': 'Try again',

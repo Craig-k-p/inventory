@@ -18,19 +18,17 @@ Voilla!
 
 '''
 
-# Resource:
-#     https://stackoverflow.com/questions/521532/...
-#        ...how-do-i-get-pythons-pprint-to-return-a-string-instead-of-printing
+
 import pprint
 
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.core.window import Window
+# from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
 
-from resources.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
-from resources.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
-from resources.account.datagrid import DataGrid, InventoryHeadingRow
+from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
+from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
+from graphics.py.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.me_extensions import MongoEngineExtensions
 from resources.utilities import LogMethods
@@ -61,7 +59,8 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
             'startup transition': NoTransition(),
             'app transition type': SlideTransition(), }
         self.kv_settings = {
-            'startup kv files': ['kv/pre_auth.kv', 'kv/account/screens.kv'],
+            'startup kv files': ['graphics/kv/pre_auth/screens.kv', 'graphics/kv/account/screens.kv'],
+            'kv popup file': 'graphics/kv/pre_auth/popups.kv',
             'overview options button size_hint': (None, 1),
             'overview options button width': 35,
             'overview weight field width': 60,

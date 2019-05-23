@@ -6,7 +6,7 @@ from kivy.uix.popup import Popup
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Rectangle
 
-from resources.pre_auth.popup import PopupContent
+from graphics.py.pre_auth.popup import PopupContent
 
 
 class KivyExtensions():
@@ -34,8 +34,7 @@ class KivyExtensions():
         text = current_screen.popup_text
 
         # Load the popup content from file and create an instance of PopupContent
-        file = 'kv/popups.kv'
-        Builder.load_file(file)
+        Builder.load_file(self.kv_settings['kv popup file'])
         self.logDebug('KvLogic', f'kivy.lang.Builder loaded the file {file}')
 
         # Create an instance of popup content found in kv_popup.py and popups.kv

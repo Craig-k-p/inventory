@@ -8,8 +8,8 @@ from kivy.graphics import Color, Rectangle
 from kivy.graphics.instructions import InstructionGroup
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 from resources.utilities import WindowKeyboard, LogMethods
-from resources.account.rows_inventory import InventoryHeadingRow, InventoryDataRow
-from resources.account.rows_box import BoxHeadingRow, BoxDataRow
+from graphics.py.account.rows_inventory import InventoryHeadingRow, InventoryDataRow
+from graphics.py.account.rows_box import BoxHeadingRow, BoxDataRow
 
 
 ''' REDO

@@ -128,8 +128,6 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
         self.sm.transition = self.settings['app transition type']
         self.logDebug('KvOps', 'Set the first screen to settings["start screen"]')
 
-        # overview.child_layout.add_widget(overview.child_layout.headings)
-
     def build(self):
         '''Without returning self.sm, the app would be a blank screen.'''
         self.logDebug('KvOps', 'self.build called')

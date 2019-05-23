@@ -3,8 +3,8 @@ import pprint
 from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
-from kivy.graphics.context_instructions import Color
-from kivy.graphics.vertex_instructions import Rectangle
+# from kivy.graphics.context_instructions import Color
+# from kivy.graphics.vertex_instructions import Rectangle
 
 from graphics.py.pre_auth.popup import PopupContent
 
@@ -35,7 +35,7 @@ class KivyExtensions():
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
-        self.logDebug('KvLogic', f'kivy.lang.Builder loaded the file {file}')
+        self.logDebug('KvLogic', f'kivy.lang.Builder loaded the file {self.kv_settings['kv popup file']}')
 
         # Create an instance of popup content found in kv_popup.py and popups.kv
         popup_content = PopupContent(self._createPopupErrorLabels(), current_screen)

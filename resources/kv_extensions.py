@@ -160,12 +160,12 @@ class KivyExtensions():
             log = f"Call {call} is not in self.validations['allowed button calls']"
             self.logCritical('KvFeedback', log)
 
-    def changeScreen(self, screen, direction, authenticated=False):
+    def changeScreen(self, screen, direction):
         '''Change to a screen using direction.  Make sure the screen does not need authentication.
         Implement method to check whether the user is logged in.
         '''
 
-        if authenticated is False:
+        if self.user_logged_in is False:
             # If an attempt to change screens to a screen that needs login information is made
             if self.validations['authentication needed'][screen] is True:
                 self.logWarning('KvLogic', f'Recieved a call to change to {screen} without authentication')
@@ -184,7 +184,7 @@ class KivyExtensions():
                 self.logWarning('App', log)
 
         # The user is logged in, so let them do what they want
-        elif authenticated is True:
+        elif self.user_logged_in is True:
             self.sm.transition.direction = direction
             self.sm.current = screen
             self.logInfo('KvOps', f'Changed to {screen} going in direction {direction}')

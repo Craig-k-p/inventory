@@ -1,7 +1,7 @@
 #: import random random
 #: include kv/account/toolbar.kv
 #: include kv/account/rows_inventory.kv
-#### include kv/account/rows_box.kv
+#: include kv/account/rows_box.kv
 #: include kv/account/datagrid.kv
 #: include kv/account/popups/create_container.kv
 
@@ -30,6 +30,24 @@
 
 <ContainerOverviewScreen>
     name: 'container'
+    # Pass these back to the class variable definitions that = ObjectProperty(None)
+    # toolbar: toolbar
+    parent_layout: parent_layout
+    data_grid: data_grid
+
+    BoxLayout:
+        # Allows the ScreenManager instance to refer to this screen
+        id: parent_layout
+        orientation: 'vertical'
+
+        # Toolbar goes on top
+        Toolbar:
+            id: toolbar
+
+        ScrollView:
+            id: scroll_view
+            DataGrid:
+                id: data_grid
 
 <ThingOverviewScreen>
     name: 'thing'

@@ -37,67 +37,30 @@ class DataGrid(GridLayout, WindowKeyboard, LogMethods):
             class_str='DataGrid'
         )
 
+        self.logInfo('kv_ops', f'Creating DataGrid instance')
+
+        # Colors for each row
         self.heading_color = None
         self.row_1_color = None
         self.row_2_color = None
 
-        self.logInfo('kv_ops', f'Creating DataGrid instance')
-
+        # Unique ids for each data row
         self.UIDs = 0
-
-        # Create the heading widgets used to label the top of the data fields
-        self.headings = InventoryHeadingRow()
-        self.add_widget(self.headings)
 
         # Store the InventoryDataRow instances here
         self.dataRows = {}
 
-        # Add some data rows for testing
-        for n in range(1, 7):
-            # Get the row ID
-            UID = self._getUID()
-            # Create the row instance
-            row = InventoryDataRow(UID)
-
-            # Add the row to the dictionary
-            self.dataRows[UID] = row
-
-        self._assignColumnWidths()
-
-        # Add them to the screen to be drawn
-        for data in self.dataRows:
-            self.add_widget(self.dataRows[data])
-
-        # Lists of widgets for each row, in order
-        # self.rows = {}
-
-        # # Make sure we can reference needed class attributes like DataGrid.row_2_color
-        # if DataGrid.row_1_color is None or DataGrid.row_2_color is None or DataGrid.heading_color is None:
-        #     self.logDebug('kv_ops', 'Initializing DataGrid.heading_color, .row_1_color, and .row_2_color...')
-        #     DataGrid.heading_color = InstructionGroup()
-        #     DataGrid.heading_color.add(Color(.1, .1, .1, 0.2))
-        #     DataGrid.heading_color.add(Rectangle(pos=self.pos, size=self.size))
-
-        #     DataGrid.row_1_color = InstructionGroup()
-        #     DataGrid.row_1_color.add(Color(.1, .1, .1, 1))
-        #     DataGrid.row_1_color.add(Rectangle(pos=self.pos, size=self.size))
-
     def addDataRow(self):
         '''Add a row of fields to the GridLayout with the given data
         Future:
-            -tie each dataRow to it's actual container/thing object
+            -tie each dataRow to it's actual container/thing object data from the server
             -tie into database functionality
         '''
         UID = self._getUID()
 
-        if self.category == 'containers':
-            new_row = InventoryDataRow(UID)
-        elif self.category == 'things':
-            new_row = BoxDataRow(UID)
-        else:
-            log = f'User attempted to addDataRow(), but self.category was {self.category}, '
-            log += 'not "containers" or "things"'
-            self.logError('kv_ops', log)
+        self.logDebug('kv_ops', f'Adding row {UID}..')
+
+        new_row = self.getDataRowClass()(UID)
         self.dataRows[UID] = new_row
         self.add_widget(self.dataRows[UID])
 
@@ -108,7 +71,35 @@ class DataGrid(GridLayout, WindowKeyboard, LogMethods):
             -delete associated row with click
             -tie into database functionality
         '''
+        self.logDebug('kv_ops', f'Removing row {UID}..')
         self.remove_widget(self.dataRows.pop(UID))
+
+    def setObjectCategory(self, category):
+        '''Set the category of object that this grid will be dealing with - ie "containers" or "things" -
+           which will allow the instance to check which type of row/heading it will be instantiating'''
+
+        self.logDebug('kvLogic', f'Setting the DataGrid category to {category}')
+
+        if category in DataGrid.categories:
+            category = category
+        else:
+            self.logCritical('kvLogic', f'category was {category}, not "things" or "containers."  Expect failures')
+            raise Exception(f'self.category must be "things" or "containers", not {category}')
+
+        self.logDebug('kvLogic', 'Assigning references to the approprate classes..')
+        # Set references to the proper classes for this instance
+        if category == 'things':
+            self._HeadingCls = BoxHeadingRow
+            self._DataRowCls = BoxDataRow
+        elif category == 'containers':
+            self._HeadingCls = InventoryHeadingRow
+            self._DataRowCls = InventoryDataRow
+
+        self.logDebug('kvLogic', 'Creating the heading row..')
+
+        # Create the heading widgets used to label the top of the data fields
+        self.headings = self.getHeadingClass()()
+        self.add_widget(self.headings)
 
     def _assignColumnWidths(self):
         '''Loop thru each child widget that needs a fixed width and set its width.  This
@@ -118,24 +109,51 @@ class DataGrid(GridLayout, WindowKeyboard, LogMethods):
         Future maybe's:
             -Set the column width to the minimum needed width to fit the values
            '''
+
+        self.logInfo('kv_ops', 'Assigning column widths')
+
         for row in self.dataRows:
             tex_width = self.dataRows[row].val_lo.width
             self.logDebug('kvLogic', f'Label size: {tex_width}')
             # tex_width = row.val_lo.texture_size
             # self.logDebug('kvLogic', f'Label size: {tex_width}')
 
+    def getDataRowClass(self):
+
+        self.logInfo('kv_ops', f'Returning self._DataRowCls: {self._DataRowCls}')
+        return self._DataRowCls
+
+    def getHeadingClass(self):
+        self.logInfo('kv_ops', f'Returning self._HeadingCls: {self._HeadingCls}')
+        return self._HeadingCls
+
     def _getUID(self):
         '''Increment self.UIDs and return the value'''
-        self.UIDs += 1
-        return self.UIDs
 
-    def setObjectCategory(self, category):
-        '''Set the category of object that this grid will be dealing with - ie "containers" or "things" -
-           which will allow the instance to check which type of row/heading it will be instantiating'''
-        if category in DataGrid.categories:
-            self.category = category
-        else:
-            self.logCritical('kvLogic', f'category was {category}, not "things" or "containers."  Expect failures')
+        self.UIDs += 1
+        self.logInfo('kvLogic', f'Incremented self.UID to {self.UIDs}')
+        return self.UIDs
 
     def _getMaxWidth(self):
         '''Loop thru each child widget's children and get the maximum width needed for the column'''
+
+    def TestRandomPopulate(self):
+        '''Populate the rows with random data'''
+
+        self.logDebug('kv_ops', 'Randomly populating rows')
+
+        # Add some data rows for testing
+        for n in range(1, random.randint(3, 20)):
+            # Get the row ID
+            UID = self._getUID()
+            # Create the row instance
+            row = self.getDataRowClass()(UID)
+
+            # Add the row to the dictionary
+            self.dataRows[UID] = row
+
+        # self._assignColumnWidths()
+
+        # Add them to the screen to be drawn
+        for data in self.dataRows:
+            self.add_widget(self.dataRows[data])

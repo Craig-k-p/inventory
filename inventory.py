@@ -28,7 +28,7 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
 
-from resources.account.screens import AccountOverviewScreen
+from resources.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
 from resources.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
 from resources.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
@@ -49,6 +49,9 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
         # Window.clearcolor = (1, 1, 1, 1)
 
         self.logInfo('App', 'MyInventoryApp instance created')
+
+        # Get rid of this and implement some sort of actual authentication
+        self.user_logged_in = True
 
         self.popup_errors = []
         self.settings = {
@@ -72,9 +75,9 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
                 'changeScreen', 'createAccount', 'login'
             ),
             'authentication needed': {
-                'account overview': True,
-                'box overview': True,
-                'thing overview': True,
+                'account': True,
+                'container': True,
+                'thing': True,
                 'login': False,
                 'create account': False}}
 
@@ -100,11 +103,6 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
         # Allow children of the WindowManager instance to access self.settings in the App instance
         self.sm.app = self
 
-        overview = AccountOverviewScreen()
-        # overview.add_widget()
-        # overview.initLog()
-        # overview.add_widget(DataGrid())
-
         screens = [
             # These are added to the screen manager sm so that the screen manager sm
             # knows which screens we are refering to  (<-- better wording needed)
@@ -113,8 +111,8 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
             LoginScreen(name='login'),
             # name can also be defined in the kv/main_widgets.kv file using "name: 'account window'" under
             # class declaration
-            # AccountOverviewScreen()
-            overview
+            AccountOverviewScreen(),
+            ContainerOverviewScreen()
         ]
         log = f'Created login, account, and create account screens with "screens" var: '
         log += f'{pprint.pformat(screens, indent=4)}'

@@ -24,10 +24,11 @@ class InventoryHeadingRow(GridLayout, LogMethods):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.__initLog__(
-            'kv_DG.py',
+            'rows_inventory.py',
             'InventoryHeadingRow'
         )
-        # self.my_text = '$$'
+
+        self.logDebug('kv_ops', 'Creating an InventoryHeadingRow instance')
 
     def setHeadingText(self,
                        container='Container',
@@ -78,14 +79,16 @@ class InventoryDataRow(GridLayout, WindowKeyboard, LogMethods):
         super().__init__(**kwargs)
         # self.data = data
         self.__initLog__(
-            'kv_DG.py',
+            'rows_inventory.py',
             'InvDataRow'
         )
 
+        self.logDebug('kv_ops', 'Creating an InvDataRow instance')
+
         self.UID = UID
 
-        self.value_col_width = 70
-        self.weight_col_width = 50
+        self.value_col_width = 65
+        self.weight_col_width = 45
 
         self.choices = ['ice cream', 'coffee', 'turnips', 'beans', 'lice', 'panzerfaust', 'crossiant']
         self.locations = ['home', 'cabin', 'bottom of the lake', 'New York', 'gf house', 'grandmas house']
@@ -102,5 +105,5 @@ class InventoryDataRow(GridLayout, WindowKeyboard, LogMethods):
 
         self.obj_label.text = random.choice(self.choices)
         self.loc_label.text = random.choice(self.locations)
-        self.val_label.text = f'{random.randint(0,99)}.{random.randint(10,99)}'
-        self.weight_label.text = f'{random.randint(0,99)}.{random.randint(0,9)}'
+        self.val_label.text = f'{random.randint(0,4000)}.{random.randint(10,99)}'
+        self.weight_label.text = f'{random.randint(0,199)}.{random.randint(0,9)}'

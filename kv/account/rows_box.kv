@@ -4,21 +4,21 @@
     # Heading row to label each column
     # Future:
     #    Tag field - dropdown of popular tags typed by user with the option to add one
-    cols: 6
+    rows: 1
     id: heading_row
     # Link the ids to the kv_datagrid.py
     obj_label: obj_label
     weight_label: weight_label
     val_label: val_label
-    tag_button: tag_label
-    opt_button: opt_label
+    tag_label: tag_label
+    opt_label: opt_label
 
     # Object heading
     AnchorLayout:
-        anchor_x: 'center'
-        size_hint: (1, 1)
-        canvas:  # Background color:
-            Color:
+        # anchor_x: 'center'
+        # size_hint: (1, 1)
+        canvas:
+            Color:  
                 rgba: random.random(), random.random(), random.random(), 1
             Rectangle:
                 pos: self.pos
@@ -109,14 +109,11 @@
     #   Location field should be a dropdown of all locations typed by user with the option to add one
     #   Tag field should be a dropdown of all locations typed by user with the option to add one
     id: data_row
-    cols: 6
+    rows: 1
     obj_label: obj_label
     weight_label: weight_label
     val_lo: val_lo
     val_label: val_label
-    
-    loc_label: loc_label
-    
     tag_button: tag_button
     opt_button: opt_button
 
@@ -133,7 +130,6 @@
                 size: self.size
         Label:
             id: obj_label
-            text: data_row.randomThing()
             color: app.kv_settings['text color']
             size_hint: (None, 1)
             size: (self.texture_size[0]+10, self.texture_size[1])
@@ -204,4 +200,5 @@
             text: 's'
             pos_hint: {'x': 0, 'y': 0}
             on_release:
-                data_row.randomValues()
+                # data_row.randomValues()
+                app.buttonPress('changeScreen', 'account', 'right')

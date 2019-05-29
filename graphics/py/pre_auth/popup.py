@@ -1,13 +1,13 @@
 import pprint
 
 from kivy.uix.button import Button
-from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.properties import ObjectProperty
 
 from resources.utilities import LogMethods
 
 
-class PopupContent(FloatLayout, LogMethods):
+class PopupContent(GridLayout, LogMethods):
     '''Defined in popups.kv.'''
 
     # Grab the BoxLayout from kv/popups.kv
@@ -20,6 +20,8 @@ class PopupContent(FloatLayout, LogMethods):
 
         # Allows us to call our own PopupContent.__init__() without overriding Kivy's FloatLayout.__init__()
         super(PopupContent, self).__init__(**kwargs)
+        self.cols = 1
+        self.pos_hint = {'x': 0, 'y': 0}
 
         # Initialize the log for this class instance
         self.__initLog__(
@@ -66,7 +68,8 @@ class PopupContent(FloatLayout, LogMethods):
                 btn = Button(
                     text=self.current_screen.popup_text['button'],
                     font_size=18,
-                    size_hint=(.6, .3),
+                    size=(200, 50),
+                    size_hint=(.5, 0),
                     id='button',
                     pos_hint={'center_x': .5}
                 )

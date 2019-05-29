@@ -7,30 +7,9 @@
     BoxLayout:
         orientation: 'vertical'
         id: box
-        pos_hint: {'center_x': .7, 'center_y': .7}
-        # canvas:
-        #     color:
-        #         rgba: .2,.2,.2,1
-        #     Rectangle:
-        #         pos: self.pos
-        #         size: self.size
-        # Label:
-        #     # id: label
-        #     # text: ''
-        #     # font_size: 14
-        #     # text_size: self.size
-        #     # # size_hint: 0.6, 0.2
-        #     # pos_hint: {'center_x': .5, 'center_y': 1.2}
-
-        # Button:
-        #     id: button
-        #     text: app.current_screen.popup_text['button']
-        #     font_size: 18
-        #     size_hint: 0.6, 0.3
-        #     pos_hint: {'center_x':.5, 'center_y': .2}
-        #     on_press:
-        #         # Dismiss the popup. Since self.pop is the popup in the app instance,
-        #         # we can access it here
-        #         app.pop.dismiss()
+        size_hint: (1, 1)
+        pos_hint: {'x': 0, 'y': 0}
+        Label:
+            size_hint: (.2, .2)
 
 

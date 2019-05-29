@@ -37,7 +37,7 @@ class KivyExtensions():
         Builder.load_file(self.kv_settings['kv popup file'])
         self.logDebug('KvLogic', f'kivy.lang.Builder loaded the file {self.kv_settings["kv popup file"]}')
 
-        # Create an instance of popup content found in kv_popup.py and popups.kv
+        # Create an instance of popup content found in popup.py and popups.kv
         popup_content = PopupContent(self._createPopupErrorLabels(), current_screen)
         self.logDebug(
             'KvOps',
@@ -46,10 +46,11 @@ class KivyExtensions():
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
-        self.pop = Popup(title=text['title'],
+        self.pop = Popup(title='',
+                         separator_height=0,
                          content=popup_content,
                          size_hint=self.kv_settings['popup size_hint'],
-                         auto_dismiss=self.kv_settings['popup auto_dismiss']
+                         auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
         log = 'Assigned self.pop as Popup('
         log += f'\n\t\t\ttitle = {self.pop.title},'
@@ -101,7 +102,7 @@ class KivyExtensions():
                 error_labels.append(
                     Label(
                         text=self.sm.current_screen.popup_text['messages'][error],
-                        font_size=18,
+                        font_size=24,
                         pos_hint={'x': 0}
                     )
                 )

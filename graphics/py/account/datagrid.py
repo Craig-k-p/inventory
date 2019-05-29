@@ -7,7 +7,8 @@ from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle
 from kivy.graphics.instructions import InstructionGroup
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
-from resources.utilities import WindowKeyboard, LogMethods
+
+from resources.utilities import LogMethods
 from graphics.py.account.rows_inventory import InventoryHeadingRow, InventoryDataRow
 from graphics.py.account.rows_box import BoxHeadingRow, BoxDataRow
 
@@ -23,7 +24,7 @@ objectproperties, etc.
 '''
 
 
-class DataGrid(GridLayout, WindowKeyboard, LogMethods):
+class DataGrid(GridLayout, LogMethods):
 
     categories = ('containers', 'things')
 

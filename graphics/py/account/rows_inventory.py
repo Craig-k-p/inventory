@@ -3,7 +3,7 @@ import random
 from kivy.uix.gridlayout import GridLayout
 from kivy.graphics import Color
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty
-from resources.utilities import LogMethods, WindowKeyboard
+from resources.utilities import LogMethods
 
 
 class InventoryHeadingRow(GridLayout, LogMethods):
@@ -58,7 +58,7 @@ class InventoryHeadingRow(GridLayout, LogMethods):
         self.logDebug('kvLogic', log)
 
 
-class InventoryDataRow(GridLayout, WindowKeyboard, LogMethods):
+class InventoryDataRow(GridLayout, LogMethods):
 
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)

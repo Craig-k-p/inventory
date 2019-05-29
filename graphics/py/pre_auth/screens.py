@@ -1,13 +1,13 @@
 import pprint
 
-from kivy.core.window import Window
+# from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import ObjectProperty
 
-from resources.utilities import UtilityMethods, WindowKeyboard, LogMethods
+from resources.utilities import UtilityMethods, LogMethods
 
 
-class LoginScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
+class LoginScreen(Screen, UtilityMethods, LogMethods):
     ''' The window that draws necesary widgets to the screen such as buttons, text inputs,
         and labels. It inherits from kivy.uix.screenmanager.screen.Screen. It also does
         the following:
@@ -27,8 +27,8 @@ class LoginScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
         # Allows us to call our own LoginScreen.__init__() without overriding Kivy's Screen.__init__()
         super(LoginScreen, self).__init__(**kwargs)
 
-        # Allow me to check if the enter key is pressed
-        Window.bind(on_key_down=self._on_keyboard_down)
+        # # Allow me to check if the enter key is pressed
+        # Window.bind(on_key_down=self._on_keyboard_down)
 
         self.__initLog__(
             file_str='pre_auth_screens',
@@ -71,7 +71,7 @@ class LoginScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
         self.logDebug('App', log)
 
 
-class CreateAccountScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
+class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
     ''' The window that draws necesary widgets to the screen such as buttons, text inputs,
         and labels. It inherits from kivy.uix.screenmanager.screen.Screen. It also does
         the following:
@@ -89,8 +89,9 @@ class CreateAccountScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
         # Allows us to call our own CreateAccountScreen.__init__() without overriding
         # Kivy's Screen.__init__()
         super(CreateAccountScreen, self).__init__(**kwargs)
-        # Allow me to check if the enter key is pressed
-        Window.bind(on_key_down=self._on_keyboard_down)
+
+        # # Allow me to check if the enter key is pressed
+        # Window.bind(on_key_down=self._on_keyboard_down)
 
         # Creates self.log which saves to app_home_dir/logs/inventory.day.month.year.log
         self.__initLog__(

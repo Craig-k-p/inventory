@@ -2,8 +2,10 @@ import datetime
 import os.path
 import inspect
 
+from kivy.app import App
 from kivy.config import Config
 from kivy.logger import Logger
+from kivy.uix.popup import Popup
 Config.set('kivy', 'log_level', 'debug')
 
 
@@ -65,17 +67,11 @@ class LogMethods():
                 current thread, up to the logging call.
 
         ---------- SAMPLE CODE -----------
-        # Get a datetime object so we can access the current time
-        now = datetime.datetime.now()
-
         # Get the absolute path to the current file
         # Resource:
         # https://stackoverflow.com/questions/17249701/...
         #     ...how-can-i-find-the-currently-executing-script-file-and-path-in-python
         file_path = os.path.dirname(os.path.abspath(__file__))
-
-        # Append a '..' to jump up a directory and the rest of the path and filename to the log file
-        file_path += f'/../logs/inventory.{now.day}.{now.month}.{now.year}.log'
 
         # Set formatting for the Formatter instances
         log_format = '%(levelname)s:%(filename)s:%(name)s:%(funcName)s:%(lineno)s'
@@ -125,45 +121,15 @@ class LogMethods():
                 }
             }
 
-            # The configuring dict is searched for the key name (defaulting to the empty string)
-            # and this is used to construct a logging.Filter instance.
-
-
-            # The configuring dict is searched for keys format and datefmt (with defaults of None)
-            # and these are used to construct a Formatter instance.
-        }
-
         # Tried this from the following resource, but it didn't work
         # https://stackoverflow.com/questions/36785002/basic-logging-dictconfig-in-python?noredirect=1
         # ...It looks like Kivy overrides the Python logging module with it's own custome implementation
         # Using the Python implementation is beyond my skill at this point.
         logging.config.dictConfig(log_dict_config)
-
-        # Get the name of the logger or create the logger with the name __name__
-        self.log = logging.getLogger(__name__)
-
-        # # Set the level of logging information to be written to the file.
-        # self.log.setLevel(logging.WARNING)
-
-        # # Create a FileHandler object that will write to the file and format everything
-        # file_handler = logging.FileHandler(file_path)
-
-        # file_handler.setFormatter(
-        #     logging.Formatter(
-        #         log_format
-        #     )
-        # )
-
-        # # Add the FileHandler to the log
-        # self.log.addHandler(file_handler)
         '''
 
         self.file = file_str
         self.calling_class = class_str
-
-        # Get a datetime object so we can access the current time
-        # Use this for writing to log files
-        now = datetime.datetime.now()
 
     def logDebug(self, category, message, newline=''):
         '''category -> string
@@ -237,28 +203,31 @@ class LogMethods():
         return file_name
 
 
-class WindowKeyboard():
-    def __init__(self):
-        '''Essentially this allows the init method of both inherited classes by LoginWindow
-           to execute.  If we didn't call this, Screen's init method would be the only init
-           method to execute on top of LoginWindow's init method.  This ensures that all
-           three execute.
-           https://stackoverflow.com/questions/
-           3277367/how-does-pythons-super-work-with-multiple-inheritance'''
-        super(WindowKeyboard, self).__init__()
+# class WindowKeyboard():
+#     def __init__(self):
+#         '''Essentially this allows the init method of both inherited classes by LoginWindow
+#            to execute.  If we didn't call this, Screen's init method would be the only init
+#            method to execute on top of LoginWindow's init method.  This ensures that all
+#            three execute.
+#            https://stackoverflow.com/questions/
+#            3277367/how-does-pythons-super-work-with-multiple-inheritance'''
+#         super(WindowKeyboard, self).__init__()
 
-    def _on_keyboard_down(self, instance, keyboard, keycode, text, modifiers):
-        ''' Check if a popup is open so we don't keep opening popups.
-            -- Need to fix:
-                - enter only executes buttonPressLogin().  Need to make it handle
-                  executing different functions.'''
+#     def _on_keyboard_down(self, instance, keyboard, keycode, text, modifiers):
+#         ''' Check if a popup is open so we don't keep opening popups.
+#             -- Need to fix:
+#                 - enter only executes buttonPressLogin().  Need to make it handle
+#                   executing different functions.'''
 
-        if keycode == 40:  # 40 - Enter key pressed
-            self.log.debug(f'The enter key pressed (keycode 40)')
-            # Check if a popup is open already.  If so, close it.
-            if isinstance(App.get_running_app().root_window.children[0], Popup):
-                App.get_running_app().root_window.children[0].dismiss()
+#         if keycode == 40:  # 40 - Enter key pressed
+#             self.logDebug('kvLogic', f'The enter key was pressed (keycode 40)..')
+#             # Check if a popup is open already.  If so, close it.
 
-            # Otherwise, execute the following function
-            else:
-                self.buttonPress()
+#             if isinstance(App.get_running_app().sm.current_screen.children[0], Popup):
+#                 App.get_running_app().root_window.children[0].dismiss()
+#                 self.logDebug('kv_ops', '  ..and the popup was dismissed')
+
+#             # Otherwise, execute the following function
+#             else:
+#                 self.logDebug('kvLogic', '  ..and self.buttonPress was called')
+#                 self.buttonPress()

@@ -1,0 +1,11 @@
+-Added ":" to the end of <widgetdefinitions>: in screens.kv - this appears to be the correct 
+ syntax, although it has not thrown any errors.
+-Created thing_view.kv and ThingView widget definition.  Also created thing_view.py file
+-Added import for ThingView to inventory.py
+
+ canvas:  # Background color:
+            Color:
+                rgba: random.random(), random.random(), random.random(), 1
+            Rectangle:
+                pos: self.pos
+                size: self.size

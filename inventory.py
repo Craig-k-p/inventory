@@ -55,7 +55,7 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
         self.settings = {
             'password min length': 4,
             'username min length': 3,
-            'start screen': 'account',
+            'start screen': 'thing',
             'startup transition': NoTransition(),
             'app transition type': SlideTransition(), }
         self.kv_settings = {
@@ -102,6 +102,7 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
         # Allow children of the WindowManager instance to access self.settings in the App instance
         self.sm.app = self
 
+        # Create a separate function to handle logging out and in, so no data is accidently preserved on a screen.
         screens = [
             # These are added to the screen manager sm so that the screen manager sm
             # knows which screens we are refering to  (<-- better wording needed)
@@ -111,7 +112,8 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
             # name can also be defined in the kv/main_widgets.kv file using "name: 'account window'" under
             # class declaration
             AccountOverviewScreen(),
-            ContainerOverviewScreen()
+            ContainerOverviewScreen(),
+            ThingOverviewScreen()
         ]
         log = f'Created login, account, and create account screens with "screens" var: '
         log += f'{pprint.pformat(screens, indent=4)}'

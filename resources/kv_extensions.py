@@ -35,7 +35,7 @@ class KivyExtensions():
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
-        self.logDebug('KvLogic', f'kivy.lang.Builder loaded the file {self.kv_settings['kv popup file']}')
+        self.logDebug('KvLogic', f'kivy.lang.Builder loaded the file {self.kv_settings["kv popup file"]}')
 
         # Create an instance of popup content found in kv_popup.py and popups.kv
         popup_content = PopupContent(self._createPopupErrorLabels(), current_screen)
@@ -79,8 +79,8 @@ class KivyExtensions():
         self.pop.open()
 
         # Make sure the file isn't loaded more than once
-        Builder.unload_file(file)
-        self.logDebug('KvLogic', f'Used kivy.lang.Builder.unload_file({file})')
+        Builder.unload_file(self.kv_settings['kv popup file'])
+        self.logDebug('KvLogic', f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})')
 
     def _createPopupErrorLabels(self):
         '''Create the widgets to give to PopupContent().  This allows PopupContent to add
@@ -102,7 +102,7 @@ class KivyExtensions():
                     Label(
                         text=self.sm.current_screen.popup_text['messages'][error],
                         font_size=18,
-                        pos_hint={'center_x': .5}
+                        pos_hint={'x': 0}
                     )
                 )
 

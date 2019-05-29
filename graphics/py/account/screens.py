@@ -1,13 +1,15 @@
 import pprint
 
-# from kivy.core.window import Window
+from kivy.core.window import Window
 # from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen
-from resources.utilities import UtilityMethods, WindowKeyboard, LogMethods
+
+from graphics.py.account.thing_view import ThingView
+from resources.utilities import UtilityMethods, LogMethods
 
 
-class AccountOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
+class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
 
     parent_layout = ObjectProperty(None)
     data_grid = ObjectProperty(None)
@@ -15,7 +17,11 @@ class AccountOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
     def __init__(self, **kwargs):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
         super(AccountOverviewScreen, self).__init__(**kwargs)
-        # Creates self.log which saves to app_home_dir/logs/inventory.day.month.year.log
+
+        # # Allow me to check if the enter key is pressed
+        # Window.bind(on_key_down=self._on_keyboard_down)
+
+        # Creates a logger for the current class
         self.__initLog__(
             file_str='account_screens',
             class_str='AccountOverviewScreen'
@@ -39,8 +45,11 @@ class AccountOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
     def initDefaultPopupText(self):
         '''Set the default text to be displayed in certain situations'''
 
+    def buttonPress(self):
+        self.logInfo('kv_ops', 'Enter pressed in AccountOverviewScreen!')
 
-class ContainerOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
+
+class ContainerOverviewScreen(Screen, LogMethods):
 
     parent_layout = ObjectProperty(None)
     data_grid = ObjectProperty(None)
@@ -48,7 +57,11 @@ class ContainerOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods
     def __init__(self, **kwargs):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
         super(ContainerOverviewScreen, self).__init__(**kwargs)
-        # Creates self.log which saves to app_home_dir/logs/inventory.day.month.year.log
+
+        # # Allow me to check if the enter key is pressed
+        # Window.bind(on_key_down=self._on_keyboard_down)
+
+        # Creates a logger for the current class
         self.__initLog__(
             file_str='account_screens',
             class_str='ContainerOverviewScreen'
@@ -72,6 +85,32 @@ class ContainerOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods
     def initDefaultPopupText(self):
         '''Set the default text to be displayed in certain situations'''
 
+    def buttonPress(self):
+        self.logInfo('kv_ops', 'Enter pressed in ContainerOverviewScreen!')
 
-class ThingOverviewScreen(Screen, WindowKeyboard, UtilityMethods, LogMethods):
-    pass
+
+class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
+    thing_view = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
+        super(ThingOverviewScreen, self).__init__(**kwargs)
+
+        # # Allow me to check if the enter key is pressed
+        # Window.bind(on_key_down=self._on_keyboard_down)
+
+        # Creates a logger for the current class
+        self.__initLog__(
+            file_str='screens.py',
+            class_str='AccountOverviewScreen'
+        )
+
+        self.logInfo('kv_ops', 'Creating an ThingOverviewScreen instance..')
+
+        # Put input widgets here so we can grab the user input at some point
+        self.widgets = {
+            'TextInputs': {}
+        }
+
+    def buttonPress(self):
+        self.logInfo('kv_ops', 'Enter pressed in ThingOverviewScreen!')

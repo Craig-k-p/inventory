@@ -3,7 +3,7 @@ import random
 from kivy.uix.gridlayout import GridLayout
 from kivy.graphics import Color
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty
-from resources.utilities import LogMethods, WindowKeyboard
+from resources.utilities import LogMethods
 
 # Try something like this for colors
 # # Make sure we can reference needed class attributes like DataGrid.row_2_color
@@ -60,7 +60,7 @@ class BoxHeadingRow(GridLayout, LogMethods):
         self.opt_button.text = options
 
 
-class BoxDataRow(GridLayout, WindowKeyboard, LogMethods):
+class BoxDataRow(GridLayout, LogMethods):
 
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)

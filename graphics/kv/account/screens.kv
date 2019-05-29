@@ -1,9 +1,11 @@
 #: import random random
+#: include graphics/kv/account/thing_view.kv
 #: include graphics/kv/account/toolbar.kv
 #: include graphics/kv/account/rows_inventory.kv
 #: include graphics/kv/account/rows_box.kv
 #: include graphics/kv/account/datagrid.kv
 #: include graphics/kv/account/popups/create_container.kv
+
 
 <AccountOverviewScreen>:
     name: 'account'
@@ -28,7 +30,7 @@
 
 
 
-<ContainerOverviewScreen>
+<ContainerOverviewScreen>:
     name: 'container'
     # Pass these back to the class variable definitions that = ObjectProperty(None)
     # toolbar: toolbar
@@ -49,5 +51,12 @@
             DataGrid:
                 id: data_grid
 
-<ThingOverviewScreen>
+<ThingOverviewScreen>:
     name: 'thing'
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        # Toolbar goes on top
+        Toolbar:
+        ThingView:

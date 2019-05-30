@@ -165,7 +165,8 @@ class KivyExtensions():
         Implement method to check whether the user is logged in.
         '''
 
-        if self.user_logged_in is False:
+        # Check if the user is logged in
+        if self.isLoggedIn() is False:
             # If an attempt to change screens to a screen that needs login information is made
             if self.validations['authentication needed'][screen] is True:
                 self.logWarning('KvLogic', f'Recieved a call to change to {screen} without authentication')
@@ -184,19 +185,29 @@ class KivyExtensions():
                 self.logWarning('App', log)
 
         # The user is logged in, so let them do what they want
-        elif self.user_logged_in is True:
+        elif self.isLoggedIn() is True:
             self.sm.transition.direction = direction
             self.sm.current = screen
             self.logInfo('KvOps', f'Changed to {screen} going in direction {direction}')
+
+        else:
+            raise Exception('self.isLoggedIn did not return a boolean')
 
     def login(self, new_screen, direction):
 
         old_screen = self.sm.current_screen
 
         # Check for an existing user
-        if old_screen._authenticate() is True:
-            # Clear the input fields for the user
-            old_screen.resetTextInputs()
+        check = old_screen.checkFormat()
+        # Clear the input fields for the user
+        old_screen.resetTextInputs()
+
+        # See if check is not False and is also a tuple
+        if check is not False and isinstance(check, tuple):
+
+            # Unpack the tuple as individual arguments to self.authenticate
+            self.authenticate(*check)
+
             # Change the transition properties and screen
             self.sm.transition.direction = direction
             self.sm.current = new_screen
@@ -236,8 +247,9 @@ class KivyExtensions():
         # If there were no errors
         if len(self.popup_errors) == 0:
             self.logInfo('KvFeedback', f'No errors were found for user input on screen {screen}')
-            if self.sm.current_screen._authenticate() is True:
+            if self.sm.current_screen.checkFormat() is True:
                 self.sm.current_screen.resetTextInputs()
+                self.sm.transition.direction = direction
                 self.sm.current = screen
             else:
                 self.logError('KvFeedback', 'Formatting errors were not caught by createAccount method')

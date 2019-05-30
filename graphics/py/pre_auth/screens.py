@@ -43,15 +43,17 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         self.widgets['TextInputs']['pswd'] = self.pswd
         self.logDebug('KvLogic', f'self.widgets was created:\n{pprint.pformat(self.widgets, indent=4)}')
 
-    def _authenticate(self):
+    def checkFormat(self):
         '''Check if the user input is valid.  Call the database function to check
            if the user exists.'''
-        if self.widgets['TextInputs']['account'].text != '' and \
-           self.widgets['TextInputs']['pswd'].text != '':
-            self.logInfo('AUTH', f'self._authenticate CONFIRMED {self.account.text}!')
-            return True
+
+        user = self.widgets['TextInputs']['account'].text
+        pw = self.widgets['TextInputs']['pswd'].text
+        if user != '' and pw != '':
+            self.logInfo('AUTH', f'self.checkFormat CONFIRMED {self.account.text}!  Logging user in...')
+            return (user, pw)
         else:
-            self.logInfo('AUTH', f'self._authenticate DENIED {self.account.text}!')
+            self.logInfo('AUTH', f'self.checkFormat DENIED {self.account.text}!')
             return False
 
     def initDefaultPopupText(self):
@@ -110,13 +112,32 @@ class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
         }
         self.logDebug('KvLogic', f'Created self.widgets:\n{pprint.pformat(self.widgets, indent=4)}')
 
-    def _authenticate(self):
+    def checkFormat(self):
         '''Check if the user input is valid.  Call the database function to check
            if the user exists.'''
-        if self.username.text != '' and \
-           self.email.text != '' and \
-           self.pswd.text != '' and \
-           self.pswdrpt.text != '':
+
+        user = self.username.text
+        email = self.email.text
+        pw = self.pswd.text
+        pw2 = self.pswdrpt.text
+
+        if len(user) < self.manager.app.settings['username min length']:
+            self.logDebug('App', 'User create account input did NOT pass as valid input')
+            return False
+
+        elif self.isEmail(email) is False:
+            self.logDebug('App', 'User create account input did NOT pass as valid input')
+            return False
+
+        elif self.checkPw(pw, pw2) is False:
+            self.logDebug('App', 'User create account input did NOT pass as valid input')
+            return False
+
+        else:
+            self.logDebug('App', 'User create account input passed as valid input')
+            return True
+
+        if self.username.text != '' and self.email.text != '' and self.pswd.text != '' and self.pswdrpt.text != '':
             self.logInfo('AUTH', f'self._authenticate CONFIRMED {self.username.text}!')
             return True
         else:

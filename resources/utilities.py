@@ -17,6 +17,28 @@ class UtilityMethods():
         for widget in self.widgets['TextInputs']:
             self.widgets['TextInputs'][widget].text = ''
 
+    def isEmail(self, email):
+        '''Work on this'''
+
+        if '@' not in email:
+            return False
+        elif '.' not in email:
+            return False
+        elif len(email) < 5:
+            return False
+
+        else:
+            return True
+
+    def checkPw(self, pw, pw2):
+        '''Check passwords for length and matching'''
+        if len(pw) < self.manager.app.settings['password min length']:
+            return False
+        elif pw != pw2:
+            return False
+        else:
+            return True
+
 
 class LogMethods():
     def __initLog__(self, file_str='', class_str=''):

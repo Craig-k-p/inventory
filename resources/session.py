@@ -1,7 +1,5 @@
 import datetime
 import mongoengine
-# import pymongo
-from getpass import getpass
 
 from resources.utilities import LogMethods
 
@@ -13,7 +11,7 @@ from resources.utilities import LogMethods
 
 class UserSession(LogMethods):
 
-    def __init__(self, user):
+    def __init__(self):
         '''Define classes within the __init__ function so we can use the user's name to assign custom privileges.
            Store the class definisions in Session.Thing, Session.Container'''
 
@@ -22,7 +20,12 @@ class UserSession(LogMethods):
             class_str=UserSession
         )
 
-        self.logInfo('App', 'Creating a UserSession instance.  Defining MongoEngine objects...')
+        self.logInfo('App', 'Created a UserSession instance')
+        self._user = None
+
+    def __initMEDocDefs__(self):
+        '''Define the instance document definitions. Thiss allows us to customize the user's database and
+           collection settings when the ME documents are defined as classes'''
 
         class PropertyObject(mongoengine.Document):
             '''Basic data that all inventory objects have'''
@@ -56,22 +59,23 @@ class UserSession(LogMethods):
             user = mongoengine.StringField(required=True)
             meta = {
                 'db_alias': 'core',
-                'collection': f'inventory_of_{user}',
+                'collection': f'inventory_of_{self.user}',
             }
 
         # Use last_login query to check whether the user credentials are correct
         class UserInfoDoc(mongoengine.Document):
+            ''' ok '''
             email = mongoengine.StringField()
             username = mongoengine.StringField()
             last_login = mongoengine.DateTimeField(default=datetime.datetime.now)
             meta = {
                 'db_alias': 'core',
-                'collection': f'inventory_of_{user}',
+                'collection': f'inventory_of_{self.user}',
             }
 
             self.Thing = Thing
             self.Container = Container
-            self.UserInfoDoc = UserInfoDoc
+            # self.UserInfoDoc = UserInfoDoc
 
     def createThing(self, **kwargs):
         self.logDebug('DB Ops', 'Creating a thing and saving it to the database')
@@ -197,6 +201,8 @@ class UserSession(LogMethods):
                                           alias=f'{self.user} core'
                                           )
 
+        self.logInfo('DB Ops', 'UserSession.login executed')
+
     def _getUserAdminClient(self):
         '''Get the client connection with user admin privilidges to add/delete users'''
 
@@ -244,6 +250,16 @@ class UserSession(LogMethods):
         print(user_admin_client)
 
         return user_admin_client
+
+    # Anytime the user property is changed, the
+    @property
+    def user(self):
+        return self._user
+
+    @user.setter
+    def user(self, new_value):
+        self._user = new_value
+        self.__initMEDocDefs__()
 
 
 if __name__ == '__main__':

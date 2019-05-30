@@ -32,7 +32,7 @@ from graphics.py.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.me_extensions import MongoEngineExtensions
 from resources.utilities import LogMethods
-from resources.utilities.session import UserSession
+from resources.session import UserSession
 
 
 class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):

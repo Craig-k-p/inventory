@@ -58,60 +58,6 @@ class InventoryManagementApp():
             if screen == 'ov':  # Overview
                 self.current_screen = self.sOverview
                 self.draw()
-            elif screen == 'nb':  # New box
-                self.current_screen = self.sOverview
-                self.createBox()
-                self.draw()
-            elif screen == 'nib':  # Not in box
-                self._reportError(self.getHomelessThings())
-                self.draw()
-            elif screen == 'Db':  # Delete box
-                self.current_screen = self.sOverview
-                self.removeBox()
-                self.draw()
-            elif screen == 'sb':  # Select box
-                tobject = 'box'   # The input given to self.select()
-                self.current_screen = self.sOverview
-                self.select(tobject)
-                self.draw()
-            elif screen == 'st':  # Select thing
-                tobject = 'thing'  # The input given to self.select()
-                if isinstance(self.selected_box, type(Box)) is True:
-                    self.current_screen = self.sViewBox
-                    self.select(tobject)
-                else:
-                    self._reportError(self.getHomelessThings())
-                    self.select(tobject)
-                self.draw()
-            elif screen == 'nt':  # New thing
-                if isinstance(self.selected_box, Box) is True:
-                    self.current_screen = self.sViewBox
-                    self.createThing()
-                else:
-                    self._reportError('Please type "sb" to select a Box first')
-                self.draw()
-            elif screen == 'Dt':  # Delete thing
-                if isinstance(self.selected_thing, Thing) is True:
-                    tobject = 'thing'
-                    self.current_screen = self.sViewBox
-                    self.removeThing()
-                else:
-                    self._reportError('No Thing is selected to delete')
-                self.draw()
-            elif screen == 'vb':  # View box
-                if self.selected_box is not None:
-                    self.current_screen = self.sViewBox
-                else:
-                    self._reportError('Please type "sb" to select a Box')
-                self.draw()
-            # Move box
-            elif screen == 'mb':
-                if self._hasBox() is True:
-                    self.current_screen = self.sOverview
-                    self.move('box')
-                else:
-                    self._reportError('Please type "sb" to select a Box')
-                self.draw()
             elif screen == 'mti':
                 if self._hasBox() is True and self.selected_box.getInventory() == self.Inventory.boxes_not_in_inventory:
                     self.current_screen = self.sOverview
@@ -169,12 +115,12 @@ class InventoryManagementApp():
         '''Create a copy of a box or thing'''
         if tobject == 'thing':
             t = self.selected_thing
-            new_thing = Thing(t.getName(),
-                t.getValue(),
-                t.getWeight(),
-                t.getContainer(),
-                None,
-                t.getDateAcquired(copy=True))
+            new_thing = Thing(  t.getName(),
+                                t.getValue(),
+                                t.getWeight(),
+                                t.getContainer(),
+                                None,
+                                t.getDateAcquired(copy=True))
             self.selected_thing = new_thing
             self.selected_box.addThing(self.selected_thing)
 

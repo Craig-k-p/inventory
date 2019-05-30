@@ -32,6 +32,7 @@ from graphics.py.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.me_extensions import MongoEngineExtensions
 from resources.utilities import LogMethods
+from resources.utilities.session import UserSession
 
 
 class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
@@ -46,16 +47,16 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
         # Set window to white
         # Window.clearcolor = (1, 1, 1, 1)
 
-        self.logInfo('App', 'MyInventoryApp instance created')
+        self.logInfo('App', 'Creating MyInventoryApp instance')
 
-        # Get rid of this and implement some sort of actual authentication
-        self.user_logged_in = True
+        # Create the UserSession instance for handling data transfer to and from the database
+        self.session = UserSession()
 
         self.popup_errors = []
         self.settings = {
             'password min length': 4,
             'username min length': 3,
-            'start screen': 'thing',
+            'start screen': 'login',
             'startup transition': NoTransition(),
             'app transition type': SlideTransition(), }
         self.kv_settings = {

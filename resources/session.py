@@ -1,5 +1,6 @@
 import datetime
 import mongoengine
+import random
 
 from resources.utilities import LogMethods
 
@@ -13,18 +14,18 @@ class UserSession(LogMethods):
 
     def __init__(self):
         '''Define classes within the __init__ function so we can use the user's name to assign custom privileges.
-           Store the class definisions in Session.Thing, Session.Container'''
+           Store the class definitions in Session.Thing, Session.Container'''
 
         self.__initLog__(
             file_str=__file__,
-            class_str=UserSession
+            class_str='UserSession'
         )
 
         self.logInfo('App', 'Created a UserSession instance')
         self._user = None
 
     def __initMEDocDefs__(self):
-        '''Define the instance document definitions. Thiss allows us to customize the user's database and
+        '''Define the instance document definitions. This allows us to customize the user's database and
            collection settings when the ME documents are defined as classes'''
 
         class PropertyObject(mongoengine.Document):
@@ -48,6 +49,10 @@ class UserSession(LogMethods):
             # box_id = mongoengine.ReferenceField('Container')
             # attributes = mongoengine.ListField(mongoengine.StringField(max_length=25))
             meta = {
+                # self.client = mongoengine.connect(db='inventory_app_db', alias=f'{self.user} core')
+                # We must set the alias to match the login above found in UserSession.login
+                # From what I understand, this ensures that these objects are written to the
+                # correct database
                 'db_alias': f'{self.user} core',
                 'collection': f'inventory_of_{self.user}'
             }
@@ -58,34 +63,43 @@ class UserSession(LogMethods):
             thing_ids = mongoengine.ListField(mongoengine.ReferenceField('Thing'))
             user = mongoengine.StringField(required=True)
             meta = {
-                'db_alias': 'core',
-                'collection': f'inventory_of_{self.user}',
+                'db_alias': f'{self.user} core',
+                'collection': f'inventory_of_{self.user}'
             }
 
         # Use last_login query to check whether the user credentials are correct
         class UserInfoDoc(mongoengine.Document):
-            ''' ok '''
+            ''' OK '''
             email = mongoengine.StringField()
             username = mongoengine.StringField()
             last_login = mongoengine.DateTimeField(default=datetime.datetime.now)
             meta = {
-                'db_alias': 'core',
-                'collection': f'inventory_of_{self.user}',
+                'db_alias': f'{self.user} core',
+                'collection': f'inventory_of_{self.user}'
             }
 
-            self.Thing = Thing
-            self.Container = Container
-            # self.UserInfoDoc = UserInfoDoc
+        class Tester(mongoengine.Document):
+            '''Used to test if the user is logged in.  Should not exist after login'''
+            _id = mongoengine.StringField(primary_key=True)
+            meta = {
+                'db_alias': f'{self.user} core'
+            }
+
+        self.Thing = Thing
+        self.Container = Container
+        self.Tester = Tester
 
     def createThing(self, **kwargs):
         self.logDebug('DB Ops', 'Creating a thing and saving it to the database')
         new_object = self.Thing(**kwargs)
         new_object.save()
+        return new_object
 
     def createContainer(self, **kwargs):
         self.logDebug('DB Ops', 'Creating a container and saving it to the database')
         new_object = self.Container(**kwargs)
         new_object.save()
+        return new_object
 
     def createUser(self, user, pd):
         '''- use user_administrator with PyMongo.command() to create a user
@@ -101,7 +115,7 @@ class UserSession(LogMethods):
                 roles:       [         { role: "userAdmin", db: "inventory_app_db" }       ]  })
 
         ---I think this method could be done by sending a request to a script running on the server
-        rather than giving user admin privilidges to the user in code form---
+        rather than giving user admin privileges to the user in code form---
 
         Collections cannot contain collections within them.  There is no tree structure like a file
         system.  You can reference other collections
@@ -114,35 +128,33 @@ class UserSession(LogMethods):
         self.user = user
 
         db = self._getUserAdminClient().inventory_app_db
-        self.logCritical('PRINT', f'{db}')
 
-        # --- check that the username doesn't already exitst! --- #
+        # --- check that the username doesn't already exists! --- #
 
         self.logDebug('DB Ops', f'Creating {self.user}\'s user role')
         # Create a custom role for the user on his/her own collection
-        db.command('createRole',
-                   f'user_role_{self.user}',
-                   roles=[],
-                   privileges=[
-                       {
-                           'resource': {'db': 'inventory_app_db',
-                                        'collection': f'inventory_of_{self.user}'},
-                           'actions': [
-                               'find',
-                               'createCollection',
-                               'dropCollection',
-                               'insert',
-                               'update',
-                               'remove'
-                           ]
-                       }
-                   ]
-                   )
+        db.command(
+            'createRole',
+            f'user_role_{self.user}',
+            roles=['readWrite'],
+            privileges=[
+                {
+                    'resource': {'db': 'inventory_app_db',
+                                 'collection': f'inventory_of_{self.user}'},
+                    'actions': [
+                        'find',
+                        'dropCollection',
+                        'insert',
+                        'update',
+                        'remove'
+                    ]
+                }
+            ]
+        )
 
         self.logDebug('DB Ops', f'Creating {self.user} in the DB and assigning them their role')
 
         # Create the user and assign it the custom role
-        print(f'--{self.user} password creation--')
         db.command('createUser',
                    self.user,
                    pwd=pd,
@@ -153,6 +165,7 @@ class UserSession(LogMethods):
                        }
                    ]
                    )
+        del db
         return True
 
         # self.login(user, pd)
@@ -170,7 +183,7 @@ class UserSession(LogMethods):
 
             # https://docs.mongodb.com/manual/reference/method/db.collection.drop/#db-collection-drop
             # List of all commands: https://docs.mongodb.com/manual/reference/command/
-            # Delete the user's custome role
+            # Delete the user's custom role
             client.inventory_app_db.command(
                 'dropRole',
                 f'user_role_{self.user}'
@@ -201,10 +214,25 @@ class UserSession(LogMethods):
                                           alias=f'{self.user} core'
                                           )
 
-        self.logInfo('DB Ops', 'UserSession.login executed')
+        # Create a test document with a random integer to reduce the risk of a duplicate
+        tester = str(random.randint(111111111111, 999999999999))
+        test_login_doc = self.Tester(_id=tester)
+        try:
+            self.logDebug('DB Ops', 'Attempting to save the test document to verify login..')
+            test_login_doc.save()
+            self.logDebug('DB Ops', 'Attempting to delete the test document to verify login..')
+            test_login_doc.delete()
+            return True
+        except Exception as e:
+            self.logError('DB Ops', f'Authentication Failed\n{e}')
+            return False
+
+    def logout(self):
+        self.user = None
+        self.client = None
 
     def _getUserAdminClient(self):
-        '''Get the client connection with user admin privilidges to add/delete users'''
+        '''Get the client connection with user admin privileges to add/delete users'''
 
         usern = 'user_administrator'
         pswd = 'iamthecreatorandthedestroyerofyouraccess'
@@ -247,15 +275,15 @@ class UserSession(LogMethods):
         user_admin_client = mongoengine.connect(
             host=f'mongodb://{usern}:{pswd}@{db_ip}:{db_port}/{app_db}'
         )
-        print(user_admin_client)
 
         return user_admin_client
 
-    # Anytime the user property is changed, the
+    # This is returned anytime self.user is used
     @property
     def user(self):
         return self._user
 
+    # This executes anytime self.user is assigned a new value
     @user.setter
     def user(self, new_value):
         self._user = new_value
@@ -264,6 +292,7 @@ class UserSession(LogMethods):
 
 if __name__ == '__main__':
     a = UserSession(input('username: '))
-    a.createThing(name='hat', owner=a.user)
+    tester = random.randint(111111111111, 999999999999)
+    a.createThing(name=f'{tester}', owner=a.user)
     input('---continue---')
     a.deleteUser()

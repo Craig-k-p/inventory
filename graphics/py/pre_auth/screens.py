@@ -43,18 +43,26 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         self.widgets['TextInputs']['pswd'] = self.pswd
         self.logDebug('KvLogic', f'self.widgets was created:\n{pprint.pformat(self.widgets, indent=4)}')
 
-    def checkFormat(self):
-        '''Check if the user input is valid.  Call the database function to check
-           if the user exists.'''
+    def checkUserInputFormat(self):
+        '''Check if the user input is valid.  Return user input (tuple) or False'''
 
+        check = True
+        errors = self.manager.app.popup_errors
+        settings = self.manager.app.settings
         user = self.widgets['TextInputs']['account'].text
         pw = self.widgets['TextInputs']['pswd'].text
-        if user != '' and pw != '':
-            self.logInfo('AUTH', f'self.checkFormat CONFIRMED {self.account.text}!  Logging user in...')
-            return (user, pw)
-        else:
+
+        if len(user) < settings['username min length'] or len(pw) < settings['password min length']:
+            self.logInfo('AUTH', f'Login information is invalid')
+            errors.append(f'Username must be at least {settings["username min length"]} characters.')
+            errors.append(f'Password must be at least {settings["password min length"]} characters.')
+            check = False
+
+        if check is True:
             self.logInfo('AUTH', f'self.checkFormat DENIED {self.account.text}!')
-            return False
+            check = (user, pw)
+
+        return check
 
     def initDefaultPopupText(self):
         '''Set the default popup text messages, popup button prompt, and popup title.  Must be done
@@ -63,6 +71,7 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         self.popup_text = {}
         self.popup_text['messages'] = {
             'invalid login': 'Invalid username/email or password.',
+            'Userpass too short': f'Username must be {self.manager.app.settings["username min length"]} and password must be {self.manager.app.settings["password min length"]} characters long',
             'blank login': 'Please provide a username/email and password.',
             'footer': 'Please check and try again.'
         }
@@ -112,37 +121,42 @@ class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
         }
         self.logDebug('KvLogic', f'Created self.widgets:\n{pprint.pformat(self.widgets, indent=4)}')
 
-    def checkFormat(self):
-        '''Check if the user input is valid.  Call the database function to check
-           if the user exists.'''
+    def checkUserInputFormat(self):
+        '''Check if the user input is valid.  Return '''
 
         user = self.username.text
         email = self.email.text
         pw = self.pswd.text
         pw2 = self.pswdrpt.text
 
+        print(f'USER: {self.username.text}, EMAIL:{self.email}')
+
+        check = True
+
         if len(user) < self.manager.app.settings['username min length']:
-            self.logDebug('App', 'User create account input did NOT pass as valid input')
-            return False
+            self.logDebug('App', f'{user} did NOT pass as valid input')
+            msg = f'{user} is not {self.manager.app.settings["username min length"]} characters long'
+            self.manager.app.popup_errors.append(msg)
+            check = False
 
-        elif self.isEmail(email) is False:
-            self.logDebug('App', 'User create account input did NOT pass as valid input')
-            return False
+        if self.isEmail(email) is False:
+            self.logDebug('App', f'{email} did NOT pass as valid input')
+            msg = f'"{email}" is not proper email format'
+            self.manager.app.popup_errors.append(msg)
+            check = False
 
-        elif self.checkPw(pw, pw2) is False:
-            self.logDebug('App', 'User create account input did NOT pass as valid input')
-            return False
+        if self.checkPw(pw, pw2) is False:
+            self.logDebug('App', 'Password inputs did NOT pass as valid')
+            msg = 'Passwords do not match or are not '
+            msg += f'{self.manager.app.settings["username min length"]} characters long'
+            self.manager.app.popup_errors.append(msg)
+            check = False
 
-        else:
-            self.logDebug('App', 'User create account input passed as valid input')
-            return True
+        if check is True:
+            self.logDebug('App', 'User create account input passed as valid input in screens.py')
+            check = (user, email, pw)
 
-        if self.username.text != '' and self.email.text != '' and self.pswd.text != '' and self.pswdrpt.text != '':
-            self.logInfo('AUTH', f'self._authenticate CONFIRMED {self.username.text}!')
-            return True
-        else:
-            self.logInfo('AUTH', f'self._authenticate DENIED {self.username.text}!')
-            return False
+        return check
 
     def initDefaultPopupText(self):
         '''Set the default popup text messages, popup button prompt, and popup title.  Must be done

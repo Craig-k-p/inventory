@@ -11,7 +11,7 @@ from graphics.py.pre_auth.popup import PopupContent
 
 class KivyExtensions():
     '''Used to separate the Kivy graphics methods needed in MyInventoryApp
-       from the MongoEngine database methods needed for the backend.'''
+       from the MongoEngine database methods needed for the back end.'''
 
     def _clearPopupErrors(self):
         self.popup_errors = []
@@ -101,7 +101,7 @@ class KivyExtensions():
             for error in self.popup_errors:
                 error_labels.append(
                     Label(
-                        text=self.sm.current_screen.popup_text['messages'][error],
+                        text=error,
                         font_size=24,
                         pos_hint={'x': 0}
                     )
@@ -142,7 +142,7 @@ class KivyExtensions():
 
                 '''
 
-        log = 'Button pressed. Recieved input:'
+        log = 'Button pressed. Received input:'
         log += f'\n\tscreen: {screen}'
         log += f'\n\tcall: {call}'
         log += f'\n\tdirection: {direction}'
@@ -153,7 +153,7 @@ class KivyExtensions():
 
             # Access the class method by string name using getattr
             # self is passed to getattr so it knows in what object to search for call
-            # Pass the necesary arguments to the method
+            # Pass the necessary arguments to the method
             getattr(self, call)(screen, direction)
 
         else:
@@ -169,7 +169,7 @@ class KivyExtensions():
         if self.isLoggedIn() is False:
             # If an attempt to change screens to a screen that needs login information is made
             if self.validations['authentication needed'][screen] is True:
-                self.logWarning('KvLogic', f'Recieved a call to change to {screen} without authentication')
+                self.logWarning('KvLogic', f'Received a call to change to {screen} without authentication')
 
             # If someone tries to switch to a valid screen that doesn't need authentication
             elif self.validations['authentication needed'][screen] is False:
@@ -178,9 +178,9 @@ class KivyExtensions():
                 self.sm.current = screen
                 self.logInfo('KvOps', f'Changed to {screen} going in direction {direction}')
 
-            # If self.validations['authentication needed'][screen] value is not a bolean
+            # If self.validations['authentication needed'][screen] value is not a boolean
             else:
-                log = f"self.validations['authentication needed'][screen] should be bolean. Got "
+                log = f"self.validations['authentication needed'][screen] should be boolean. Got "
                 log += f'{self.authentication_needed[screen]}'
                 self.logWarning('App', log)
 
@@ -194,65 +194,72 @@ class KivyExtensions():
             raise Exception('self.isLoggedIn did not return a boolean')
 
     def login(self, new_screen, direction):
+        '''Handles the graphics operations of logging in and calls the self.authenticate method'''
 
         old_screen = self.sm.current_screen
 
-        # Check for an existing user
-        check = old_screen.checkFormat()
-        # Clear the input fields for the user
-        old_screen.resetTextInputs()
+        # Check formatting of user input
+        check = old_screen.checkUserInputFormat()
 
         # See if check is not False and is also a tuple
         if check is not False and isinstance(check, tuple):
 
             # Unpack the tuple as individual arguments to self.authenticate
-            self.authenticate(*check)
+            is_logged_in = self.authenticate(*check)
 
-            # Change the transition properties and screen
-            self.sm.transition.direction = direction
-            self.sm.current = new_screen
+            # If user successfully logged in
+            if is_logged_in:
+                # Change the transition properties and current screen
+                self.sm.transition.direction = direction
+                self.sm.current = new_screen
+            # Username or pass is invalid.  Create a popup
+            else:
+                self.logDebug('DB Ops', 'Login rejected, creating error popup')
+                self.popup_errors.append('Invalid username or password')
+                self.createPopup()
         else:
-            # Clear the input fields for the user
-            self.sm.current_screen.resetTextInputs()
-            # Append the invalid login error key (found in
-            #       pre_auth_screens.LoginScreen.initPopupInfo())
-            # to the error list.  These errors will be used to customize popup content using custom
-            # text for labels found in self.sm.current_screen.popup_text
-            self.popup_errors.append('invalid login')
-            # Create a popup that tells the user that they failed to login
-            print('Failed to authenticate!')
             self.createPopup()
 
-    def createAccount(self, screen, direction):
+        old_screen.resetTextInputs()
 
-        # Create a shortcut to the text input widgets in the create account screen
-        inputs = self.sm.current_screen.widgets['TextInputs']
-        # If the
-        if len(inputs['username'].text) < self.settings['username min length']:
-            self.popup_errors.append('invalid username length')
-            log = f"Username should be at least {self.settings['username min length']} characters long"
-            self.logDebug('KvFeedback', log)
-        if inputs['pswd'].text != inputs['pswdrpt'].text:
-            self.popup_errors.append('password mismatch')
-            self.logDebug('KvFeedback', f"Passwords don't match!")
-        if len(inputs['pswd'].text) < self.settings['password min length']:
-            self.popup_errors.append('password length')
-            log = f"Password should be at least {self.settings['password min length']} characters long!"
-            self.logDebug('KvFeedback', log)
-        if '@' not in inputs['email'].text or '.' not in inputs['email'].text:
-            self.popup_errors.append('invalid email')
-            log = f"This is an invalid email format!"
-            self.logDebug('KvLogic', log)
+    def createAccount(self, new_screen, direction):
+
+        old_screen = self.sm.current_screen
+
+        # Check user input format
+        check = old_screen.checkUserInputFormat()
+        old_screen.resetTextInputs()
 
         # If there were no errors
         if len(self.popup_errors) == 0:
-            self.logInfo('KvFeedback', f'No errors were found for user input on screen {screen}')
-            if self.sm.current_screen.checkFormat() is True:
-                self.sm.current_screen.resetTextInputs()
-                self.sm.transition.direction = direction
-                self.sm.current = screen
+
+            self.logInfo('KvFeedback', f'No errors were found for user input on new_screen {new_screen}')
+
+            # If the formatting is correct
+            if check is not False and isinstance(check, tuple):
+
+                # Try to create an account
+                self.logDebug('KvOps', 'Requesting account creation..')
+                is_logged_in = self.createUser(*check)
+
+                # If the user was successfully created and logged in
+                if is_logged_in is True:
+
+                    self.logInfo('KvOps', 'User was successfully logged in! Changing screen')
+                    # Change the screen
+                    self.sm.transition.direction = direction
+                    self.sm.current = new_screen
+
+                # If the account creation failed
+                else:
+                    self.logError('DB Ops', 'Account creation failed! Creating popup')
+                    self.popup_errors.append('Account creation failed for an unknown reason!')
+
             else:
                 self.logError('KvFeedback', 'Formatting errors were not caught by createAccount method')
 
         else:
+            # Errors existed, make a popup
             self.createPopup()
+
+        old_screen.resetTextInputs()

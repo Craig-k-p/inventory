@@ -30,12 +30,12 @@ class UserSession(LogMethods):
 
         class PropertyObject(mongoengine.Document):
             '''Basic data that all inventory objects have'''
+            description = mongoengine.StringField(required=True)
             created_date = mongoengine.DateTimeField(default=datetime.datetime.now)
             # acquired_date = mongoengine.DateTimeField(required=True)
-            owner = mongoengine.StringField(required=True)
-            # tags = mongoengine.ListField(mongoengine.StringField(max_length=25))
+            tags = mongoengine.ListField(mongoengine.StringField(max_length=25))
             weight = mongoengine.FloatField(required=True)
-            value = mongoengine.FloatField(required=True)
+            usd_value = mongoengine.FloatField(required=True)
 
             meta = {
                 'abstract': True
@@ -45,8 +45,7 @@ class UserSession(LogMethods):
         # http://docs.mongoengine.org/guide/document-instances.html#pre-save-data-validation-and-cleaning
         class Thing(PropertyObject):
             '''Inherits from property object and adds other attributes to create a thing'''
-            name = mongoengine.StringField(required=True)
-            # box_id = mongoengine.ReferenceField('Container')
+            container_id = mongoengine.ReferenceField('Container ID')
             # attributes = mongoengine.ListField(mongoengine.StringField(max_length=25))
             meta = {
                 # self.client = mongoengine.connect(db='inventory_app_db', alias=f'{self.user} core')
@@ -59,9 +58,7 @@ class UserSession(LogMethods):
 
         class Container(PropertyObject):
             ''' container_type, thing_ids '''
-            container_type = mongoengine.StringField(required=True, max_length=30)
             thing_ids = mongoengine.ListField(mongoengine.ReferenceField('Thing'))
-            user = mongoengine.StringField(required=True)
             meta = {
                 'db_alias': f'{self.user} core',
                 'collection': f'inventory_of_{self.user}'
@@ -85,24 +82,27 @@ class UserSession(LogMethods):
                 'db_alias': f'{self.user} core'
             }
 
-        self.Thing = Thing
-        self.Container = Container
-        self.Tester = Tester
+        self._Thing = Thing
+        self._Container = Container
+        self._Tester = Tester
 
-    def createThing(self, **kwargs):
+    def Thing(self, **kwargs):
+        '''Create a new thing'''
         self.logDebug('DB Ops', 'Creating a thing and saving it to the database')
-        new_object = self.Thing(**kwargs)
+        new_object = self._Thing(**kwargs)
         new_object.save()
         return new_object
 
-    def createContainer(self, **kwargs):
+    def Container(self, **kwargs):
+        '''Create a new container'''
         self.logDebug('DB Ops', 'Creating a container and saving it to the database')
-        new_object = self.Container(**kwargs)
+        new_object = self._Container(**kwargs)
         new_object.save()
         return new_object
 
     def createUser(self, user, pd):
-        '''- use user_administrator with PyMongo.command() to create a user
+        '''
+        - use user_administrator with PyMongo.command() to create a user
         - use user_administrator to create a new collection
         - use user_administrator to create a role associated with that collection
         - use appAdmin to assign the role to the user
@@ -216,7 +216,7 @@ class UserSession(LogMethods):
 
         # Create a test document with a random integer to reduce the risk of a duplicate
         tester = str(random.randint(111111111111, 999999999999))
-        test_login_doc = self.Tester(_id=tester)
+        test_login_doc = self._Tester(_id=tester)
         try:
             self.logDebug('DB Ops', 'Attempting to save the test document to verify login..')
             test_login_doc.save()
@@ -290,9 +290,9 @@ class UserSession(LogMethods):
         self.__initMEDocDefs__()
 
 
-if __name__ == '__main__':
-    a = UserSession(input('username: '))
-    tester = random.randint(111111111111, 999999999999)
-    a.createThing(name=f'{tester}', owner=a.user)
-    input('---continue---')
-    a.deleteUser()
+# if __name__ == '__main__':
+#     a = UserSession(input('username: '))
+#     tester = random.randint(111111111111, 999999999999)
+#     a.createThing(name=f'{tester}', owner=a.user)
+#     input('---continue---')
+#     a.deleteUser()

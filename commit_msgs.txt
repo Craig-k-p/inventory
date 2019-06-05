@@ -1,11 +1,13 @@
--Added ":" to the end of <widgetdefinitions>: in screens.kv - this appears to be the correct 
- syntax, although it has not thrown any errors.
--Created thing_view.kv and ThingView widget definition.  Also created thing_view.py file
--Added import for ThingView to inventory.py
+Objective:
+Create new boxes/things and save them to the server
 
- canvas:  # Background color:
-            Color:
-                rgba: random.random(), random.random(), random.random(), 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
+Created PopupCreateThingContent in popups.kv
+Added createInventoryObject to MongoEngineExtensions
+Added createThingPopup to KivyExtensions
+Added text "+T" to a toolbar button and assigned createThingPopup to on_release app.buttonPress call
+Added 'createThingPopup', 'createContainerPopup', 'createThing', 'createContainer' to app.validations
+Added createContainerPopup to KivyExtensions
+Created PopupCreateContainerContent in popups.kv
+Added popup functionality to toolbar buttons
+Added Toolbar.checkForScreen method to filter which screens allow which popups on button press
+Added app._getObjectCreationUserInput to get text inputs from user for object creation

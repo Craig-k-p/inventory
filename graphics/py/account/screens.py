@@ -6,6 +6,7 @@ from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen
 
 from graphics.py.account.thing_view import ThingView
+from graphics.py.account.toolbar import Toolbar
 from resources.utilities import UtilityMethods, LogMethods
 
 
@@ -27,7 +28,7 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
             class_str='AccountOverviewScreen'
         )
 
-        self.logInfo('kv_ops', 'Creating an AccountOverviewScreen instance..')
+        self.logInfo('kv Ops', 'Creating an AccountOverviewScreen instance..')
 
         # Put input widgets here so we can grab the user input at some point
         self.widgets = {
@@ -37,7 +38,7 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
         # Make sure the data_grid knows what format to follow
         self.data_grid.setObjectCategory('containers')
 
-        self.logInfo('kv_ops', 'Calling self.data_grid.TextRandomPopulate..')
+        self.logInfo('kv Ops', 'Calling self.data_grid.TextRandomPopulate..')
 
         # Test the rows with random data
         self.data_grid.TestRandomPopulate()
@@ -46,7 +47,7 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
         '''Set the default text to be displayed in certain situations'''
 
     def buttonPress(self):
-        self.logInfo('kv_ops', 'Enter pressed in AccountOverviewScreen!')
+        self.logInfo('kv Ops', 'Enter pressed in AccountOverviewScreen!')
 
 
 class ContainerOverviewScreen(Screen, LogMethods):
@@ -67,7 +68,7 @@ class ContainerOverviewScreen(Screen, LogMethods):
             class_str='ContainerOverviewScreen'
         )
 
-        self.logInfo('kv_ops', 'Creating a ContainerOverviewScreen instance..')
+        self.logInfo('kv Ops', 'Creating a ContainerOverviewScreen instance..')
 
         # Put input widgets here so we can grab the user input at some point
         self.widgets = {
@@ -77,7 +78,7 @@ class ContainerOverviewScreen(Screen, LogMethods):
         # Make sure the data_grid knows what format to follow
         self.data_grid.setObjectCategory('things')
 
-        self.logInfo('kv_ops', 'Calling self.data_grid.TextRandomPopulate..')
+        self.logInfo('kv Ops', 'Calling self.data_grid.TextRandomPopulate..')
 
         # Test the rows with random data
         self.data_grid.TestRandomPopulate()
@@ -86,7 +87,7 @@ class ContainerOverviewScreen(Screen, LogMethods):
         '''Set the default text to be displayed in certain situations'''
 
     def buttonPress(self):
-        self.logInfo('kv_ops', 'Enter pressed in ContainerOverviewScreen!')
+        self.logInfo('kv Ops', 'Enter pressed in ContainerOverviewScreen!')
 
 
 class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
@@ -105,7 +106,7 @@ class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
             class_str='AccountOverviewScreen'
         )
 
-        self.logInfo('kv_ops', 'Creating an ThingOverviewScreen instance..')
+        self.logInfo('kv Ops', 'Creating an ThingOverviewScreen instance..')
 
         # Put input widgets here so we can grab the user input at some point
         self.widgets = {
@@ -113,4 +114,4 @@ class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
         }
 
     def buttonPress(self):
-        self.logInfo('kv_ops', 'Enter pressed in ThingOverviewScreen!')
+        self.logInfo('kv Ops', 'Enter pressed in ThingOverviewScreen!')

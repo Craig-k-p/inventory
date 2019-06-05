@@ -31,3 +31,19 @@ class MongoEngineExtensions():
             return True
         else:
             return False
+
+    def createInventoryObject(self, object_class_str, kv_obj_reference):
+        '''Create a new thing using the information filled in by the user in the popup'''
+
+        # Get a dictionary of all user input strings
+        # The keys must match with MongoEngine document definition attributes
+        kwargs = self._getObjectCreationUserInput(kv_obj_reference)
+
+        # Get the class (stored as an attribute) from self.session
+        ObjectClass = getattr(self.session, object_class_str)
+
+        # Create an instance of the new Inventory object and store it as a variable for later use
+        new_object = ObjectClass(**kwargs)
+        self.logDebug('DB Ops', f'Saved a new {new_object.description}')
+        self.pop.dismiss()
+        return new_object

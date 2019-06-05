@@ -1,25 +1,26 @@
 import pprint
 
 from kivy.uix.button import Button
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, ListProperty
 
 from resources.utilities import LogMethods
 
 
-class PopupContent(GridLayout, LogMethods):
-    '''Defined in popups.kv.'''
+class PopupErrorContent(GridLayout, LogMethods):
+    '''A class linked to popups.kv class definition'''
 
     # Grab the BoxLayout from kv/popups.kv
     box = ObjectProperty(None)
 
     def __init__(self, widgets, current_screen, is_yes_no=False, **kwargs):
-        '''Grab a list of child widgets to be added to the popup after self.parent (reference to the parent 
+        '''Grab a list of child widgets to be added to the popup after self.parent (reference to the parent
            popup) is assigned.
            widgets -> list of Kivy widgets'''
 
         # Allows us to call our own PopupContent.__init__() without overriding Kivy's FloatLayout.__init__()
-        super(PopupContent, self).__init__(**kwargs)
+        super(PopupErrorContent, self).__init__(**kwargs)
         self.cols = 1
         self.pos_hint = {'x': 0, 'y': 0}
 
@@ -37,7 +38,7 @@ class PopupContent(GridLayout, LogMethods):
         log += f'\n\t\t\twidgets = {self.widgets},'
         log += f'\n\t\t\tcurrent_screen = {self.current_screen.manager.current},'
         log += f'\n\t\t\tis_yes_no = {self.is_yes_no}'
-        self.logDebug('App', log)
+        self.logDebug('Kv Ops', log)
 
     def assignParentMethod(self, parentMethod):
         '''Allows us to reference the popup from the kv file as root.parent.do_something.
@@ -46,7 +47,7 @@ class PopupContent(GridLayout, LogMethods):
 
         # Method to be executed by the popup button
         self.parentMethod = parentMethod
-        self.logDebug('App', f'Recieved parentMethod: {parentMethod.__name__}')
+        self.logDebug('Kv Logic', f'Recieved parentMethod: {parentMethod.__name__}')
 
         # Add the child widgets to the popup
         self._assignChildren()
@@ -61,7 +62,7 @@ class PopupContent(GridLayout, LogMethods):
             for widget in self.widgets:
                 self.box.add_widget(widget)
 
-            self.logInfo('KvOps', f'Added widgets to popup:\n{pprint.pformat(self.widgets)}')
+            self.logInfo('Kv Ops', f'Added widgets to popup:\n{pprint.pformat(self.widgets)}')
 
             if self.is_yes_no is False:
                 # Create a button
@@ -74,17 +75,40 @@ class PopupContent(GridLayout, LogMethods):
                     pos_hint={'center_x': .5}
                 )
                 btn.bind(on_release=self.parentMethod)
-                self.logDebug('App', 'self.is_yes_no is False.  Added a single button to popup')
+                self.logDebug('Kv Ops', 'self.is_yes_no is False.  Added a single button to popup')
                 # Add a button to the BoxLayout with the given text and parentMethod
                 self.box.add_widget(btn)
 
             else:
                 print('Not implemented --- kv_popup.PopupContent._assignChildren')
                 log = 'self.is_yes_no is True.  Added a yes/no button pair'
-                self.logError('App', 'Not implemented!  self.is_yes_no is True')
+                self.logError('Kv Ops', 'Not implemented!  self.is_yes_no is True')
 
         else:
             log = f'Error!  self.widgets is either not a list or is empty:'
             log += f'\n\t\t\ttype: {type(self.widgets)}'
             log += f'\n\t\t\tcontent: {self.widgets}'
-            self.logWarning('App', log)
+            self.logWarning('Kv Ops', log)
+
+
+class PopupCreateThingContent(ScrollView):
+    '''A class linked to popups.kv class definition'''
+    description = ObjectProperty(None)
+    value = ObjectProperty(None)
+    weight = ObjectProperty(None)
+    tags = ObjectProperty(None)
+    inputs = ListProperty(None)
+
+    def __init__(self, **kwargs):
+        super(PopupCreateThingContent, self).__init__(**kwargs)
+
+
+class PopupCreateContainerContent(ScrollView):
+    '''A class linked to popups.kv class definition'''
+    description = ObjectProperty(None)
+    value = ObjectProperty(None)
+    weight = ObjectProperty(None)
+    tags = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super(PopupCreateContainerContent, self).__init__(**kwargs)

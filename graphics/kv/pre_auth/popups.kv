@@ -1,7 +1,4 @@
-<PopupContent>:
-
-    # label: label
-    # button: button
+<PopupErrorContent>:
     box: box
 
     BoxLayout:
@@ -11,5 +8,219 @@
         pos_hint: {'x': 0, 'y': 0}
         Label:
             size_hint: (.2, .2)
+
+<AllignLayout@AnchorLayout>:
+    size_hint: (1, 1)
+    anchor_x: 'left'
+    anchor_y: 'bottom'
+    # canvas:
+    #     Color:
+    #         rgba: random.random(), random.random(), random.random(), 1
+    #     Rectangle:
+    #         pos: self.pos
+    #         size: self.size
+
+    
+<PopLabel@Label>:
+    bold: True
+    color: app.kv_settings['text color']
+    # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
+    # Allows the AnchorLayout to allign this widget along the x axis (left, center, right)
+    size_hint: (None, None)
+    # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
+    # https://stackoverflow.com/questions/24803773/...
+    # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
+    font_size: 22
+    size: (self.texture_size[0]+10, self.texture_size[1])
+
+<PopInput@TextInput>:
+    hint_text: 'required'
+    color: app.kv_settings['text color']
+    size_hint: (.9, None)
+    height: self.minimum_height
+    multiline: False
+    font_size: 22
+
+<PopButton@Button>:
+    color: app.kv_settings['text color']
+    size_hint: (1, 1)
+    font_size: 22
+
+<PopPairGrid@GridLayout>:
+    size_hint: (1, 1)
+    cols: 1
+    spacing: 10
+
+
+
+
+<PopupCreateThingContent>:  # ScrollView inheritance - popup.py
+    description: description
+    usd_value: usd_value
+    weight: weight
+    tags: tags
+
+    id: popup_content
+    size_hint: (1, 1)
+
+    GridLayout:
+        cols: 1
+        size_hint: (1, 1)
+        padding: 10
+        spacing: 10
+        # Allow ScrollView to scroll (next two lines)
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: 90
+        row_force_default: True
+        padding: 20
+        spacing: 20
+
+        PopPairGrid:
+            cols: 1
+            size_hint: (1, 1)
+            AllignLayout:
+                PopLabel:
+                    text: 'Object description:'
+            PopInput:
+                id: description
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Object value (USD):'
+            PopInput:
+                id: usd_value
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Object weight (lbs):'
+            PopInput:
+                id: weight
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Searchable keyword tag:'
+            PopInput:
+                hint_text: 'Press enter to add tag'
+                id: tags
+
+        PopPairGrid:
+            cols: 2
+            size_hint: (1, None)
+            # canvas:
+            #     Color:
+            #         rgba: random.random(), random.random(), random.random(), 1
+            #     Rectangle:
+            #         pos: self.pos
+            #         size: self.size
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'center'
+                size_hint: (.5, 1)
+                PopButton:
+                    text: 'Add to container'
+                    size_hint: (None, None)
+                    size: (180, 90)
+                    on_release:
+                        app.buttonPress(call='createInventoryObject', kv_object_reference=popup_content, object_class_str='Thing')
+            AnchorLayout:
+                anchor_x: 'left'
+                anchor_y: 'center'
+                size_hint: (.5, 1)
+                PopButton:
+                    text: 'Cancel'
+                    size_hint: (None, None)
+                    size: (180, 90)
+                    on_release:
+                        app.pop.dismiss()
+
+<PopupCreateContainerContent>:
+    description: description
+    usd_value: usd_value
+    weight: weight
+    tags: tags
+    tags: []
+
+    id: popup_content
+    size_hint: (1, 1)
+
+    GridLayout:
+        cols: 1
+        size_hint: (1, 1)
+        padding: 10
+        spacing: 10
+        # Allow ScrollView to scroll (next two lines)
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: 90
+        row_force_default: True
+        padding: 20
+        spacing: 20
+
+        PopPairGrid:
+            cols: 1
+            size_hint: (1, 1)
+            AllignLayout:
+                PopLabel:
+                    text: 'Container description:'
+            PopInput:
+                id: description
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Container value (USD):'
+            PopInput:
+                id: usd_value
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Container empty weight (lbs):'
+            PopInput:
+                id: weight
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Short descriptive keyword tags:'
+            PopInput:
+                id: tags
+                hint_text: 'Press enter to add tag'
+
+        PopPairGrid:
+            cols: 2
+            size_hint: (1, None)
+            # canvas:
+            #     Color:
+            #         rgba: random.random(), random.random(), random.random(), 1
+            #     Rectangle:
+            #         pos: self.pos
+            #         size: self.size
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'center'
+                size_hint: (.5, 1)
+                PopButton:
+                    text: 'Add to inventory'
+                    size_hint: (None, None)
+                    size: (180, 90)
+                    on_release:
+                        app.buttonPress(call='createInventoryObject', kv_object_reference=popup_content, object_class_str='Container')
+            AnchorLayout:
+                anchor_x: 'left'
+                anchor_y: 'center'
+                size_hint: (.5, 1)
+                PopButton:
+                    text: 'Cancel'
+                    size_hint: (None, None)
+                    size: (180, 90)
+                    on_release:
+                        app.pop.dismiss()
+
+
 
 

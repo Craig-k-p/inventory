@@ -23,7 +23,7 @@ import pprint
 
 from kivy.app import App
 from kivy.lang import Builder
-# from kivy.core.window import Window
+from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
 
 from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
@@ -45,7 +45,7 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
         )
 
         # Set window to white
-        # Window.clearcolor = (1, 1, 1, 1)
+        Window.clearcolor = (1, 1, 1, 1)
 
         self.logInfo('App', 'Creating MyInventoryApp instance')
 
@@ -68,11 +68,16 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
             'popup auto_dismiss': False,
             'popup size_hint': (.75, .75),
             'standard font': 'arial',
-            'text color': (1, 1, 1, 1),
+            'text color': (0, 0, 0, 1),
             'title font name': 'segoesc'}
         self.validations = {
             'allowed button calls': (
-                'changeScreen', 'createAccount', 'login'
+                'changeScreen',
+                'createAccount',
+                'login',
+                'createThingPopup',
+                'createContainerPopup',
+                'createInventoryObject'
             ),
             'authentication needed': {
                 'account': True,

@@ -38,7 +38,10 @@ class UserSession(LogMethods):
             usd_value = mongoengine.FloatField(required=True)
 
             meta = {
-                'abstract': True
+                'abstract': True,
+                # The following line is very important.  Without it, all objects would be searched
+                # instead of just the objects within the class structure that's defined below
+                'allow_inheritance': True
             }
 
         # Validation:
@@ -197,6 +200,13 @@ class UserSession(LogMethods):
                 self.user
             )
 
+    def get(self, class_str):
+        self.logInfo('__TEST__', f'Session.get called with class_str: {class_str}')
+        ObjectClass = getattr(self, '_' + class_str)
+        self.logInfo('TEST', f'Got {ObjectClass} as ObjectClass')
+
+        return ObjectClass.objects()
+
     def login(self, user, pd):
         '''Log the user in to the server using username and password.  Save the client session as self.user'''
         self.user = user
@@ -222,9 +232,10 @@ class UserSession(LogMethods):
             test_login_doc.save()
             self.logDebug('DB Ops', 'Attempting to delete the test document to verify login..')
             test_login_doc.delete()
+            self.logDebug('DB Ops', 'Success!')
             return True
         except Exception as e:
-            self.logError('DB Ops', f'Authentication Failed\n{e}')
+            self.logError('DB Ops', f'Authentication Failed!\n{e}')
             return False
 
     def logout(self):
@@ -288,11 +299,3 @@ class UserSession(LogMethods):
     def user(self, new_value):
         self._user = new_value
         self.__initMEDocDefs__()
-
-
-# if __name__ == '__main__':
-#     a = UserSession(input('username: '))
-#     tester = random.randint(111111111111, 999999999999)
-#     a.createThing(name=f'{tester}', owner=a.user)
-#     input('---continue---')
-#     a.deleteUser()

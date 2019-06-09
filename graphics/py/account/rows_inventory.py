@@ -28,7 +28,7 @@ class InventoryHeadingRow(GridLayout, LogMethods):
             'InventoryHeadingRow'
         )
 
-        self.logDebug('kv_ops', 'Creating an InventoryHeadingRow instance')
+        self.logDebug('kv Ops', 'Creating an InventoryHeadingRow instance')
 
     def setHeadingText(self,
                        container='Container',
@@ -41,9 +41,8 @@ class InventoryHeadingRow(GridLayout, LogMethods):
         '''Set the heading text for each child widget Label'''
         log = f'Setting heading Label text values to {container}, {weight}, {value}, '
         log += f'{location}, {tags}, and {options}'
-        self.logDebug('kvLogic', log)
-        # self.logDebug('kvLogic', f'container.label = {self.container.label}')
-        self.logDebug('kvLogic', f'self.weight.label = {self.weight_label.text}')
+        self.logDebug('kv Logic', log)
+        self.logDebug('kv Logic', f'self.weight.label = {self.weight_label.text}')
 
         self.obj_label.text = 'HELP'
         self.weight_label.text = weight
@@ -52,10 +51,10 @@ class InventoryHeadingRow(GridLayout, LogMethods):
         self.tag_button.text = tags
         self.opt_button.text = options
 
-        self.logDebug('kvLogic', f'container.label = {self.obj_label.text}')
+        self.logDebug('kv Logic', f'container.label = {self.obj_label.text}')
 
         log = f'Values: {self.obj_label.text}, {self.weight_label.text}, {self.val_label.text}'
-        self.logDebug('kvLogic', log)
+        self.logDebug('kv Logic', log)
 
 
 class InventoryDataRow(GridLayout, LogMethods):
@@ -74,7 +73,7 @@ class InventoryDataRow(GridLayout, LogMethods):
         'row_2_color': Color(.1, .1, .1, 0.2)
     }
 
-    def __init__(self, UID, **kwargs):
+    def __init__(self, UID, object_doc, **kwargs):
         '''Get the information from database to put into the label widgets'''
         super().__init__(**kwargs)
         # self.data = data
@@ -83,16 +82,17 @@ class InventoryDataRow(GridLayout, LogMethods):
             'InvDataRow'
         )
 
-        self.logDebug('kv_ops', 'Creating an InvDataRow instance')
+        self.logDebug('kv Ops', 'Creating an InvDataRow instance')
 
         self.UID = UID
+        self.object_doc = object_doc
 
         self.value_col_width = 65
         self.weight_col_width = 45
 
         self.choices = ['ice cream', 'coffee', 'turnips', 'beans', 'lice', 'panzerfaust', 'crossiant']
         self.locations = ['home', 'cabin', 'bottom of the lake', 'New York', 'gf house', 'grandmas house']
-        self.randomValues()
+        self.assignValues()
 
     def randomValues(self):
         '''Set the heading text for each child widget Label'''
@@ -107,3 +107,11 @@ class InventoryDataRow(GridLayout, LogMethods):
         self.loc_label.text = random.choice(self.locations)
         self.val_label.text = f'{random.randint(0,4000)}.{random.randint(10,99)}'
         self.weight_label.text = f'{random.randint(0,199)}.{random.randint(0,9)}'
+
+    def assignValues(self):
+        self.logDebug('----TEST----', f'{self.object_doc.description}, {self.object_doc.usd_value}, {self.object_doc.weight}')
+
+        self.obj_label.text = str(self.object_doc.description)
+        self.loc_label.text = 'Home'
+        self.val_label.text = str(self.object_doc.usd_value)
+        self.weight_label.text = str(self.object_doc.weight)

@@ -1,13 +1,25 @@
 Objective:
-Create new boxes/things and save them to the server
+Access containers/things from the server and present them in data rows
 
-Created PopupCreateThingContent in popups.kv
-Added createInventoryObject to MongoEngineExtensions
-Added createThingPopup to KivyExtensions
-Added text "+T" to a toolbar button and assigned createThingPopup to on_release app.buttonPress call
-Added 'createThingPopup', 'createContainerPopup', 'createThing', 'createContainer' to app.validations
-Added createContainerPopup to KivyExtensions
-Created PopupCreateContainerContent in popups.kv
-Added popup functionality to toolbar buttons
-Added Toolbar.checkForScreen method to filter which screens allow which popups on button press
-Added app._getObjectCreationUserInput to get text inputs from user for object creation
+Created Toolbar.logObjects method
+Created app.getObjects method
+Created UserSession.get method
+Created DataGrid.fillUserData method
+Created InventoryDataRow.assignValues method
+Alphabetized datagrid.py
+Moved the creation of account screen Classes to kv_extensions.py -> app.createUserScreens
+Integrated Database functionality with DataGrid.addDataRow, InventoryDataRow instantiation, and app.createInventoryObject
+
+Next Goals:
+	Add:
+Delete object on widget deletion
+	-currently widget deletes but document doesn't
+	-widgets do not reappear until the program RESTARTS
+	
+	To Fix:
+
+[INFO] [AUTH] [screens.py][LoginScreen.checkUserInputFormat][62] self.checkFormat DENIED asdf!
+[INFO] [DB AUTH] [me_extensions.py][MyInventoryApp.authenticate][8] Checking credentials for asdf
+[DEBUG] [DB Ops] [session.py][UserSession.login][216] Attempting to log asdf into the database
+
+_getObjectCreationUserInput does not filter for "required" fields. kv_extensions.py, 386

@@ -25,3 +25,19 @@ class Toolbar(BoxLayout, LogMethods):
         if screen_str == app.sm.current:
             self.logDebug('Kv Logic', f'Checked if screen_str was equal to app.sm.current and found True!')
             app.buttonPress(popup_method_str, None, None)
+
+    def logObjects(self, app):
+        '''Call self.getObjects and put them into the log'''
+        self.logInfo('__TEST__', f'Toolbar.logObjects called')
+
+        objects = app.getObjects("Container")
+        self.logInfo('__TEST__', f'objects found: {objects}')
+
+        for obj in objects:
+            self.logInfo('__TEST__', f'Object: {obj.description}, ${obj.usd_value}, {obj.weight} lbs')
+
+        objects = app.getObjects("Thing")
+        self.logInfo('__TEST__', f'objects found: {objects}')
+
+        for obj in objects:
+            self.logInfo('__TEST__', f'Object: {obj.description}, ${obj.usd_value}, {obj.weight} lbs')

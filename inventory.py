@@ -26,7 +26,7 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
 
-from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
+# from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
 from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
 from graphics.py.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
@@ -117,10 +117,8 @@ class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
             LoginScreen(name='login'),
             # name can also be defined in the kv/main_widgets.kv file using "name: 'account window'" under
             # class declaration
-            AccountOverviewScreen(),
-            ContainerOverviewScreen(),
-            ThingOverviewScreen()
         ]
+
         log = f'Created login, account, and create account screens with "screens" var: '
         log += f'{pprint.pformat(screens, indent=4)}'
         self.logDebug('App', log)

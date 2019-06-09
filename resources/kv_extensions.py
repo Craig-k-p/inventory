@@ -8,6 +8,7 @@ from kivy.uix.textinput import TextInput
 # from kivy.graphics.vertex_instructions import Rectangle
 
 from graphics.py.pre_auth.popups import PopupErrorContent, PopupCreateThingContent, PopupCreateContainerContent
+from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
 
 
 class KivyExtensions():
@@ -36,7 +37,7 @@ class KivyExtensions():
                 'createThingPopup',
                 'createContainerPopup',
                 'createInventoryObject'
-                
+
             Resources:
         https://stackoverflow.com/questions/3061/calling-a-function-of-a-module-by-using-its-name-a-string
         https://stackoverflow.com/questions/1855558/call-method-from-string
@@ -280,6 +281,13 @@ class KivyExtensions():
         Builder.unload_file(self.kv_settings['kv popup file'])
         self.logDebug('Kv Logic', f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})')
 
+    def createUserScreens(self):
+        '''Create user screens after the user has been logged in to be sure the widgets are able
+           to get the information they need!'''
+        self.sm.add_widget(AccountOverviewScreen())
+        self.sm.add_widget(ContainerOverviewScreen())
+        self.sm.add_widget(ThingOverviewScreen())
+
     def login(self, new_screen, direction):
         '''Handles the graphics operations of logging in and calls the self.authenticate method'''
 
@@ -295,7 +303,10 @@ class KivyExtensions():
             is_logged_in = self.authenticate(*check)
 
             # If user successfully logged in
-            if is_logged_in:
+            if is_logged_in is True:
+                # Create the screens now that the user is logged in!
+                self.createUserScreens()
+
                 # Change the transition properties and current screen
                 self.sm.transition.direction = direction
                 self.sm.current = new_screen

@@ -28,6 +28,9 @@
         direction: 'right'
         ToolbarButton:
             pos_hint: {'center_x': .25, 'center_y': .5}
+            text: 'get'
+            on_release:
+                toolbar.logObjects(app)
         ToolbarButton:
             pos_hint: {'center_x': .25, 'center_y': .5}
         ToolbarButton:

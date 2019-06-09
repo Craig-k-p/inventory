@@ -1,5 +1,3 @@
-
-
 class MongoEngineExtensions():
     '''Used to keep the MongoEngine database methods separate from the Kivy graphics methods'''
 
@@ -42,8 +40,20 @@ class MongoEngineExtensions():
         # Get the class (stored as an attribute) from self.session
         ObjectClass = getattr(self.session, object_class_str)
 
-        # Create an instance of the new Inventory object and store it as a variable for later use
-        new_object = ObjectClass(**kwargs)
-        self.logDebug('DB Ops', f'Saved a new {new_object.description}')
+        # Create an instance of the new Inventory object document and store it as a variable for later use
+        new_object_doc = ObjectClass(**kwargs)
+        self.logDebug('DB Ops', f'Saved a new {new_object_doc.description}')
         self.pop.dismiss()
-        return new_object
+
+        self.sm.current_screen.data_grid.addDataRow(new_object_doc)
+
+        return new_object_doc
+
+    def getObjects(self, object_class_str):
+        '''Get objects in the user's inventory'''
+        self.logInfo('__TEST__', f'app.getObjects called.')
+
+        # Get 'thing' or 'container'
+        objects = self.session.get(object_class_str)
+
+        return objects

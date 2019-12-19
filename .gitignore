@@ -1,3 +1,6 @@
 ignore.*
 data
 *pycache*
+*.bat
+*.lnk
+THING-VIEW.*

@@ -1,4 +1,7 @@
-'''  Manage inventory for Things and keep track of their value
+'''  ---DEPRECATED---
+
+
+Manage inventory for Things and keep track of their value
 
     Improvements for future programs can include
         -Separating the logic layer from the presentation layer.  This program's

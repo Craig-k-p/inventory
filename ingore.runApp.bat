@@ -1,2 +1,2 @@
-python D:\Files\Projects\Python\Inventory\V5\inventory.py
+python "D:\Files\Projects\Python\Inventory\github_inventory\inventory.py"
 cmd /k

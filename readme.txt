@@ -2,3 +2,4 @@ Requires Python version 3.7
 
 1. Activate virtual environment (Windows -> venv) using the command prompt:  ignore.venv\Scripts\activate.bat
 2. Install requirements: pip install -r requirements.txt
+3. Deactivate virtual environment: deactivate

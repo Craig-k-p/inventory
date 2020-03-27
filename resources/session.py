@@ -1,5 +1,4 @@
 import datetime
-import mongoengine
 import random
 
 from resources.utilities import LogMethods
@@ -13,8 +12,9 @@ from resources.utilities import LogMethods
 class UserSession(LogMethods):
 
     def __init__(self):
-        '''Define classes within the __init__ function so we can use the user's name to assign custom privileges.
-           Store the class definitions in Session.Thing, Session.Container'''
+        '''Define classes within the __init__ function so we can use the user's name to
+        assign custom privileges. Store the class definitions in Session.Thing,
+        Session.Container'''
 
         self.__initLog__(
             file_str=__file__,
@@ -24,70 +24,71 @@ class UserSession(LogMethods):
         self.logInfo('App', 'Created a UserSession instance')
         self._user = None
 
-    def __initMEDocDefs__(self):
-        '''Define the instance document definitions. This allows us to customize the user's database and
-           collection settings when the ME documents are defined as classes'''
+    # def __initMEDocDefs__(self):
+    #     '''Define the instance document definitions. This allows us to customize the user's
+    #     database and collection settings when the ME documents are defined as classes'''
 
-        class PropertyObject(mongoengine.Document):
-            '''Basic data that all inventory objects have'''
-            description = mongoengine.StringField(required=True)
-            created_date = mongoengine.DateTimeField(default=datetime.datetime.now)
-            # acquired_date = mongoengine.DateTimeField(required=True)
-            tags = mongoengine.ListField(mongoengine.StringField(max_length=25))
-            weight = mongoengine.FloatField(required=True)
-            usd_value = mongoengine.FloatField(required=True)
+    #     class PropertyObject(mongoengine.Document):
+    #         '''Basic data that all inventory objects have'''
+    #         description = mongoengine.StringField(required=True)
+    #         created_date = mongoengine.DateTimeField(default=datetime.datetime.now)
+    #         # acquired_date = mongoengine.DateTimeField(required=True)
+    #         tags = mongoengine.ListField(mongoengine.StringField(max_length=25))
+    #         weight = mongoengine.FloatField(required=True)
+    #         usd_value = mongoengine.FloatField(required=True)
 
-            meta = {
-                'abstract': True,
-                # The following line is very important.  Without it, all objects would be searched
-                # instead of just the objects within the class structure that's defined below
-                'allow_inheritance': True
-            }
+    #         meta = {
+    #             'abstract': True,
+    #             # The following line is very important.  Without it, all objects would be
+    #             # searched instead of just the objects within the class structure that's
+    #             # defined below
+    #             'allow_inheritance': True
+    #         }
 
-        # Validation:
-        # http://docs.mongoengine.org/guide/document-instances.html#pre-save-data-validation-and-cleaning
-        class Thing(PropertyObject):
-            '''Inherits from property object and adds other attributes to create a thing'''
-            container_id = mongoengine.ReferenceField('Container ID')
-            # attributes = mongoengine.ListField(mongoengine.StringField(max_length=25))
-            meta = {
-                # self.client = mongoengine.connect(db='inventory_app_db', alias=f'{self.user} core')
-                # We must set the alias to match the login above found in UserSession.login
-                # From what I understand, this ensures that these objects are written to the
-                # correct database
-                'db_alias': f'{self.user} core',
-                'collection': f'inventory_of_{self.user}'
-            }
+    #     # Validation:
+    #     # http://docs.mongoengine.org/guide/document-instances.html#pre-save-data-validation-and-cleaning
+    #     class Thing(PropertyObject):
+    #         '''Inherits from property object and adds other attributes to create a thing'''
+    #         container_id = mongoengine.ReferenceField('Container ID')
+    #         # attributes = mongoengine.ListField(mongoengine.StringField(max_length=25))
+    #         meta = {
+    #             # self.client = mongoengine.connect(db='inventory_app_db', alias=f'{self.user} core')
+    #             # We must set the alias to match the login above found in UserSession.login
+    #             # From what I understand, this ensures that these objects are written to the
+    #             # correct database
+    #             'db_alias': f'{self.user} core',
+    #             'collection': f'inventory_of_{self.user}'
+    #         }
 
-        class Container(PropertyObject):
-            ''' container_type, thing_ids '''
-            thing_ids = mongoengine.ListField(mongoengine.ReferenceField('Thing'))
-            meta = {
-                'db_alias': f'{self.user} core',
-                'collection': f'inventory_of_{self.user}'
-            }
+    #     class Container(PropertyObject):
+    #         ''' container_type, thing_ids '''
+    #         thing_ids = mongoengine.ListField(mongoengine.ReferenceField('Thing'))
+    #         meta = {
+    #             'db_alias': f'{self.user} core',
+    #             'collection': f'inventory_of_{self.user}'
+    #         }
 
-        # Use last_login query to check whether the user credentials are correct
-        class UserInfoDoc(mongoengine.Document):
-            ''' OK '''
-            email = mongoengine.StringField()
-            username = mongoengine.StringField()
-            last_login = mongoengine.DateTimeField(default=datetime.datetime.now)
-            meta = {
-                'db_alias': f'{self.user} core',
-                'collection': f'inventory_of_{self.user}'
-            }
+    #     # Use last_login query to check whether the user credentials are correct
+    #     class UserInfoDoc(mongoengine.Document):
+    #         ''' OK '''
+    #         email = mongoengine.StringField()
+    #         username = mongoengine.StringField()
+    #         last_login = mongoengine.DateTimeField(default=datetime.datetime.now)
+    #         meta = {
+    #             'db_alias': f'{self.user} core',
+    #             'collection': f'inventory_of_{self.user}'
+    #         }
 
-        class Tester(mongoengine.Document):
-            '''Used to test if the user is logged in.  Should not exist after login'''
-            _id = mongoengine.StringField(primary_key=True)
-            meta = {
-                'db_alias': f'{self.user} core'
-            }
+    #     class Tester(mongoengine.Document):
+    #         '''Used to test if the user is logged in.  Should not exist after login'''
+    #         _id = mongoengine.StringField(primary_key=True)
+    #         meta = {
+    #             'db_alias': f'{self.user} core'
+    #         }
 
-        self._Thing = Thing
-        self._Container = Container
-        self._Tester = Tester
+    #     self._Thing = Thing
+    #     self._Container = Container
+    #     self._Tester = Tester
 
     def Thing(self, **kwargs):
         '''Create a new thing'''
@@ -201,42 +202,46 @@ class UserSession(LogMethods):
             )
 
     def get(self, class_str):
-        self.logInfo('__TEST__', f'Session.get called with class_str: {class_str}')
-        ObjectClass = getattr(self, '_' + class_str)
-        self.logInfo('TEST', f'Got {ObjectClass} as ObjectClass')
+        return []
+        '''Return the things or containers in the user's database file'''
+        # self.logInfo('__TEST__', f'Session.get called with class_str: {class_str}')
+        # ObjectClass = getattr(self, '_' + class_str)
+        # self.logInfo('TEST', f'Got {ObjectClass} as ObjectClass')
 
-        return ObjectClass.objects()
+        # return ObjectClass.objects()
 
     def login(self, user, pd):
-        '''Log the user in to the server using username and password.  Save the client session as self.user'''
-        self.user = user
+        return True
+        '''Log the user in to the server using username and password.  Save the client
+        session as self.user'''
+        # self.user = user
 
-        # Check if the user exists
+        # # Check if the user exists
 
-        self.logDebug('DB Ops', f'Attempting to log {self.user} into the database')
-        # This actually creates a PyMongo.MongoClient instance
-        # The same as pymongo.MongoClient(f'mongodb://user:pwd@ip:port/db_name')
-        self.client = mongoengine.connect(db='inventory_app_db',
-                                          username=self.user,
-                                          password=pd,
-                                          host='10.0.0.8',
-                                          port=27017,
-                                          alias=f'{self.user} core'
-                                          )
+        # self.logDebug('DB Ops', f'Attempting to log {self.user} into the database')
+        # # This actually creates a PyMongo.MongoClient instance
+        # # The same as pymongo.MongoClient(f'mongodb://user:pwd@ip:port/db_name')
+        # self.client = mongoengine.connect(db='inventory_app_db',
+        #                                   username=self.user,
+        #                                   password=pd,
+        #                                   host='10.0.0.8',
+        #                                   port=27017,
+        #                                   alias=f'{self.user} core'
+        #                                   )
 
-        # Create a test document with a random integer to reduce the risk of a duplicate
-        tester = str(random.randint(111111111111, 999999999999))
-        test_login_doc = self._Tester(_id=tester)
-        try:
-            self.logDebug('DB Ops', 'Attempting to save the test document to verify login..')
-            test_login_doc.save()
-            self.logDebug('DB Ops', 'Attempting to delete the test document to verify login..')
-            test_login_doc.delete()
-            self.logDebug('DB Ops', 'Success!')
-            return True
-        except Exception as e:
-            self.logError('DB Ops', f'Authentication Failed!\n{e}')
-            return False
+        # # Create a test document with a random integer to reduce the risk of a duplicate
+        # tester = str(random.randint(111111111111, 999999999999))
+        # test_login_doc = self._Tester(_id=tester)
+        # try:
+        #     self.logDebug('DB Ops', 'Attempting to save the test document to verify login..')
+        #     test_login_doc.save()
+        #     self.logDebug('DB Ops', 'Attempting to delete the test document to verify login..')
+        #     test_login_doc.delete()
+        #     self.logDebug('DB Ops', 'Success!')
+        #     return True
+        # except Exception as e:
+        #     self.logError('DB Ops', f'Authentication Failed!\n{e}')
+        #     return False
 
     def logout(self):
         self.user = None
@@ -245,11 +250,11 @@ class UserSession(LogMethods):
     def _getUserAdminClient(self):
         '''Get the client connection with user admin privileges to add/delete users'''
 
-        usern = 'user_administrator'
-        pswd = 'iamthecreatorandthedestroyerofyouraccess'
-        app_db = 'inventory_app_db'
-        db_ip = '10.0.0.8'
-        db_port = '27017'
+        # usern = 'user_administrator'
+        # pswd = 'iamthecreatorandthedestroyerofyouraccess'
+        # app_db = 'inventory_app_db'
+        # db_ip = '10.0.0.8'
+        # db_port = '27017'
 
         '''
         #https://docs.mongodb.com/manual/reference/built-in-roles/#userAdmin
@@ -283,11 +288,11 @@ class UserSession(LogMethods):
         )'''
 
         # PyMongo library can be used similarly
-        user_admin_client = mongoengine.connect(
-            host=f'mongodb://{usern}:{pswd}@{db_ip}:{db_port}/{app_db}'
-        )
+        # user_admin_client = mongoengine.connect(
+        #     host=f'mongodb://{usern}:{pswd}@{db_ip}:{db_port}/{app_db}'
+        # )
 
-        return user_admin_client
+        # return user_admin_client
 
     # This is returned anytime self.user is used
     @property
@@ -298,4 +303,4 @@ class UserSession(LogMethods):
     @user.setter
     def user(self, new_value):
         self._user = new_value
-        self.__initMEDocDefs__()
+        # self.__initMEDocDefs__()

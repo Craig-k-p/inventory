@@ -64,6 +64,7 @@ class DataGrid(GridLayout, LogMethods):
         ''' Populate the rows with user data '''
 
         self.logDebug('Db Logic', 'Getting data for the data grid')
+        # Get the containers or things to fill the data grid
         data = app.getObjects(self.category)
 
         self.logDebug('Db Logic', 'Looping thru the data')
@@ -165,7 +166,9 @@ class DataGrid(GridLayout, LogMethods):
             # self.logDebug('kvLogic', f'Label size: {tex_width}')
 
     def _getMaxWidth(self):
-        '''Loop thru each child widget's children and get the maximum width needed for the column'''
+        '''Loop thru each child widget's children and get the maximum width needed for the
+        column'''
+        self.logInfo('kvLogic', f'Did nothing...')
 
     def _getUID(self):
         '''Increment self.UIDs and return the value'''

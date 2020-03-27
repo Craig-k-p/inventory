@@ -25,10 +25,12 @@ class MongoEngineExtensions():
             return False
 
     def isLoggedIn(self):
-        if self.session.user is not None and self.session.client is not None:
-            return True
-        else:
-            return False
+        '''Method not needed with a local save.'''
+        # if self.session.user is not None and self.session.client is not None:
+        #     return True
+        # else:
+        #     return False
+        return True
 
     def createInventoryObject(self, object_class_str, kv_obj_reference):
         '''Create a new thing using the information filled in by the user in the popup'''

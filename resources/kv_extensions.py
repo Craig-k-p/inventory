@@ -50,7 +50,8 @@ class KivyExtensions():
         log += f'\n\tdirection: {direction}'
         self.logDebug('KvFeedback', log)
 
-        # If call is among the allowed calls or, in other words, if the string matches a method name
+        # If call is among the allowed calls or, in other words, if the string matches a
+        # method name
         if call in self.validations['allowed button calls']:
 
             # Access the class method by string name using getattr
@@ -72,15 +73,18 @@ class KivyExtensions():
             self.logCritical('KvFeedback', log)
 
     def changeScreen(self, screen, direction):
-        '''Change to a screen using direction.  Make sure the screen does not need authentication.
+        '''Change to a screen using direction.  Make sure the screen does not need
+        authentication.
         Implement method to check whether the user is logged in.
         '''
 
         # Check if the user is logged in
         if self.isLoggedIn() is False:
-            # If an attempt to change screens to a screen that needs login information is made
+            # If an attempt to change screens to a screen that needs login information
+            # is made
             if self.validations['authentication needed'][screen] is True:
-                self.logWarning('Kv Logic', f'Received a call to change to {screen} without authentication')
+                self.logWarning('Kv Logic',
+                    f'Received a call to change to {screen} without authentication')
 
             # If someone tries to switch to a valid screen that doesn't need authentication
             elif self.validations['authentication needed'][screen] is False:
@@ -91,7 +95,8 @@ class KivyExtensions():
 
             # If self.validations['authentication needed'][screen] value is not a boolean
             else:
-                log = f"self.validations['authentication needed'][screen] should be boolean. Got "
+                log = f"self.validations['authentication needed'][screen] should be boolean.\
+                 Got "
                 log += f'{self.authentication_needed[screen]}'
                 self.logWarning('App', log)
 
@@ -115,7 +120,10 @@ class KivyExtensions():
         # If there were no errors
         if len(self.popup_errors) == 0:
 
-            self.logInfo('Kv Feedback', f'No errors were found for user input on new_screen {new_screen}')
+            self.logInfo(
+                'Kv Feedback',
+                f'No errors were found for user input on new_screen {new_screen}'
+            )
 
             # If the formatting is correct
             if check is not False and isinstance(check, tuple):
@@ -138,7 +146,8 @@ class KivyExtensions():
                     self.popup_errors.append('Account creation failed for an unknown reason!')
 
             else:
-                self.logError('KvFeedback', 'Formatting errors were not caught by createAccount method')
+                self.logError('KvFeedback', 'Formatting errors were not caught by \
+                    createAccount method')
 
         else:
             # Errors existed, make a popup
@@ -162,13 +171,15 @@ class KivyExtensions():
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
-        self.logDebug('Kv Logic', f'kivy.lang.Builder loaded the file {self.kv_settings["kv popup file"]}')
+        self.logDebug('Kv Logic', f'kivy.lang.Builder loaded the file\
+         {self.kv_settings["kv popup file"]}')
 
         # Create an instance of popup content found in popup.py and popups.kv
         popup_content = PopupErrorContent(self._createPopupErrorLabels(), current_screen)
         self.logDebug(
             'Kv Ops',
-            f'Created a PopupErrorContent instance with popup error labels for screen {self.sm.current}'
+            f'Created a PopupErrorContent instance with popup error labels for screen\
+             {self.sm.current}'
         )
 
         # Create the popup, assign the title, content, etc
@@ -197,11 +208,17 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-        self.logDebug('Kv Logic', f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})')
+        self.logDebug(
+            'Kv Logic',
+            f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
+        )
 
     def createContainerPopup(self, screen=None, direction=None):
         # Load the popup content from file and create an instance of PopupContent
-        self.logDebug('Kv Logic', f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}')
+        self.logDebug(
+            'Kv Logic',
+            f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}'
+        )
         Builder.load_file(self.kv_settings['kv popup file'])
 
         # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
@@ -238,11 +255,17 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-        self.logDebug('Kv Logic', f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})')
+        self.logDebug(
+            'Kv Logic',
+            f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
+        )
 
     def createThingPopup(self, screen=None, direction=None):
         # Load the popup content from file and create an instance of PopupContent
-        self.logDebug('Kv Logic', f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}')
+        self.logDebug(
+            'Kv Logic',
+            f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}'
+        )
         Builder.load_file(self.kv_settings['kv popup file'])
 
         # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
@@ -279,17 +302,21 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-        self.logDebug('Kv Logic', f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})')
+        self.logDebug(
+            'Kv Logic',
+            f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
+        )
 
     def createUserScreens(self):
-        '''Create user screens after the user has been logged in to be sure the widgets are able
-           to get the information they need!'''
+        '''Create user screens after the user has been logged in to be sure the widgets are
+        able to get the information they need!'''
         self.sm.add_widget(AccountOverviewScreen())
         self.sm.add_widget(ContainerOverviewScreen())
         self.sm.add_widget(ThingOverviewScreen())
 
     def login(self, new_screen, direction):
-        '''Handles the graphics operations of logging in and calls the self.authenticate method'''
+        '''Handles the graphics operations of logging in and calls the self.authenticate
+        method'''
 
         old_screen = self.sm.current_screen
 
@@ -337,7 +364,8 @@ class KivyExtensions():
         # If self.popup_errors is a populated list..
         if isinstance(self.popup_errors, list) and len(self.popup_errors) > 0:
 
-            # Go through the errors and create Label widgets with the messages as the Labels' text
+            # Go through the errors and create Label widgets with the messages as the Labels'
+            # text
             for error in self.popup_errors:
                 error_labels.append(
                     Label(
@@ -353,7 +381,10 @@ class KivyExtensions():
             )
 
             self._clearPopupErrors()
-            self.logDebug('Kv Logic', 'self.popup_errors reset to [] and error_labels returned')
+            self.logDebug(
+                'Kv Logic',
+                'self.popup_errors reset to [] and error_labels returned'
+            )
             return error_labels
 
         else:

@@ -30,12 +30,12 @@ from kivy.uix.screenmanager import NoTransition, SlideTransition
 from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
 from graphics.py.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
-from resources.me_extensions import MongoEngineExtensions
+from resources.iohandler import IOHandler
 from resources.utilities import LogMethods
 from resources.session import UserSession
 
 
-class MyInventoryApp(App, KivyExtensions, MongoEngineExtensions, LogMethods):
+class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
 
     def __init__(self, **kwargs):
         super(MyInventoryApp, self).__init__(**kwargs)

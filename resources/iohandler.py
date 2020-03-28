@@ -1,4 +1,4 @@
-class MongoEngineExtensions():
+class IOHandler():
     '''Used to keep the MongoEngine database methods separate from the Kivy graphics methods'''
 
     def authenticate(self, user, pd):

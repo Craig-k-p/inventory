@@ -1,10 +1,12 @@
+import json
+import shutil
+
+
 class IOHandler():
-
-
     def __init__(self):
         self.things = {}
         self.containers = {}
-
+        self.file_hash = None
 
     def authenticate(self, user, pd):
         '''Method not needed with a local save.'''
@@ -70,7 +72,47 @@ class IOHandler():
         '''Return all user objects'''
         return []
 
-    # def saveData(self):
+    def prepareData(self, load):
+        '''Prepare data for a save or from a load'''
 
-    #     with open(f'save_data/{file_name}')
-    #         return fi
+        if load is True:
+            pass
+
+        # Prepare data for a save
+        elif load is False:
+            save_data = {'things':{},'containers':{}}
+            for key in self.things:
+                save_data['things'][key] = self.things[key]['doc']
+            for key in self.containers:
+                save_data['containers'][key] = self.containers[key]['doc']
+
+            self.logDebug('IO Ops', f'Save data: {save_data}')
+
+
+    def saveData(self):
+        '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
+
+        with open(self.settings['save file'], 'w', encoding='utf-8') as f:
+            self.prepareData(load=False)
+
+    def loadData(self):
+        '''Load and hash data to check if a save is needed'''
+
+        # Catch errors if the file doesn't exist
+        try:
+            # Open the file in read mode with utf-8 encoding
+            with open(self.settings['save file'], 'r', encoding='utf-8') as f:
+                # Load the data as a dictionary
+                objects = json.load(f)
+
+        # If the file wasn't found, check for the backup file
+        except FileNotFoundError:
+            try:
+                # Open the file in read mode with utf-8 encoding
+                with open(self.settings['backup save file'], 'r', encoding='utf-8') as f:
+                    # Load the data as a dictionary
+                    objects = json.load(f)
+
+            # If the file wasn't found, return empty dictionaries
+            except FileNotFoundError:
+                objects = {}

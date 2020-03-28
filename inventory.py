@@ -60,7 +60,9 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
             'username min length': 0,
             'start screen': 'login', # account, container, thing
             'startup transition': NoTransition(),
-            'app transition type': SlideTransition(), }
+            'app transition type': SlideTransition(),
+            'save file': 'save_data/save_data',
+            'backup save file': 'save_data/backup_save_data' }
         self.kv_settings = {
             'startup kv files': ['graphics/kv/pre_auth/screens.kv', 'graphics/kv/account/screens.kv'],
             'kv popup file': 'graphics/kv/pre_auth/popups.kv',
@@ -82,9 +84,9 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
                 'createInventoryObject'
             ),
             'authentication needed': {
-                'account': True,
-                'container': True,
-                'thing': True,
+                'account': False,
+                'container': False,
+                'thing': False,
                 'login': False,
                 'create account': False}}
 
@@ -146,8 +148,8 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
         '''Execute this function when the application is exited'''
         self.logDebug('db_ops', 'Saving data...')
         # Save the user data to a file
-        file_name = self.saveData()
-        self.logDebug('db_ops', f'The data has been saved to {file_name}')
+        self.saveData()
+        self.logDebug('IO Ops', f'The data has been saved to {self.settings["save file"]}')
 
 
 if __name__ == '__main__':

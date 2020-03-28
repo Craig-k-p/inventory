@@ -94,20 +94,6 @@ class InventoryDataRow(GridLayout, LogMethods):
         self.locations = ['home', 'cabin', 'bottom of the lake', 'New York', 'gf house', 'grandmas house']
         self.assignValues()
 
-    # def randomValues(self):
-    #     '''Set the heading text for each child widget Label'''
-
-    #     objs = [self.obj_label, self.loc_label]
-
-    #     # Choose a random string value for the text attribute
-    #     for obj in objs:
-    #         obj.text = random.choice(self.choices)
-
-    #     self.obj_label.text = random.choice(self.choices)
-    #     self.loc_label.text = random.choice(self.locations)
-    #     self.val_label.text = f'{random.randint(0,4000)}.{random.randint(10,99)}'
-    #     self.weight_label.text = f'{random.randint(0,199)}.{random.randint(0,9)}'
-
     def assignValues(self):
         self.logDebug(
             '----TEST----',

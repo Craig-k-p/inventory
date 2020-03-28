@@ -95,16 +95,6 @@ class BoxDataRow(GridLayout, LogMethods):
         self.choices = ['tape', 'coffee', 'hat', 'beans', 'lice', 'ratchet', 'files']
         self.assignValues()
 
-    def randomValues(self):
-        '''Set the heading text for each child widget Label'''
-
-        self.logDebug('kvLogic', 'Choosing random text values for BoxDataRow Labels')
-
-        # Choose a random string value for the text attribute
-        self.obj_label.text = random.choice(self.choices)
-        self.val_label.text = f'{random.randint(0,99)}.{random.randint(10,99)}'
-        self.weight_label.text = f'{random.randint(0,99)}.{random.randint(0,9)}'
-
     def assignValues(self):
         self.logDebug(
             '----TEST----',

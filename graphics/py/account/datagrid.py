@@ -17,6 +17,12 @@ class DataGrid(GridLayout, LogMethods):
 
     categories = ('Container', 'Thing')
 
+    # Unique ids for each data row
+    UIDs = 0
+
+    # Store the InventoryDataRow instances here
+    dataRows = {'containers': {}, 'things': {}}
+
     def __init__(self, **kwargs):
         '''Creates the widgets in a user-defined manner'''
         # Init the parent, ScrollView
@@ -35,12 +41,6 @@ class DataGrid(GridLayout, LogMethods):
         self.heading_color = None
         self.row_1_color = None
         self.row_2_color = None
-
-        # Unique ids for each data row
-        self.UIDs = 0
-
-        # Store the InventoryDataRow instances here
-        self.dataRows = {}
 
     def addDataRow(self, object_doc):
         '''Add a row of fields to the GridLayout with the given data
@@ -71,7 +71,7 @@ class DataGrid(GridLayout, LogMethods):
             'row': new_row,
             'doc': object_doc
         }
-        # Link to the appropriate dictionary
+        # Link to the appropriate dictionary in iohandler.py
         if self.category == 'Thing':
             self.app.things = self.dataRows
         elif self.category == 'Container':
@@ -141,13 +141,19 @@ class DataGrid(GridLayout, LogMethods):
             raise Exception(f'self.category must be "things" or "containers", not {category}')
 
         self.logDebug('kvLogic', 'Assigning references to the approprate classes..')
+
         # Set references to the proper classes for this instance
         if self.category == 'Thing':
             self._HeadingCls = BoxHeadingRow
             self._DataRowCls = BoxDataRow
+            # Link the correct dictionary stored in DataGrid.dataRows for storing row instances
+            self.dataRows = DataGrid.dataRows['things']
+
         elif self.category == 'Container':
             self._HeadingCls = InventoryHeadingRow
             self._DataRowCls = InventoryDataRow
+            # Link the correct dictionary stored in DataGrid.dataRows for storing row instances
+            self.dataRows = DataGrid.dataRows['containers']
 
         self.logDebug('kvLogic', 'Creating the heading row..')
 
@@ -180,6 +186,6 @@ class DataGrid(GridLayout, LogMethods):
     def _getUID(self):
         '''Increment self.UIDs and return the value'''
 
-        self.UIDs += 1
-        self.logInfo('kvLogic', f'Incremented self.UID to {self.UIDs}')
-        return self.UIDs
+        DataGrid.UIDs += 1
+        self.logInfo('kvLogic', f'Incremented DataGrid.UID to {DataGrid.UIDs}')
+        return DataGrid.UIDs

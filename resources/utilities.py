@@ -41,7 +41,7 @@ class UtilityMethods():
 
 
 class LogMethods():
-    focus = ['datagrid.py', 'iohandler.py']
+    focus = []#['datagrid.py', 'iohandler.py']
     def __initLog__(self, file_str='', class_str=''):
         ''' It looksl like Kivy has it's own implementation of logging.  Instead of creating a custom
             logger, scroll to the bottom of this doc string.
@@ -159,8 +159,6 @@ class LogMethods():
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
-        if filename not in LogMethods.focus:
-            return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
@@ -172,8 +170,6 @@ class LogMethods():
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
-        if filename not in LogMethods.focus:
-            return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
@@ -185,8 +181,6 @@ class LogMethods():
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
-        if filename not in LogMethods.focus:
-            return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
@@ -198,8 +192,6 @@ class LogMethods():
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
-        if filename not in LogMethods.focus:
-            return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
@@ -211,8 +203,6 @@ class LogMethods():
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
-        if filename not in LogMethods.focus:
-            return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
@@ -224,8 +214,6 @@ class LogMethods():
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
-        if filename not in LogMethods.focus:
-            return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'

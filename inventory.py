@@ -32,7 +32,6 @@ from graphics.py.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.iohandler import IOHandler
 from resources.utilities import LogMethods
-from resources.session import SessionIO
 
 
 class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
@@ -49,8 +48,11 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
 
         self.logInfo('App', 'Creating MyInventoryApp instance')
 
+
+
+        ###
         # Create the UserSession instance for handling data transfer to and from the database
-        self.SessionIO = SessionIO()
+        ### Call to load data
 
         self.popup_errors = []
         self.settings = {
@@ -139,6 +141,13 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
         self.logDebug('KvOps', 'self.build called')
         self.title = 'My Inventory'
         return self.sm
+
+    def on_stop(self):
+        '''Execute this function when the application is exited'''
+        self.logDebug('db_ops', 'Saving data...')
+        # Save the user data to a file
+        file_name = self.saveData()
+        self.logDebug('db_ops', f'The data has been saved to {file_name}')
 
 
 if __name__ == '__main__':

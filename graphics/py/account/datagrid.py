@@ -29,6 +29,8 @@ class DataGrid(GridLayout, LogMethods):
 
         self.logInfo('kv_ops', f'Creating DataGrid instance')
 
+        self.app = None
+
         # Colors for each row
         self.heading_color = None
         self.row_1_color = None
@@ -46,6 +48,11 @@ class DataGrid(GridLayout, LogMethods):
             -tie each dataRow to it's actual container/thing object data from the server
             -tie into database functionality
         '''
+
+        if self.app == None:
+            # Allow easy access to the app instance for IO calls
+            self.app = self.parent.parent.parent.parent.app
+
         self.logDebug('Kv Ops', 'Adding a new data row to the DataGrid instance')
         # Get a unique ID for the row
         UID = self._getUID()
@@ -59,12 +66,21 @@ class DataGrid(GridLayout, LogMethods):
         self.logDebug('kv_ops', f'object_doc: {object_doc}')
         new_row2 = new_row(UID, object_doc)
 
-        # Add the ***DataRow instance to the dataRows dictionary
+        # Add the ***DataRow instance to the dataRows dictionary and link the data to the
+        # IOHandler instance
         self.dataRows[UID] = new_row2
+        if self.category == 'Thing':
+            self.app.things = self.dataRows
+        elif self.category == 'Container':
+            self.app.containers = self.dataRows
 
-        self.logDebug('Kv Ops', 'Adding the row for {object_doc.description} to the grid')
+        self.logDebug('TEST', f'self.dataRows: {self.dataRows}')
+
+        self.logDebug('Kv Ops', f'Adding the row for {object_doc["description"]} to the grid')
         # Add the ***DataRow instance to the DataGrid widget
         self.add_widget(self.dataRows[UID])
+
+        self.logDebug('TEST', f' {self.app}')
 
     def fillUserData(self, app):
         ''' Populate the rows with user data '''
@@ -99,25 +115,26 @@ class DataGrid(GridLayout, LogMethods):
         return self._HeadingCls
 
     def removeDataRow(self, UID):
-        '''Remove a row of fields from the GridLayout
-        Future:
-            -confirm?
-            -delete associated row with click
-            -tie into database functionality
-        '''
+        '''Remove a row of fields from the GridLayout'''
         self.logDebug('kv_ops', f'Removing row {UID}..')
         self.remove_widget(self.dataRows.pop(UID))
 
     def setObjectCategory(self, category):
-        '''Set the category of object that this grid will be dealing with - ie "containers" or "things" -
-           which will allow the instance to check which type of row/heading it will be instantiating'''
+        '''Set the category of object that this grid will be dealing with - ie "containers" or
+           "things" - which will allow the instance to check which type of row/heading it will
+           be instantiating
+           Called in screens.py'''
 
         self.logDebug('kvLogic', f'Setting the DataGrid category to {category}')
 
+        # Make sure the category is valid
         if category in DataGrid.categories:
             self.category = category
         else:
-            self.logCritical('kvLogic', f'category was {category}, not "things" or "containers."  Expect failures')
+            self.logCritical(
+                'kvLogic',
+                f'category was {category}, not "things" or "containers."  Expect failures'
+            )
             raise Exception(f'self.category must be "things" or "containers", not {category}')
 
         self.logDebug('kvLogic', 'Assigning references to the approprate classes..')

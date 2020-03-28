@@ -45,7 +45,7 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
         )
 
         # Set window to white
-        Window.clearcolor = (1, 1, 1, 1)
+        Window.clearcolor = (0, 0, 0, 1)
 
         self.logInfo('App', 'Creating MyInventoryApp instance')
 
@@ -56,7 +56,7 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
         self.settings = {
             'password min length': 0,
             'username min length': 0,
-            'start screen': 'login',
+            'start screen': 'login', # account, container, thing
             'startup transition': NoTransition(),
             'app transition type': SlideTransition(), }
         self.kv_settings = {
@@ -68,7 +68,7 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
             'popup auto_dismiss': False,
             'popup size_hint': (.75, .75),
             'standard font': 'arial',
-            'text color': (0, 0, 0, 1),
+            'text color': (1, 1, 1, 1),
             'title font name': 'segoesc'}
         self.validations = {
             'allowed button calls': (

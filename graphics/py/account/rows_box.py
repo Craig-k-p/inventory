@@ -75,7 +75,7 @@ class BoxDataRow(GridLayout, LogMethods):
         'row_2_color': Color(.1, .1, .1, 0.2)
     }
 
-    def __init__(self, UID, **kwargs):
+    def __init__(self, UID, object_doc=None, **kwargs):
         '''Get the information from database to put into the label widgets'''
         super().__init__(**kwargs)
         # self.data = data

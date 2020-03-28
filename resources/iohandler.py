@@ -24,7 +24,7 @@ class IOHandler():
         ObjectClass = getattr(self.SessionIO, object_class_str)
 
         # Create a new object and pass it to data_grid
-        new_object_doc = ObjectClass(**kwargs)
+        new_object_doc = ObjectClass(kwargs)
         self.logDebug('DB Ops', f'Saved a new {new_object_doc["description"]}')
         self.pop.dismiss()
 

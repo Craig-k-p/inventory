@@ -50,11 +50,17 @@ class DataGrid(GridLayout, LogMethods):
         # Get a unique ID for the row
         UID = self._getUID()
 
+        self.logDebug('kv_ops', f'UID: {UID}')
+
         # Instanciate a data row with UID and document
-        new_row = self.getDataRowClass()(UID, object_doc)
+        new_row = self.getDataRowClass()
+        self.logDebug('kv_ops', f'new_row: {new_row}')
+        self.logDebug('kv_ops', f'UID: {UID}')
+        self.logDebug('kv_ops', f'object_doc: {object_doc}')
+        new_row2 = new_row(UID, object_doc)
 
         # Add the ***DataRow instance to the dataRows dictionary
-        self.dataRows[UID] = new_row
+        self.dataRows[UID] = new_row2
 
         self.logDebug('Kv Ops', 'Adding the row for {object_doc.description} to the grid')
         # Add the ***DataRow instance to the DataGrid widget

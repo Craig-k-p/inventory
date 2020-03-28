@@ -75,7 +75,7 @@ class BoxDataRow(GridLayout, LogMethods):
         'row_2_color': Color(.1, .1, .1, 0.2)
     }
 
-    def __init__(self, UID, object_doc=None, **kwargs):
+    def __init__(self, UID, object_doc, **kwargs):
         '''Get the information from database to put into the label widgets'''
         super().__init__(**kwargs)
         # self.data = data
@@ -87,12 +87,13 @@ class BoxDataRow(GridLayout, LogMethods):
         self.logDebug('kv_ops', 'Creating a BoxDataRow instance')
 
         self.UID = UID
+        self.object_doc = object_doc
 
         self.value_col_width = 65
         self.weight_col_width = 40
 
         self.choices = ['tape', 'coffee', 'hat', 'beans', 'lice', 'ratchet', 'files']
-        self.randomValues()
+        self.assignValues()
 
     def randomValues(self):
         '''Set the heading text for each child widget Label'''
@@ -103,3 +104,13 @@ class BoxDataRow(GridLayout, LogMethods):
         self.obj_label.text = random.choice(self.choices)
         self.val_label.text = f'{random.randint(0,99)}.{random.randint(10,99)}'
         self.weight_label.text = f'{random.randint(0,99)}.{random.randint(0,9)}'
+
+    def assignValues(self):
+        self.logDebug(
+            '----TEST----',
+            f'{self.object_doc["description"]}, {self.object_doc["usd_value"]}, {self.object_doc["weight"]}'
+            )
+
+        self.obj_label.text = str(self.object_doc["description"])
+        self.val_label.text = str(self.object_doc["usd_value"])
+        self.weight_label.text = str(self.object_doc["weight"])

@@ -84,9 +84,6 @@ class ContainerOverviewScreen(Screen, LogMethods):
 
         self.logInfo('kv Ops', 'Calling self.data_grid.TextRandomPopulate..')
 
-        # Test the rows with random data
-        self.data_grid.TestRandomPopulate()
-
     def initDefaultPopupText(self):
         '''Set the default text to be displayed in certain situations'''
 

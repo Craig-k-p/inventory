@@ -64,11 +64,14 @@ class DataGrid(GridLayout, LogMethods):
         self.logDebug('kv_ops', f'new_row: {new_row}')
         self.logDebug('kv_ops', f'UID: {UID}')
         self.logDebug('kv_ops', f'object_doc: {object_doc}')
-        new_row2 = new_row(UID, object_doc)
+        new_row = new_row(UID, object_doc)
 
-        # Add the ***DataRow instance to the dataRows dictionary and link the data to the
-        # IOHandler instance
-        self.dataRows[UID] = new_row2
+        # Add the ***DataRow instance to the dataRows dictionary and link it to IOHandler instance
+        self.dataRows[UID] = {
+            'row': new_row,
+            'doc': object_doc
+        }
+        # Link to the appropriate dictionary
         if self.category == 'Thing':
             self.app.things = self.dataRows
         elif self.category == 'Container':
@@ -78,7 +81,7 @@ class DataGrid(GridLayout, LogMethods):
 
         self.logDebug('Kv Ops', f'Adding the row for {object_doc["description"]} to the grid')
         # Add the ***DataRow instance to the DataGrid widget
-        self.add_widget(self.dataRows[UID])
+        self.add_widget(self.dataRows[UID]['row'])
 
         self.logDebug('TEST', f' {self.app}')
 
@@ -151,25 +154,6 @@ class DataGrid(GridLayout, LogMethods):
         # Create the heading widgets used to label the top of the data fields
         self.headings = self.getHeadingClass()()
         self.add_widget(self.headings)
-
-    def TestRandomPopulate(self):
-        '''Populate the rows with random data'''
-
-        self.logDebug('kv_ops', 'Randomly populating rows')
-
-        # Add some data rows for testing
-        for n in range(1, random.randint(3, 20)):
-            # Get the row ID
-            UID = self._getUID()
-            # Create the row instance
-            row = self.getDataRowClass()(UID)
-
-            # Add the row to the dictionary
-            self.dataRows[UID] = row
-
-        # Add them to the screen to be drawn
-        for data in self.dataRows:
-            self.add_widget(self.dataRows[data])
 
     def _assignColumnWidths(self):
         '''Loop thru each child widget that needs a fixed width and set its width.  This

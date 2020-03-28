@@ -5,22 +5,6 @@ class IOHandler():
         '''Call methods in the UserSession classs to log the user in.'''
         return True
 
-    def createUser(self, user, em, pd):
-        '''Call methods in the UserSession class to create a user and log the user in'''
-        self.logInfo('DB Ops', 'Creating a new user..')
-        was_created = self.session.createUser(user, pd)
-        if was_created is True:
-            is_authenticated = self.session.login(user, pd)
-            del user, pd
-            if is_authenticated is True:
-                return True
-            else:
-                self.logError('DB Ops', 'User was created in MongoDB but was unable to log in!')
-                return False
-        else:
-            self.logError('DB Ops', 'MongoDB user creation attempt failed!')
-            return False
-
     def isLoggedIn(self):
         '''Method not needed with a local save.'''
         # if self.session.user is not None and self.session.client is not None:
@@ -36,12 +20,12 @@ class IOHandler():
         # The keys must match with MongoEngine document definition attributes
         kwargs = self._getObjectCreationUserInput(kv_obj_reference)
 
-        # Get the class (stored as an attribute) from self.session
+        # Get the proper method for saving data from self.SessionIO
         ObjectClass = getattr(self.SessionIO, object_class_str)
 
-        # Create an instance of the new Inventory object document and store it as a variable for later use
+        # Create a new object and pass it to data_grid
         new_object_doc = ObjectClass(**kwargs)
-        self.logDebug('DB Ops', f'Saved a new {new_object_doc.description}')
+        self.logDebug('DB Ops', f'Saved a new {new_object_doc["description"]}')
         self.pop.dismiss()
 
         self.sm.current_screen.data_grid.addDataRow(new_object_doc)

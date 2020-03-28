@@ -109,9 +109,12 @@ class InventoryDataRow(GridLayout, LogMethods):
         self.weight_label.text = f'{random.randint(0,199)}.{random.randint(0,9)}'
 
     def assignValues(self):
-        self.logDebug('----TEST----', f'{self.object_doc.description}, {self.object_doc.usd_value}, {self.object_doc.weight}')
+        self.logDebug(
+            '----TEST----',
+            f'{self.object_doc["description"]}, {self.object_doc["usd_value"]}, {self.object_doc["weight"]}'
+            )
 
-        self.obj_label.text = str(self.object_doc.description)
+        self.obj_label.text = str(self.object_doc["description"])
         self.loc_label.text = 'Home'
-        self.val_label.text = str(self.object_doc.usd_value)
-        self.weight_label.text = str(self.object_doc.weight)
+        self.val_label.text = str(self.object_doc["usd_value"])
+        self.weight_label.text = str(self.object_doc["weight"])

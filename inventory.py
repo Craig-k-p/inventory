@@ -54,8 +54,8 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
 
         self.popup_errors = []
         self.settings = {
-            'password min length': 4,
-            'username min length': 3,
+            'password min length': 0,
+            'username min length': 0,
             'start screen': 'login',
             'startup transition': NoTransition(),
             'app transition type': SlideTransition(), }

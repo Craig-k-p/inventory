@@ -64,10 +64,10 @@ class SessionIO(LogMethods):
     def Thing(self, **kwargs):
         '''Create a new thing'''
         self.logDebug('DB Ops', 'Creating a thing and saving it to the database')
-        new_object = self._Thing(**kwargs)
-        return new_object
+        self.logDebug('DB Ops', f'{kwargs}')
+        return kwargs
 
-    def Container(self, kwargs):
+    def Container(self, **kwargs):
         '''Create a new container'''
         self.logDebug('DB Ops', 'Creating a container and saving it to the database')
         self.logDebug('DB Ops', f'{kwargs}')

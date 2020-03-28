@@ -1,8 +1,0 @@
-Objective:
-	Integrate local IO operations with UI
-		-renamed UserSession class to SessionIO and fixed associations
-		-Removed database connections for container creation and added log 
-		 messages for file operation debugging
-	
-	To Fix:
-_getObjectCreationUserInput does not filter for "required" fields. kv_extensions.py, 386

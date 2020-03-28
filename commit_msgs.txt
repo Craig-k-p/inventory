@@ -1,25 +1,8 @@
 Objective:
-Access containers/things from the server and present them in data rows
-
-Created Toolbar.logObjects method
-Created app.getObjects method
-Created UserSession.get method
-Created DataGrid.fillUserData method
-Created InventoryDataRow.assignValues method
-Alphabetized datagrid.py
-Moved the creation of account screen Classes to kv_extensions.py -> app.createUserScreens
-Integrated Database functionality with DataGrid.addDataRow, InventoryDataRow instantiation, and app.createInventoryObject
-
-Next Goals:
-	Add:
-Delete object on widget deletion
-	-currently widget deletes but document doesn't
-	-widgets do not reappear until the program RESTARTS
+	Integrate local IO operations with UI
+		-renamed UserSession class to SessionIO and fixed associations
+		-Removed database connections for container creation and added log 
+		 messages for file operation debugging
 	
 	To Fix:
-
-[INFO] [AUTH] [screens.py][LoginScreen.checkUserInputFormat][62] self.checkFormat DENIED asdf!
-[INFO] [DB AUTH] [me_extensions.py][MyInventoryApp.authenticate][8] Checking credentials for asdf
-[DEBUG] [DB Ops] [session.py][UserSession.login][216] Attempting to log asdf into the database
-
 _getObjectCreationUserInput does not filter for "required" fields. kv_extensions.py, 386

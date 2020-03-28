@@ -3,10 +3,7 @@ class IOHandler():
 
     def authenticate(self, user, pd):
         '''Call methods in the UserSession classs to log the user in.'''
-        self.logInfo('DB AUTH', f'Checking credentials for {user}')
-        is_authenticated = self.session.login(user, pd)
-        del user, pd
-        return is_authenticated
+        return True
 
     def createUser(self, user, em, pd):
         '''Call methods in the UserSession class to create a user and log the user in'''
@@ -40,7 +37,7 @@ class IOHandler():
         kwargs = self._getObjectCreationUserInput(kv_obj_reference)
 
         # Get the class (stored as an attribute) from self.session
-        ObjectClass = getattr(self.session, object_class_str)
+        ObjectClass = getattr(self.SessionIO, object_class_str)
 
         # Create an instance of the new Inventory object document and store it as a variable for later use
         new_object_doc = ObjectClass(**kwargs)
@@ -56,6 +53,6 @@ class IOHandler():
         self.logInfo('__TEST__', f'app.getObjects called.')
 
         # Get 'thing' or 'container'
-        objects = self.session.get(object_class_str)
+        objects = self.SessionIO.get(object_class_str)
 
         return objects

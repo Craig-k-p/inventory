@@ -32,7 +32,7 @@ from graphics.py.account.datagrid import DataGrid, InventoryHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.iohandler import IOHandler
 from resources.utilities import LogMethods
-from resources.session import UserSession
+from resources.session import SessionIO
 
 
 class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
@@ -50,7 +50,7 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
         self.logInfo('App', 'Creating MyInventoryApp instance')
 
         # Create the UserSession instance for handling data transfer to and from the database
-        self.session = UserSession()
+        self.SessionIO = SessionIO()
 
         self.popup_errors = []
         self.settings = {

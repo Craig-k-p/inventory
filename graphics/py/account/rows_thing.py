@@ -18,7 +18,7 @@ from resources.utilities import LogMethods
 #     DataGrid.row_1_color.add(Rectangle(pos=self.pos, size=self.size))
 
 
-class BoxHeadingRow(GridLayout, LogMethods):
+class ThingHeadingRow(GridLayout, LogMethods):
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
@@ -36,10 +36,10 @@ class BoxHeadingRow(GridLayout, LogMethods):
         super().__init__(**kwargs)
         self.__initLog__(
             'rows_box.py',
-            'BoxHeadingRow'
+            'ThingHeadingRow'
         )
 
-        self.logDebug('kv_ops', 'Creating a BoxHeadingRow instance..')
+        self.logDebug('kv_ops', 'Creating a ThingHeadingRow instance..')
 
     def setHeadingText(self,
                        container='Thing',
@@ -60,7 +60,7 @@ class BoxHeadingRow(GridLayout, LogMethods):
         self.opt_button.text = options
 
 
-class BoxDataRow(GridLayout, LogMethods):
+class ThingDataRow(GridLayout, LogMethods):
 
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
@@ -81,10 +81,10 @@ class BoxDataRow(GridLayout, LogMethods):
         # self.data = data
         self.__initLog__(
             'rows_box.py',
-            'BoxDataRow'
+            'ThingDataRow'
         )
 
-        self.logDebug('kv_ops', 'Creating a BoxDataRow instance')
+        self.logDebug('kv_ops', 'Creating a ThingDataRow instance')
 
         self.UID = UID
         self.object_doc = object_doc

@@ -6,7 +6,7 @@ from kivy.properties import ObjectProperty, NumericProperty, StringProperty
 from resources.utilities import LogMethods
 
 
-class InventoryHeadingRow(GridLayout, LogMethods):
+class ContainerHeadingRow(GridLayout, LogMethods):
     container = ObjectProperty(None)
     weight = ObjectProperty(None)
     val = ObjectProperty(None)
@@ -25,10 +25,10 @@ class InventoryHeadingRow(GridLayout, LogMethods):
         super().__init__(**kwargs)
         self.__initLog__(
             'rows_inventory.py',
-            'InventoryHeadingRow'
+            'ContainerHeadingRow'
         )
 
-        self.logDebug('kv Ops', 'Creating an InventoryHeadingRow instance')
+        self.logDebug('kv Ops', 'Creating an ContainerHeadingRow instance')
 
     def setHeadingText(self,
                        container='Container',
@@ -57,7 +57,7 @@ class InventoryHeadingRow(GridLayout, LogMethods):
         self.logDebug('kv Logic', log)
 
 
-class InventoryDataRow(GridLayout, LogMethods):
+class ContainerDataRow(GridLayout, LogMethods):
 
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
@@ -79,10 +79,10 @@ class InventoryDataRow(GridLayout, LogMethods):
         # self.data = data
         self.__initLog__(
             'rows_inventory.py',
-            'InvDataRow'
+            'ContainerDataRow'
         )
 
-        self.logDebug('kv Ops', 'Creating an InvDataRow instance')
+        self.logDebug('kv Ops', 'Creating a ContainerDataRow instance')
 
         self.UID = UID
         self.object_doc = object_doc
@@ -95,8 +95,9 @@ class InventoryDataRow(GridLayout, LogMethods):
         self.assignValues()
 
     def assignValues(self):
+        self.logDebug('KV Logic', f'self.object_doc: {self.object_doc}')
         self.logDebug(
-            '----TEST----',
+            'KV Logic',
             f'{self.object_doc["description"]}, {self.object_doc["usd_value"]}, {self.object_doc["weight"]}'
             )
 

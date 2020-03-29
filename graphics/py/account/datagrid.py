@@ -1,6 +1,3 @@
-import pprint
-import random
-
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
@@ -9,18 +6,17 @@ from kivy.graphics.instructions import InstructionGroup
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 
 from resources.utilities import LogMethods
-from graphics.py.account.rows_inventory import InventoryHeadingRow, InventoryDataRow
-from graphics.py.account.rows_box import BoxHeadingRow, BoxDataRow
+from graphics.py.account.rows_container import ContainerHeadingRow, ContainerDataRow
+from graphics.py.account.rows_thing import ThingHeadingRow, ThingDataRow
+
+from json import dumps
 
 
 class DataGrid(GridLayout, LogMethods):
 
     categories = ('Container', 'Thing')
 
-    # Unique ids for each data row
-    UIDs = 0
-
-    # Store the InventoryDataRow instances here
+    # Store the ContainerDataRow instances here
     dataRows = {'containers': {}, 'things': {}}
 
     def __init__(self, **kwargs):
@@ -34,6 +30,7 @@ class DataGrid(GridLayout, LogMethods):
         )
 
         self.logInfo('kv_ops', f'Creating DataGrid instance')
+        self.logInfo('--TESTING--', f'self.parent: {self.parent}')
 
         self.app = None
 
@@ -45,7 +42,7 @@ class DataGrid(GridLayout, LogMethods):
     def addDataRow(self, object_doc):
         '''Add a row of fields to the GridLayout with the given data
         Future:
-            -tie each dataRow to it's actual container/thing object data from the server
+            -DONE tie each dataRow to it's actual container/thing object data from the server
             -tie into database functionality
         '''
 
@@ -55,11 +52,11 @@ class DataGrid(GridLayout, LogMethods):
 
         self.logDebug('Kv Ops', 'Adding a new data row to the DataGrid instance')
         # Get a unique ID for the row
-        UID = self._getUID()
+        UID = self.app._getUID()
 
         self.logDebug('kv_ops', f'UID: {UID}')
 
-        # Instanciate a data row with UID and document
+        # Instantiate a data row with UID and document
         new_row = self.getDataRowClass()
         self.logDebug('kv_ops', f'new_row: {new_row}')
         self.logDebug('kv_ops', f'UID: {UID}')
@@ -85,20 +82,42 @@ class DataGrid(GridLayout, LogMethods):
 
         self.logDebug('TEST', f' {self.app}')
 
+
     def fillUserData(self, app):
         ''' Populate the rows with user data '''
 
-        self.logDebug('Db Logic', 'Getting data for the data grid')
+        # Get access to the application instance
+        if self.app == None:
+            self.app = app
+        # # Try to load data if it hasn't already been loaded
+        # if self.app.load_data == None:
+        #     self.app.loadData()
+
+        self.logDebug('Db Logic', f'Getting data for the data grid in category {self.category}')
         # Get the containers or things to fill the data grid
-        data = app.getObjects(self.category)
+        data = self.app.getObjects(self.category)
+
+        # {'1': {
+        #     'description': 'asdf',
+        #     'usd_value': '3',
+        #     'weight': '3'}}
+
+        self.logInfo('KV Logic', f'Data:\n{dumps(data, indent=4)}')
+
+        if self.getDataRowClass() == 'Container':
+            data_class = 'containers'
+        else:
+            data_class = 'things'
 
         self.logDebug('Db Logic', 'Looping thru the data')
-        for doc in data:
+        for key in data:
             # Get a row ID
-            UID = self._getUID()
+            UID = self.app._getUID()
 
-            # Create the InventoryDataRow or BoxDataRow instance
-            row = self.getDataRowClass()(UID, doc)
+            self.logDebug('KV Logic', f'data[key]:\n{dumps(data[key], indent=4)}')
+
+            # Create the ContainerDataRow or ThingDataRow instance
+            row = self.getDataRowClass()(UID, data[key])
 
             # Add it to the dictionary
             self.dataRows[UID] = row
@@ -108,7 +127,7 @@ class DataGrid(GridLayout, LogMethods):
             self.add_widget(self.dataRows[drow])
 
     def getDataRowClass(self):
-        ''' Return a reference to InventoryDataRow or BoxDataRow class def'''
+        ''' Return a reference to ContainerDataRow or ThingDataRow class def'''
         self.logInfo('kv_ops', f'Returning self._DataRowCls: {self._DataRowCls}')
         return self._DataRowCls
 
@@ -144,14 +163,14 @@ class DataGrid(GridLayout, LogMethods):
 
         # Set references to the proper classes for this instance
         if self.category == 'Thing':
-            self._HeadingCls = BoxHeadingRow
-            self._DataRowCls = BoxDataRow
+            self._HeadingCls = ThingHeadingRow
+            self._DataRowCls = ThingDataRow
             # Link the correct dictionary stored in DataGrid.dataRows for storing row instances
             self.dataRows = DataGrid.dataRows['things']
 
         elif self.category == 'Container':
-            self._HeadingCls = InventoryHeadingRow
-            self._DataRowCls = InventoryDataRow
+            self._HeadingCls = ContainerHeadingRow
+            self._DataRowCls = ContainerDataRow
             # Link the correct dictionary stored in DataGrid.dataRows for storing row instances
             self.dataRows = DataGrid.dataRows['containers']
 
@@ -182,10 +201,3 @@ class DataGrid(GridLayout, LogMethods):
         '''Loop thru each child widget's children and get the maximum width needed for the
         column'''
         self.logInfo('kvLogic', f'Did nothing...')
-
-    def _getUID(self):
-        '''Increment self.UIDs and return the value'''
-
-        DataGrid.UIDs += 1
-        self.logInfo('kvLogic', f'Incremented DataGrid.UID to {DataGrid.UIDs}')
-        return DataGrid.UIDs

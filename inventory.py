@@ -17,24 +17,24 @@ Right click and edit target to say:
 Voilla!
 
 '''
-
-
-import pprint
+from pprint import pformat
 
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
 
-# from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
 from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
-from graphics.py.account.datagrid import DataGrid, InventoryHeadingRow
+from graphics.py.account.datagrid import DataGrid, ContainerHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.iohandler import IOHandler
 from resources.utilities import LogMethods
 
 
 class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
+
+    # Unique ID for each of the user's objects
+    UIDs = 0
 
     def __init__(self, **kwargs):
         super(MyInventoryApp, self).__init__(**kwargs)
@@ -43,16 +43,10 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
             class_str='MyInventoryApp'
         )
 
-        # Set window to white
-        Window.clearcolor = (0, 0, 0, 1)
-
         self.logInfo('App', 'Creating MyInventoryApp instance')
 
-
-
-        ###
-        # Create the UserSession instance for handling data transfer to and from the database
-        ### Call to load data
+        # Set window to white
+        Window.clearcolor = (0, 0, 0, 1)
 
         self.popup_errors = []
         self.settings = {
@@ -62,7 +56,8 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
             'startup transition': NoTransition(),
             'app transition type': SlideTransition(),
             'save file': 'save_data/save_data',
-            'backup save file': 'save_data/backup_save_data' }
+            'backup save file': 'save_data/backup_save_data',
+            'log filtering': 'iohandler.py' }
         self.kv_settings = {
             'startup kv files': ['graphics/kv/pre_auth/screens.kv', 'graphics/kv/account/screens.kv'],
             'kv popup file': 'graphics/kv/pre_auth/popups.kv',
@@ -90,11 +85,9 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
                 'login': False,
                 'create account': False}}
 
-        # See resource for more info:
-        # https://docs.python.org/3/library/pprint.html#pprint.pformat
-        self.logInfo('App', f'Started session with settings:\n{pprint.pformat(self.settings, indent=4)}')
-        self.logInfo('App', f'Started session with settings:\n{pprint.pformat(self.kv_settings, indent=4)}')
-        log = f'Started session with validations:\n{pprint.pformat(self.validations, indent=4)}'
+        self.logInfo('App', f'Started session with settings:\n{pformat(self.settings, indent=4)}')
+        self.logInfo('App', f'Started session with settings:\n{pformat(self.kv_settings, indent=4)}')
+        log = f'Started session with validations:\n{pformat(self.validations, indent=4)}'
         self.logInfo('App', log)
 
         # Load the .kv files to start building the GUI
@@ -124,7 +117,7 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
         ]
 
         log = f'Created login, account, and create account screens with "screens" var: '
-        log += f'{pprint.pformat(screens, indent=4)}'
+        log += f'{pformat(screens, indent=4)}'
         self.logDebug('App', log)
 
         # Make sure sm knows how to handle changes to self.current
@@ -138,6 +131,13 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
         self.sm.transition = self.settings['app transition type']
         self.logDebug('KvOps', 'Set the first screen to settings["start screen"]')
 
+    def _getUID(self):
+        '''Increment self.UIDs and return the value'''
+
+        self.UIDs += 1
+        self.logInfo('kvLogic', f'Incremented app.UID to {self.UIDs}')
+        return self.UIDs
+
     def build(self):
         '''Without returning self.sm, the app would be a blank screen.'''
         self.logDebug('KvOps', 'self.build called')
@@ -147,9 +147,9 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
     def on_stop(self):
         '''Execute this function when the application is exited'''
         self.logDebug('db_ops', 'Saving data...')
-        # Save the user data to a file
+        # Save the user data to a file if necessary
         self.saveData()
-        self.logDebug('IO Ops', f'The data has been saved to {self.settings["save file"]}')
+        self.logDebug('IO Ops', 'Exiting the application..')
 
 
 if __name__ == '__main__':

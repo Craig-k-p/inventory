@@ -1,8 +1,8 @@
 #: import random random
 #: include graphics/kv/account/thing_view.kv
 #: include graphics/kv/account/toolbar.kv
-#: include graphics/kv/account/rows_inventory.kv
-#: include graphics/kv/account/rows_box.kv
+#: include graphics/kv/account/rows_container.kv
+#: include graphics/kv/account/rows_thing.kv
 #: include graphics/kv/account/datagrid.kv
 #: include graphics/kv/account/popups/create_container.kv
 
@@ -37,6 +37,7 @@
     # toolbar: toolbar
     parent_layout: parent_layout
     data_grid: data_grid
+    miapp: app
 
     BoxLayout:
         # Allows the ScreenManager instance to refer to this screen

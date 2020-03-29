@@ -41,7 +41,7 @@ class UtilityMethods():
 
 
 class LogMethods():
-    focus = []#['datagrid.py', 'iohandler.py']
+    filter = []
     def __initLog__(self, file_str='', class_str=''):
         ''' It looksl like Kivy has it's own implementation of logging.  Instead of creating a custom
             logger, scroll to the bottom of this doc string.
@@ -154,66 +154,90 @@ class LogMethods():
         self.file = file_str
         self.calling_class = class_str
 
-    def logDebug(self, category, message, newline=''):
+    def logDebug(self, category, message):
         '''category -> string
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
+        # Skip log if filtering is enabled
+        if len(self.filter) > 0:
+            if filename not in self.filter:
+                return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.debug(log_str)
 
-    def logInfo(self, category, message, newline=''):
+    def logInfo(self, category, message):
         '''category -> string
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
+        # Skip log if filtering is enabled
+        if len(self.filter) > 0:
+            if filename not in self.filter:
+                return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.info(log_str)
 
-    def logWarning(self, category, message, newline=''):
+    def logWarning(self, category, message):
         '''category -> string
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
+        # Skip log if filtering is enabled
+        if len(self.filter) > 0:
+            if filename not in self.filter:
+                return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.warning(log_str)
 
-    def logError(self, category, message, newline=''):
+    def logError(self, category, message):
         '''category -> string
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
+        # Skip log if filtering is enabled
+        if len(self.filter) > 0:
+            if filename not in self.filter:
+                return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.error(log_str)
 
-    def logCritical(self, category, message, newline=''):
+    def logCritical(self, category, message):
         '''category -> string
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
+        # Skip log if filtering is enabled
+        if len(self.filter) > 0:
+            if filename not in self.filter:
+                return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.critical(log_str)
 
-    def logTrace(self, category, message, newline=''):
+    def logTrace(self, category, message):
         '''category -> string
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
+        # Skip log if filtering is enabled
+        if len(self.filter) > 0:
+            if filename not in self.filter:
+                return
         lineno = caller[2]
         function = caller[3]
         log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'

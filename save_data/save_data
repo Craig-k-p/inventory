@@ -1,0 +1,36 @@
+{
+    "things": {
+        "3": {
+            "description": "hat",
+            "usd_value": "5",
+            "weight": "1"
+        },
+        "4": {
+            "description": "hammer",
+            "usd_value": "9",
+            "weight": "2"
+        },
+        "5": {
+            "description": "string",
+            "usd_value": "1",
+            "weight": "1"
+        }
+    },
+    "containers": {
+        "1": {
+            "description": "box1",
+            "usd_value": "5",
+            "weight": "5"
+        },
+        "2": {
+            "description": "box2",
+            "usd_value": "8",
+            "weight": "8"
+        },
+        "7": {
+            "description": "Crate",
+            "usd_value": "60",
+            "weight": "25"
+        }
+    }
+}

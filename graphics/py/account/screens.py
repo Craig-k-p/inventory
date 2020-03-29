@@ -41,9 +41,6 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
 
         self.logInfo('kv Ops', 'Calling self.data_grid.fillUserData')
 
-        # # Test the rows with random data
-        # self.data_grid.TestRandomPopulate()
-
         # Fill the user data into rows
         self.data_grid.fillUserData(self.miapp)
 
@@ -55,9 +52,11 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
 
 
 class ContainerOverviewScreen(Screen, LogMethods):
+    '''Overview of all containers in the user's inventory'''
 
     parent_layout = ObjectProperty(None)
     data_grid = ObjectProperty(None)
+    miapp = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
@@ -83,6 +82,9 @@ class ContainerOverviewScreen(Screen, LogMethods):
         self.data_grid.setObjectCategory('Thing')
 
         self.logInfo('kv Ops', 'Calling self.data_grid.TextRandomPopulate..')
+
+        # Fill the user data into rows
+        self.data_grid.fillUserData(self.miapp)
 
     def initDefaultPopupText(self):
         '''Set the default text to be displayed in certain situations'''

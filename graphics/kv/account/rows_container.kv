@@ -1,4 +1,4 @@
-<InventoryHeadingRow>:
+<ContainerHeadingRow>:
     rows: 1
     id: heading_row
     # Link the ids to the kv_datagrid.py
@@ -39,7 +39,7 @@
             # https://stackoverflow.com/questions/24803773/...
             # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
             size: (self.texture_size[0]+10, self.texture_size[1])
-        
+
     # Weight heading
     AnchorLayout:
         # label: label
@@ -151,7 +151,7 @@
             pos_hint: {'x': 0, 'y': 0}
 
 
-<InventoryDataRow>:
+<ContainerDataRow>:
     id: data_row
     rows: 1
     # TextEntry on click
@@ -192,7 +192,7 @@
             # https://stackoverflow.com/questions/24803773/...
             # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
             size: (self.texture_size[0]+10, self.texture_size[1])
-        
+
     # Weight field
     AnchorLayout:
         # Future: size rows only as wide as needed using weight_label.texture if possible!

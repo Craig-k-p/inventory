@@ -1,6 +1,6 @@
 # See rows_inventory.kv for a similar layout with more detailed notes
 
-<BoxHeadingRow>:
+<ThingHeadingRow>:
     # Heading row to label each column
     # Future:
     #    Tag field - dropdown of popular tags typed by user with the option to add one
@@ -18,7 +18,7 @@
         # anchor_x: 'center'
         # size_hint: (1, 1)
         canvas:
-            Color:  
+            Color:
                 rgba: random.random(), random.random(), random.random(), 1
             Rectangle:
                 pos: self.pos
@@ -31,7 +31,7 @@
             # Allow parent layout to modify the x position of Label
             size_hint: (None, 1)
             size: (self.texture_size[0]+10, self.texture_size[1])
-        
+
     # Weight heading
     AnchorLayout:
         # label: label
@@ -104,7 +104,7 @@
             pos_hint: {'x': 0, 'y': 0}
 
 
-<BoxDataRow>:
+<ThingDataRow>:
     # Future:
     #   Location field should be a dropdown of all locations typed by user with the option to add one
     #   Tag field should be a dropdown of all locations typed by user with the option to add one
@@ -133,7 +133,7 @@
             color: app.kv_settings['text color']
             size_hint: (None, 1)
             size: (self.texture_size[0]+10, self.texture_size[1])
-        
+
     # Weight field
     AnchorLayout:
         id: weight_lo

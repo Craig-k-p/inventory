@@ -397,6 +397,27 @@ class KivyExtensions():
             self._clearPopupErrors()
             return None
 
+    def _isValidPopupUserInput(self, popup_content):
+        '''Verify that user input from the popup is valid'''
+        required = self.kv_settings['popup required fields']
+        self.logDebug('KV Logic', f'Required input keys: {required}')
+
+        # Loop through the popup_content.ids (text_inputs) keys and check if they're required
+        # Add the key of required TextInputs with empty text fields to the error_keys list
+        error_keys = []
+        for key in popup_content.ids:
+            if key in required and popup_content.ids[key].text == '':
+                self.logDebug('KV Logic', f'Found error for key: {key}')
+                error_keys.append(key)
+
+        if len(error_keys) > 0:
+            popup_content.updateTextInputErrors(error_keys)
+            return False
+
+        # Return True if no empty fields were found
+        return True
+
+
     def _getObjectCreationUserInput(self, popup_content):
         '''Get user input text from popup fields for container and object creation
            Takes popup_content instance as an argument to access the TextInput instances
@@ -405,7 +426,7 @@ class KivyExtensions():
              since it is being passed directly for instantiation'''
 
         # Key-word argument dictionary
-        kwargs = {}
+        data = {}
         # For each key in popup_content instance ids dictionary
         # Holds child widgets with their defined id as a key
         for key in popup_content.ids:
@@ -414,7 +435,8 @@ class KivyExtensions():
                 # Ignore empty fields
                 if popup_content.ids[key].text is not '':
                     # Add the key and string to the kwargs dictionary
-                    kwargs[key] = popup_content.ids[key].text
-                    self.logDebug('Kv Logic', f'kwargs: {kwargs}')
+                    data[key] = popup_content.ids[key].text
 
-        return kwargs
+        self.logDebug('KV Logic', f'data: {data}')
+
+        return data

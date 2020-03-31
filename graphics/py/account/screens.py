@@ -1,7 +1,6 @@
 import pprint
 
 from kivy.core.window import Window
-# from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen
 

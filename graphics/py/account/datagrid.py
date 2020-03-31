@@ -127,7 +127,8 @@ class DataGrid(GridLayout, LogMethods):
         '''Remove a row of fields from the GridLayout in the DataGrid. Also, remove the
            object data from app.data'''
         self.logDebug('kv_ops', f'Removing row {UID}..')
-        self.remove_widget(self.dataRows.pop(UID))
+        self.remove_widget(self.dataRows[UID])
+        del self.dataRows[UID]
         self.app.deleteObj(UID)
 
     def setObjectCategory(self, category):

@@ -3,6 +3,7 @@ import pprint
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty, ListProperty
 
 from resources.utilities import LogMethods
@@ -91,7 +92,7 @@ class PopupErrorContent(GridLayout, LogMethods):
             self.logWarning('Kv Ops', log)
 
 
-class PopupCreateThingContent(ScrollView):
+class PopupCreateThingContent(ScrollView, LogMethods):
     '''A class linked to popups.kv class definition'''
     description = ObjectProperty(None)
     value = ObjectProperty(None)
@@ -102,8 +103,19 @@ class PopupCreateThingContent(ScrollView):
     def __init__(self, **kwargs):
         super(PopupCreateThingContent, self).__init__(**kwargs)
 
+        # Initialize the log for this class instance
+        self.__initLog__(
+            file_str='popups',
+            class_str='PopupCreateThingContent'
+        )
 
-class PopupCreateContainerContent(ScrollView):
+    def updateTextInputErrors(self, keys):
+        '''Change the text inputs with an error to a red tone. Accepts a list of keys
+           as input'''
+        self.logDebug('KV Ops', 'Changing error TextInputs to a red tone.')
+
+
+class PopupCreateContainerContent(ScrollView, LogMethods):
     '''A class linked to popups.kv class definition'''
     description = ObjectProperty(None)
     value = ObjectProperty(None)
@@ -112,3 +124,34 @@ class PopupCreateContainerContent(ScrollView):
 
     def __init__(self, **kwargs):
         super(PopupCreateContainerContent, self).__init__(**kwargs)
+        self.__initLog__(
+            file_str='popups',
+            class_str='PopupCreateContainerContent'
+        )
+
+    def updateTextInputErrors(self, keys):
+        '''Change the text inputs with an error to a red tone. Accepts a list of keys
+           as input'''
+        self.logDebug('KV Ops', f'{keys} TextInput fields being changed to red')
+
+        for key in keys:
+            self.ids[key].error = True
+
+    # def _setBackgroundColor(self):
+    #     '''Determine what color to set the background'''
+    #     if self.focus == True:
+    #         self.
+
+
+class PopInput(TextInput):
+    '''An input with special functions'''
+    def __init__(self, **kwargs):
+        super(PopInput, self).__init__(**kwargs)
+
+    # def _setBackgroundColor(self):
+    #     if self.focus == True:
+    #         return (.8,.8,1,1)
+    #     elif self.error == True:
+    #         return (1,.7,.7,1)
+    #     else:
+    #         return (1,1,1,1)

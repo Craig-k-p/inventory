@@ -65,10 +65,11 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
             'overview options button width': 35,
             'overview weight field width': 60,
             'popup auto_dismiss': False,
+            'popup required fields': ['description', 'usd_value', 'weight'],
             'popup size_hint': (.75, .75),
             'standard font': 'arial',
             'text color': (1, 1, 1, 1),
-            'title font name': 'segoesc'}
+            'title font name': 'segoesc',}
         self.validations = {
             'allowed button calls': (
                 'changeScreen',

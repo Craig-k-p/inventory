@@ -22,26 +22,32 @@ class IOHandler():
 
         # Get a dictionary of all user input strings
         # The keys must match with those found in session.py
-        data = self._getObjectCreationUserInput(kv_obj_reference)
+        test = self._isValidPopupUserInput(kv_obj_reference)
 
-        self.logInfo('IO Ops', f'User input:\n{json.dumps(data, indent=4)}')
+        if test is True:
+            data = self._getObjectCreationUserInput(kv_obj_reference)
 
-        # # Get the proper method from self for saving data
-        createObject = getattr(self, object_class_str)
+            self.logInfo('IO Ops', f'User input:\n{json.dumps(data, indent=4)}')
 
-        # Create a new object with user's input and dismiss the popup
-        UID = self.getUniqueID()
-        new_object_doc = createObject(data, UID)
-        self.logDebug('IO Ops', f'Saved a new {data["description"]}')
-        self.pop.dismiss()
+            # # Get the proper method from self for saving data
+            createObject = getattr(self, object_class_str)
 
-        self.logDebug('IO Ops', f'New data: {json.dumps(self.data, indent=4)}')
+            # Create a new object with user's input and dismiss the popup
+            UID = self.getUniqueID()
+            new_object_doc = createObject(data, UID)
+            self.logDebug('IO Ops', f'Saved a new {data["description"]}')
+            self.pop.dismiss()
 
-        # Add a new row with the new data to the user's screen
-        self.sm.current_screen.data_grid.addDataRow(data, UID)
+            self.logDebug('IO Ops', f'New data: {json.dumps(self.data, indent=4)}')
 
-        # Return the object's data
-        return data
+            # Add a new row with the new data to the user's screen
+            self.sm.current_screen.data_grid.addDataRow(data, UID)
+
+            # Return the object's data
+            return data
+
+        else:
+            pass
 
     def getObjects(self, object_class_str):
         '''Get objects in the user's inventory'''

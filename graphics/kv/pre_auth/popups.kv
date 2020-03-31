@@ -33,13 +33,16 @@
     font_size: 22
     size: (self.texture_size[0]+10, self.texture_size[1])
 
-<PopInput@TextInput>:
+<PopInput>:
     hint_text: 'required'
     color: app.kv_settings['text color']
+    # Python way: Use on_focus and on_error to call self.setBackground
+    background_color: (.8,.8,1,1) if self.focus else ((1,.8,.8,1) if self.error else (1,1,1,1))
     size_hint: (.9, None)
     height: self.minimum_height
     multiline: False
     font_size: 22
+    error: False
 
 <PopButton@Button>:
     color: app.kv_settings['text color']

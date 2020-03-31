@@ -18,7 +18,7 @@ class IOHandler():
         return True
 
     def createInventoryObject(self, object_class_str, kv_obj_reference):
-        '''Create a new thing using the information filled in by the user in the popup'''
+        '''Create a new object using the popup user input'''
 
         # Get a dictionary of all user input strings
         # The keys must match with those found in session.py
@@ -26,49 +26,71 @@ class IOHandler():
 
         self.logInfo('IO Ops', f'User input:\n{json.dumps(data, indent=4)}')
 
-        # # Get the proper method for saving data from self
+        # # Get the proper method from self for saving data
         createObject = getattr(self, object_class_str)
 
-        self.logDebug('IO Ops', f'{self.things}')
-        self.logDebug('IO Ops', f'{self.containers}')
-
         # Create a new object with user's input and dismiss the popup
-        new_object_doc = createObject(self._getUID(), data)
+        UID = self.getUniqueID()
+        new_object_doc = createObject(data, UID)
         self.logDebug('IO Ops', f'Saved a new {data["description"]}')
         self.pop.dismiss()
 
-        self.logDebug('IO Ops', f'{self.things}')
-        self.logDebug('IO Ops', f'{self.containers}')
+        self.logDebug('IO Ops', f'New data: {json.dumps(self.data, indent=4)}')
 
         # Add a new row with the new data to the user's screen
-        self.sm.current_screen.data_grid.addDataRow(data)
-
-        self.logDebug('IO Ops', f'It doesn\'t look like the data was stored for file writing')
+        self.sm.current_screen.data_grid.addDataRow(data, UID)
 
         # Return the object's data
         return data
 
     def getObjects(self, object_class_str):
         '''Get objects in the user's inventory'''
-        self.logInfo('IO Ops', f'app.getObjects called with object_class_str {object_class_str}.')
+        self.logInfo(
+            'IO Ops',
+            f'app.getObjects called with object_class_str {object_class_str}.'
+        )
+
+        if self.data == None:
+            # Load any available data into self.data
+            self.loadData()
 
         # Change the class string to a usable key for the data dict
-        new_object_class_str = 'things' if object_class_str == 'Thing' else 'containers'
-        # Load any available data into self.data
-        self.loadData()
+        data = self.things if object_class_str == 'Thing' else self.containers
 
-        return self.data[new_object_class_str]
+        return data
 
-    def Thing(self, UID, data):
+    def getUniqueID(self):
+        '''Increment self.uid_counter and return the value'''
+
+        # Make sure only unique IDs are used
+        invalid = True
+        while invalid:
+            self.uid_counter += 1  # Increment the ID counter
+            self.logInfo('DEBUG', f'app.uid_counter incremented to {self.uid_counter}')
+
+            # Do nothing if UID already exists
+            if str(self.uid_counter) in self.things.keys():
+                self.logDebug('DEBUG', f'{self.uid_counter} found in self.things.keys()')
+                pass
+            # Do nothing if UID already exists
+            elif str(self.uid_counter) in self.containers.keys():
+                self.logDebug('DEBUG', f'{self.uid_counter} found in self.containers.keys()')
+                pass
+            # Return the UID if it doesn't exist
+            else:
+                self.logInfo('kvLogic', f'Returning app.uid_counter {self.uid_counter}')
+                return str(self.uid_counter)
+
+    def Thing(self, data, UID):
         '''Create a new thing'''
-        self.logDebug('IO Ops', 'Creating a thing and saving it to the database..')
+        self.logDebug('IO Ops', 'Creating a thing and saving it to the dictionary..')
         self.logDebug('IO Ops', f'\n{json.dumps(data, indent=4)}')
         self.things[UID] = data
         return data
 
-    def Container(self, UID, data):
+    def Container(self, data, UID):
         '''Create a new container'''
-        self.logDebug('IO Ops', 'Creating a container and saving it to the database')
+        self.logDebug('IO Ops', 'Creating a container and saving it to the dictionary..')
         self.logDebug('IO Ops', f'\n{json.dumps(data, indent=4)}')
         self.containers[UID] = data
         return data
@@ -110,7 +132,7 @@ class IOHandler():
     def saveData(self):
         '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
 
-        self.logDebug('IO Ops', f'data: {self.data}')
+        self.logDebug('IO Ops', f'data: {json.dumps(self.data, indent=4)}')
         self.logDebug('IO Ops', f'data hash: {hash(str(self.data))}')
         self.logDebug('IO Ops', f'Previous hash: {self.data_hash}')
 

@@ -96,10 +96,7 @@ class ThingDataRow(GridLayout, LogMethods):
         self.assignValues()
 
     def assignValues(self):
-        self.logDebug(
-            '----TEST----',
-            f'{self.object_doc["description"]}, {self.object_doc["usd_value"]}, {self.object_doc["weight"]}'
-            )
+        self.logDebug('KV Logic', f'self.object_doc: {self.object_doc}')
 
         self.obj_label.text = str(self.object_doc["description"])
         self.val_label.text = str(self.object_doc["usd_value"])

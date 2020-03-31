@@ -28,7 +28,7 @@ class ContainerHeadingRow(GridLayout, LogMethods):
             'ContainerHeadingRow'
         )
 
-        self.logDebug('kv Ops', 'Creating an ContainerHeadingRow instance')
+        self.logDebug('kv Ops', 'Creating a ContainerHeadingRow instance')
 
     def setHeadingText(self,
                        container='Container',
@@ -96,10 +96,6 @@ class ContainerDataRow(GridLayout, LogMethods):
 
     def assignValues(self):
         self.logDebug('KV Logic', f'self.object_doc: {self.object_doc}')
-        self.logDebug(
-            'KV Logic',
-            f'{self.object_doc["description"]}, {self.object_doc["usd_value"]}, {self.object_doc["weight"]}'
-            )
 
         self.obj_label.text = str(self.object_doc["description"])
         self.loc_label.text = 'Home'

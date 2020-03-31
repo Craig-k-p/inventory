@@ -1,36 +1,66 @@
 {
     "things": {
-        "3": {
+        "5": {
             "description": "hat",
-            "usd_value": "5",
+            "usd_value": "9",
             "weight": "1"
         },
-        "4": {
-            "description": "hammer",
-            "usd_value": "9",
+        "7": {
+            "description": "bat",
+            "usd_value": "20",
+            "weight": "4"
+        },
+        "11": {
+            "description": "pan",
+            "usd_value": "20",
+            "weight": "3"
+        },
+        "8": {
+            "description": "hat",
+            "usd_value": "8",
+            "weight": "8"
+        },
+        "10": {
+            "description": "bat soup",
+            "usd_value": "87",
             "weight": "2"
         },
-        "5": {
-            "description": "string",
-            "usd_value": "1",
-            "weight": "1"
+        "12": {
+            "description": "ham",
+            "usd_value": "6",
+            "weight": "8"
         }
     },
     "containers": {
         "1": {
             "description": "box1",
+            "usd_value": "9",
+            "weight": "9"
+        },
+        "3": {
+            "description": "HDX",
+            "usd_value": "8",
+            "weight": "2"
+        },
+        "9": {
+            "description": "Crate",
+            "usd_value": "50",
+            "weight": "15"
+        },
+        "2": {
+            "description": "e",
             "usd_value": "5",
             "weight": "5"
         },
-        "2": {
-            "description": "box2",
-            "usd_value": "8",
-            "weight": "8"
+        "4": {
+            "description": "5a",
+            "usd_value": "5",
+            "weight": "5"
         },
-        "7": {
-            "description": "Crate",
-            "usd_value": "60",
-            "weight": "25"
+        "6": {
+            "description": "5g",
+            "usd_value": "43",
+            "weight": "3"
         }
     }
 }

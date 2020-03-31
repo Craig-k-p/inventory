@@ -131,13 +131,6 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
         self.sm.transition = self.settings['app transition type']
         self.logDebug('KvOps', 'Set the first screen to settings["start screen"]')
 
-    def _getUID(self):
-        '''Increment self.UIDs and return the value'''
-
-        self.UIDs += 1
-        self.logInfo('kvLogic', f'Incremented app.UID to {self.UIDs}')
-        return self.UIDs
-
     def build(self):
         '''Without returning self.sm, the app would be a blank screen.'''
         self.logDebug('KvOps', 'self.build called')

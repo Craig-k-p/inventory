@@ -81,7 +81,7 @@ class ContainerOverviewScreen(Screen, LogMethods):
         # Make sure the data_grid knows what format to follow
         self.data_grid.setObjectCategory('Thing')
 
-        self.logInfo('kv Ops', 'Calling self.data_grid.TextRandomPopulate..')
+        self.logInfo('kv Ops', 'Calling self.data_grid.fillUserData')
 
         # Fill the user data into rows
         self.data_grid.fillUserData(self.miapp)

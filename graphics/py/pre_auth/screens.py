@@ -52,14 +52,14 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         user = self.widgets['TextInputs']['account'].text
         pw = self.widgets['TextInputs']['pswd'].text
 
-        if len(user) < settings['username min length'] or len(pw) < settings['password min length']:
-            self.logInfo('AUTH', f'Login information is invalid')
-            errors.append(f'Username must be at least {settings["username min length"]} characters.')
-            errors.append(f'Password must be at least {settings["password min length"]} characters.')
-            check = False
+        # if len(user) < settings['username min length'] or len(pw) < settings['password min length']:
+        #     self.logInfo('AUTH', f'Login information is invalid')
+        #     errors.append(f'Username must be at least {settings["username min length"]} characters.')
+        #     errors.append(f'Password must be at least {settings["password min length"]} characters.')
+        #     check = False
 
         if check is True:
-            self.logInfo('AUTH', f'self.checkFormat DENIED {self.account.text}!')
+            self.logInfo('AUTH', f'self.checkFormat accepted {self.account.text}')
             check = (user, pw)
 
         return check

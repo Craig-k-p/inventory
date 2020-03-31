@@ -124,9 +124,11 @@ class DataGrid(GridLayout, LogMethods):
         return self._HeadingCls
 
     def removeDataRow(self, UID):
-        '''Remove a row of fields from the GridLayout'''
+        '''Remove a row of fields from the GridLayout in the DataGrid. Also, remove the
+           object data from app.data'''
         self.logDebug('kv_ops', f'Removing row {UID}..')
         self.remove_widget(self.dataRows.pop(UID))
+        self.app.deleteObj(UID)
 
     def setObjectCategory(self, category):
         '''Set the category of object that this grid will be dealing with - ie "containers" or

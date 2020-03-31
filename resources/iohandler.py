@@ -83,25 +83,29 @@ class IOHandler():
 
     def Thing(self, data, UID):
         '''Create a new thing'''
-        self.logDebug('IO Ops', 'Creating a thing and saving it to the dictionary..')
+        self.logDebug('IO Ops', f'Creating a thing with UID {UID}:')
         self.logDebug('IO Ops', f'\n{json.dumps(data, indent=4)}')
         self.things[UID] = data
         return data
 
     def Container(self, data, UID):
         '''Create a new container'''
-        self.logDebug('IO Ops', 'Creating a container and saving it to the dictionary..')
+        self.logDebug('IO Ops', f'Creating a container with UID {UID}:')
         self.logDebug('IO Ops', f'\n{json.dumps(data, indent=4)}')
         self.containers[UID] = data
         return data
 
-    def deleteObj(self, kind, obj_data):
-        '''Delete the matching object.
-            kind = 'thing' or 'container'
-            matching_data = dict matching an existing object'''
-        if kind == 'thing':
-            if obj_data in self.things:
-                self.things.pop(obj_data)
+    def deleteObj(self, UID):
+        '''Delete the object in self.data using the UID'''
+        UID = str(UID)
+        if UID in self.things:
+            del self.things[UID]
+        elif UID in self.containers:
+            del self.containers[UID]
+        else:
+            raise KeyError(f'UID [{UID}] not found in self.things or self.containers')
+
+        self.logInfo('IO Logic', f'Deleted object with UID {UID}')
 
 
     def loadData(self):

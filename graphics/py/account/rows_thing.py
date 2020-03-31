@@ -92,7 +92,6 @@ class ThingDataRow(GridLayout, LogMethods):
         self.value_col_width = 65
         self.weight_col_width = 40
 
-        self.choices = ['tape', 'coffee', 'hat', 'beans', 'lice', 'ratchet', 'files']
         self.assignValues()
 
     def assignValues(self):

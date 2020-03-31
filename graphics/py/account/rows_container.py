@@ -90,8 +90,6 @@ class ContainerDataRow(GridLayout, LogMethods):
         self.value_col_width = 65
         self.weight_col_width = 45
 
-        self.choices = ['ice cream', 'coffee', 'turnips', 'beans', 'lice', 'panzerfaust', 'crossiant']
-        self.locations = ['home', 'cabin', 'bottom of the lake', 'New York', 'gf house', 'grandmas house']
         self.assignValues()
 
     def assignValues(self):

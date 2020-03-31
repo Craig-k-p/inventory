@@ -22,9 +22,8 @@ class IOHandler():
 
         # Get a dictionary of all user input strings
         # The keys must match with those found in session.py
-        test = self._isValidPopupUserInput(kv_obj_reference)
 
-        if test is True:
+        if self._isValidPopupUserInput(kv_obj_reference) is True:
             data = self._getObjectCreationUserInput(kv_obj_reference)
 
             self.logInfo('IO Ops', f'User input:\n{json.dumps(data, indent=4)}')
@@ -52,8 +51,7 @@ class IOHandler():
     def getObjects(self, object_class_str):
         '''Get objects in the user's inventory'''
         self.logInfo(
-            'IO Ops',
-            f'app.getObjects called with object_class_str {object_class_str}.'
+            'IO Ops', f'app.getObjects called with object_class_str {object_class_str}.'
         )
 
         if self.data == None:

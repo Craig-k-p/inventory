@@ -82,7 +82,7 @@ class DataGrid(GridLayout, LogMethods):
 
 
     def fillUserData(self, app):
-        ''' Populate the data rows with user data and add them to the data grid (self)'''
+        ''' Populate the data rows with user data and add them to the data grid'''
 
         # Get access to the application instance
         if self.app == None:
@@ -106,11 +106,8 @@ class DataGrid(GridLayout, LogMethods):
             self.dataRows[key] = row
 
         # Add the rows to the screen to be drawn
-        for data_row in self.dataRows:
-            self.add_widget(self.dataRows[data_row])
-
-        # Reset the UID counter so numbers aren't skipped
-        # self.app.UIDs = 0
+        for row in self.dataRows:
+            self.add_widget(self.dataRows[row])
 
     def getDataRowClass(self):
         ''' Return a reference to ContainerDataRow or ThingDataRow class def for instantiating
@@ -126,7 +123,8 @@ class DataGrid(GridLayout, LogMethods):
     def removeDataRow(self, UID):
         '''Remove a row of fields from the GridLayout in the DataGrid. Also, remove the
            object data from app.data'''
-        self.logDebug('kv_ops', f'Removing row {UID}..')
+        self.logDebug('KV Ops', f'Removing row {UID}..')
+        self.logDebug('KV Ops', f'{self.dataRows[UID]}..')
         self.remove_widget(self.dataRows[UID])
         del self.dataRows[UID]
         self.app.deleteObj(UID)

@@ -39,7 +39,7 @@ class PopupErrorContent(GridLayout, LogMethods):
         log += f'\n\t\t\twidgets = {self.widgets},'
         log += f'\n\t\t\tcurrent_screen = {self.current_screen.manager.current},'
         log += f'\n\t\t\tis_yes_no = {self.is_yes_no}'
-        self.logDebug('Kv Ops', log)
+        self.logDebug(log)
 
     def assignParentMethod(self, parentMethod):
         '''Allows us to reference the popup from the kv file as root.parent.do_something.
@@ -48,7 +48,7 @@ class PopupErrorContent(GridLayout, LogMethods):
 
         # Method to be executed by the popup button
         self.parentMethod = parentMethod
-        self.logDebug('Kv Logic', f'Recieved parentMethod: {parentMethod.__name__}')
+        self.logDebug(f'Recieved parentMethod: {parentMethod.__name__}')
 
         # Add the child widgets to the popup
         self._assignChildren()
@@ -63,7 +63,7 @@ class PopupErrorContent(GridLayout, LogMethods):
             for widget in self.widgets:
                 self.box.add_widget(widget)
 
-            self.logInfo('Kv Ops', f'Added widgets to popup:\n{pprint.pformat(self.widgets)}')
+            self.logInfo(f'Added widgets to popup:\n{pprint.pformat(self.widgets)}')
 
             if self.is_yes_no is False:
                 # Create a button
@@ -76,14 +76,14 @@ class PopupErrorContent(GridLayout, LogMethods):
                     pos_hint={'center_x': .5}
                 )
                 btn.bind(on_release=self.parentMethod)
-                self.logDebug('Kv Ops', 'self.is_yes_no is False.  Added a single button to popup')
+                self.logDebug('self.is_yes_no is False.  Added a single button to popup')
                 # Add a button to the BoxLayout with the given text and parentMethod
                 self.box.add_widget(btn)
 
             else:
                 print('Not implemented --- kv_popup.PopupContent._assignChildren')
                 log = 'self.is_yes_no is True.  Added a yes/no button pair'
-                self.logError('Kv Ops', 'Not implemented!  self.is_yes_no is True')
+                self.logError('Not implemented!  self.is_yes_no is True')
 
         else:
             log = f'Error!  self.widgets is either not a list or is empty:'
@@ -112,7 +112,10 @@ class PopupCreateThingContent(ScrollView, LogMethods):
     def updateTextInputErrors(self, keys):
         '''Change the text inputs with an error to a red tone. Accepts a list of keys
            as input'''
-        self.logDebug('KV Ops', 'Changing error TextInputs to a red tone.')
+        self.logDebug(f'{keys} TextInput fields being changed to red')
+
+        for key in keys:
+            self.ids[key].error = True
 
 
 class PopupCreateContainerContent(ScrollView, LogMethods):
@@ -132,7 +135,7 @@ class PopupCreateContainerContent(ScrollView, LogMethods):
     def updateTextInputErrors(self, keys):
         '''Change the text inputs with an error to a red tone. Accepts a list of keys
            as input'''
-        self.logDebug('KV Ops', f'{keys} TextInput fields being changed to red')
+        self.logDebug(f'{keys} TextInput fields being changed to red')
 
         for key in keys:
             self.ids[key].error = True

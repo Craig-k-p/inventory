@@ -29,7 +29,7 @@ class DataGrid(GridLayout, LogMethods):
             class_str='DataGrid'
         )
 
-        self.logInfo('kv_ops', 'Creating DataGrid instance')
+        self.logInfo('Creating DataGrid instance')
 
         self.app = None
 
@@ -53,12 +53,12 @@ class DataGrid(GridLayout, LogMethods):
         if self.inventory == None:
             self.inventory = self.app.inventory
 
-        self.logDebug('Kv Ops', f'Adding a new {data["description"]} data row to the DataGrid')
+        self.logDebug(f'Adding a new {data["description"]} data row to the DataGrid')
 
         # Instantiate a data row with UID and data
         RowClass = self.getInventoryRowClass()
-        self.logDebug('KV Ops', f'new_row:')
-        self.logDebug('KV Ops', f'  UID: {UID}, data: {data}')
+        self.logDebug(f'new_row:')
+        self.logDebug(f'  UID: {UID}, data: {data}')
         new_row = RowClass(UID, data)
 
         # new_row: <graphics.py.account.rows_container.ContainerDataRow object at 0x0B2E3538>
@@ -78,7 +78,7 @@ class DataGrid(GridLayout, LogMethods):
         #         self.app.containers = self.dataRows
         #         self.logDebug('IO Logic', f'Linked self.dataRows to Container dictionary')
 
-        self.logDebug('Kv Ops', f'Adding a row for the {data["description"]} to the grid')
+        self.logDebug(f'Adding a row for the {data["description"]} to the grid')
         # Add the ***DataRow instance to the DataGrid widget
         self.add_widget(self.inventory_kv[UID])
 
@@ -90,16 +90,16 @@ class DataGrid(GridLayout, LogMethods):
         if self.app == None:
             self.app = app
 
-        self.logDebug('Db Logic', f'Getting data for the data grid in category {self.category}')
+        self.logDebug(f'Getting data for the data grid in category {self.category}')
         # Get the containers or things to fill the data grid
         data = self.app.getObjects(self.category)
 
-        self.logInfo('KV Logic', f'{self.category} data:\n{dumps(data, indent=4)}')
-        self.logDebug('KV Logic', 'Looping through the data')
+        self.logInfo(f'{self.category} data:\n{dumps(data, indent=4)}')
+        self.logDebug('Looping through the data')
 
         # Loop through the data and instantiate DataRows
         for key in data:
-            self.logDebug('KV Logic', f'data[{key}]:\n{dumps(data[key], indent=4)}')
+            self.logDebug(f'data[{key}]:\n{dumps(data[key], indent=4)}')
 
             # Create the ContainerDataRow or ThingDataRow instance
             row_kv = self.getInventoryRowClass()(key, data[key])
@@ -114,19 +114,19 @@ class DataGrid(GridLayout, LogMethods):
     def getInventoryRowClass(self):
         ''' Return a reference to ContainerDataRow or ThingDataRow class def for instantiating
             new rows'''
-        self.logDebug('KV Logic', f'Returning self._DataRowCls: {self._DataRowCls}')
+        self.logDebug(f'Returning self._DataRowCls: {self._DataRowCls}')
         return self._DataRowCls
 
     def getHeadingClass(self):
         ''' Return a reference to ****HeadingRow class def '''
-        self.logDebug('KV Logic', f'Returning self._HeadingCls: {self._HeadingCls}')
+        self.logDebug(f'Returning self._HeadingCls: {self._HeadingCls}')
         return self._HeadingCls
 
     def deleteObject(self, UID):
         '''Delete a row from the GridLayout in the DataGrid. Also, remove the
            object data from app.inventory'''
-        self.logDebug('KV Ops', f'Removing row {UID}..')
-        self.logDebug('KV Ops', f'{self.inventory_kv[UID]}..')
+        self.logDebug(f'Removing row {UID}..')
+        self.logDebug(f'{self.inventory_kv[UID]}..')
         # Remove the widget from the DataGrid instance
         self.remove_widget(self.inventory_kv[UID])
         # Delete the object from the dictionary
@@ -140,18 +140,17 @@ class DataGrid(GridLayout, LogMethods):
            be instantiating
            Called in screens.py'''
 
-        self.logDebug('kvLogic', f'Setting the DataGrid category to {category}')
+        self.logDebug(f'Setting the DataGrid category to {category}')
 
         # Make sure the category is valid
         if category in DataGrid.categories:
             self.category = category
         else:
             self.logCritical(
-                'kvLogic',
                 f'category was {category}, not "thing" or "container."  Expect failures'
             )
 
-        self.logDebug('kvLogic', 'Assigning references to the approprate classes..')
+        self.logDebug('Assigning references to the approprate classes..')
 
         # Set references to the proper classes for this instance
         if self.category == 'thing':
@@ -162,7 +161,7 @@ class DataGrid(GridLayout, LogMethods):
             self._HeadingCls = ContainerHeadingRow
             self._DataRowCls = ContainerDataRow
 
-        self.logDebug('KV Ops', 'Creating the heading..')
+        self.logDebug('Creating the heading..')
 
         # Create the heading widgets used to label the top of the data fields
         self.headings = self.getHeadingClass()()
@@ -177,15 +176,15 @@ class DataGrid(GridLayout, LogMethods):
             -Set the column width to the minimum needed width to fit the values
            '''
 
-        self.logInfo('kv_ops', 'Assigning column widths')
+        self.logInfo('Assigning column widths')
 
         for row in self.dataRows:
             tex_width = self.dataRows[row].val_lo.width
-            self.logDebug('kvLogic', f'Label size: {tex_width}')
+            self.logDebug(f'Label size: {tex_width}')
             # tex_width = row.val_lo.texture_size
             # self.logDebug('kvLogic', f'Label size: {tex_width}')
 
     def _getMaxWidth(self):
         '''Loop thru each child widget's children and get the maximum width needed for the
         column'''
-        self.logInfo('kvLogic', f'Did nothing...')
+        self.logInfo(f'Did nothing...')

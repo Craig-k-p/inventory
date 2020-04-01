@@ -28,7 +28,7 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
             class_str='AccountOverviewScreen'
         )
 
-        self.logInfo('kv Ops', 'Creating an AccountOverviewScreen instance..')
+        self.logInfo('Creating an AccountOverviewScreen instance..')
 
         # Put input widgets here so we can grab the user input at some point
         self.widgets = {
@@ -38,7 +38,7 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
         # Make sure the data_grid knows what format to follow
         self.data_grid.setDataGridObjectType('container')
 
-        self.logInfo('kv Ops', 'Calling self.data_grid.fillUserData')
+        self.logInfo('Calling self.data_grid.fillUserData')
 
         # Fill the user data into rows
         self.data_grid.fillUserData(self.miapp)
@@ -47,7 +47,7 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
         '''Set the default text to be displayed in certain situations'''
 
     def buttonPress(self):
-        self.logInfo('kv Ops', 'Enter pressed in AccountOverviewScreen!')
+        self.logInfo('Enter pressed in AccountOverviewScreen!')
 
 
 class ContainerOverviewScreen(Screen, LogMethods):
@@ -70,7 +70,7 @@ class ContainerOverviewScreen(Screen, LogMethods):
             class_str='ContainerOverviewScreen'
         )
 
-        self.logInfo('kv Ops', 'Creating a ContainerOverviewScreen instance..')
+        self.logInfo('Creating a ContainerOverviewScreen instance..')
 
         # Put input widgets here so we can grab the user input at some point
         self.widgets = {
@@ -80,7 +80,7 @@ class ContainerOverviewScreen(Screen, LogMethods):
         # Make sure the data_grid knows what format to follow
         self.data_grid.setDataGridObjectType('thing')
 
-        self.logInfo('kv Ops', 'Calling self.data_grid.fillUserData')
+        self.logInfo('Calling self.data_grid.fillUserData')
 
         # Fill the user data into rows
         self.data_grid.fillUserData(self.miapp)
@@ -89,7 +89,7 @@ class ContainerOverviewScreen(Screen, LogMethods):
         '''Set the default text to be displayed in certain situations'''
 
     def buttonPress(self):
-        self.logInfo('kv Ops', 'Enter pressed in ContainerOverviewScreen!')
+        self.logInfo('Enter pressed in ContainerOverviewScreen!')
 
 
 class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
@@ -108,7 +108,7 @@ class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
             class_str='AccountOverviewScreen'
         )
 
-        self.logInfo('kv Ops', 'Creating an ThingOverviewScreen instance..')
+        self.logInfo('Creating an ThingOverviewScreen instance..')
 
         # Put input widgets here so we can grab the user input at some point
         self.widgets = {
@@ -116,4 +116,4 @@ class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
         }
 
     def buttonPress(self):
-        self.logInfo('kv Ops', 'Enter pressed in ThingOverviewScreen!')
+        self.logInfo('Enter pressed in ThingOverviewScreen!')

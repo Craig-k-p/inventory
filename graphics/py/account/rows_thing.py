@@ -39,7 +39,7 @@ class ThingHeadingRow(GridLayout, LogMethods):
             'ThingHeadingRow'
         )
 
-        self.logDebug('kv_ops', 'Creating a ThingHeadingRow instance..')
+        self.logDebug('Creating a ThingHeadingRow instance..')
 
     def setHeadingText(self,
                        container='Thing',
@@ -51,7 +51,7 @@ class ThingHeadingRow(GridLayout, LogMethods):
         '''Set the heading text for each child widget Label'''
         log = f'Setting heading Label text values to {container}, {weight}, {value}, '
         log += f'{tags}, and {options}'
-        self.logDebug('kvLogic', log)
+        self.logDebug(log)
 
         self.obj_label.text = 'HELP'
         self.weight_label.text = weight
@@ -84,7 +84,7 @@ class ThingDataRow(GridLayout, LogMethods):
             'ThingDataRow'
         )
 
-        self.logDebug('kv_ops', 'Creating a ThingDataRow instance')
+        self.logDebug('Creating a ThingDataRow instance')
 
         self.UID = UID
         self.object_doc = object_doc
@@ -95,7 +95,7 @@ class ThingDataRow(GridLayout, LogMethods):
         self.assignValues()
 
     def assignValues(self):
-        self.logDebug('KV Logic', f'self.object_doc: {self.object_doc}')
+        self.logDebug(f'self.object_doc: {self.object_doc}')
 
         self.obj_label.text = str(self.object_doc["description"])
         self.val_label.text = str(self.object_doc["usd_value"])

@@ -154,9 +154,8 @@ class LogMethods():
         self.file = file_str
         self.calling_class = class_str
 
-    def logDebug(self, category, message):
-        '''category -> string
-           message -> string'''
+    def logDebug(self, message):
+        ''' message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
         # Skip log if filtering is enabled
@@ -165,13 +164,12 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.debug(log_str)
 
-    def logInfo(self, category, message):
-        '''category -> string
-           message -> string'''
+    def logInfo(self, message):
+        ''' message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
         # Skip log if filtering is enabled
@@ -180,13 +178,12 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.info(log_str)
 
-    def logWarning(self, category, message):
-        '''category -> string
-           message -> string'''
+    def logWarning(self, message):
+        ''' message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
         # Skip log if filtering is enabled
@@ -195,13 +192,12 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.warning(log_str)
 
-    def logError(self, category, message):
-        '''category -> string
-           message -> string'''
+    def logError(self, message):
+        ''' message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
         # Skip log if filtering is enabled
@@ -210,13 +206,12 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.error(log_str)
 
-    def logCritical(self, category, message):
-        '''category -> string
-           message -> string'''
+    def logCritical(self, message):
+        ''' message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
         # Skip log if filtering is enabled
@@ -225,12 +220,12 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.critical(log_str)
 
-    def logTrace(self, category, message):
-        '''category -> string
+    def logTrace(self, message):
+        ''' -> string
            message -> string'''
         caller = inspect.stack()[1]
         filename = self._getFileNameFromPath(caller[1])
@@ -240,7 +235,7 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f'{category}: [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.trace(log_str)
 

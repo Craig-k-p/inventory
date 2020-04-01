@@ -27,11 +27,11 @@ from kivy.uix.screenmanager import NoTransition, SlideTransition
 from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
 from graphics.py.account.datagrid import DataGrid, ContainerHeadingRow
 from resources.kv_extensions import KivyExtensions
-from resources.iohandler import IOHandler
+from resources.inventoryhandler import InventoryHandler
 from resources.utilities import LogMethods
 
 
-class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
+class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
     # Unique ID for each of the user's objects
     uid_counter = 0
@@ -43,7 +43,7 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
             class_str='MyInventoryApp'
         )
 
-        self.logInfo('App', 'Creating MyInventoryApp instance')
+        self.logInfo('Creating MyInventoryApp instance')
 
         # Set window to white
         Window.clearcolor = (0, 0, 0, 1)
@@ -57,7 +57,7 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
             'app transition type': SlideTransition(),
             'save file': 'save_data/save_data',
             'backup save file': 'save_data/backup_save_data',
-            'log filtering': 'iohandler.py' }
+            'log filtering': 'InventoryHandler.py' }
         self.kv_settings = {
             'startup kv files': ['graphics/kv/pre_auth/screens.kv', 'graphics/kv/account/screens.kv'],
             'kv popup file': 'graphics/kv/pre_auth/popups.kv',
@@ -86,22 +86,22 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
                 'login': False,
                 'create account': False}}
 
-        self.logInfo('App', f'Started session with settings:\n{pformat(self.settings, indent=4)}')
-        self.logInfo('App', f'Started session with settings:\n{pformat(self.kv_settings, indent=4)}')
+        self.logInfo(f'Started session with settings:\n{pformat(self.settings, indent=4)}')
+        self.logInfo(f'Started session with settings:\n{pformat(self.kv_settings, indent=4)}')
         log = f'Started session with validations:\n{pformat(self.validations, indent=4)}'
-        self.logInfo('App', log)
+        self.logInfo(log)
 
         # Load the .kv files to start building the GUI
         for file in self.kv_settings['startup kv files']:
             Builder.load_file(file)
 
-        self.logDebug('KvOps', f'Used kivy.lang.Builder to load files {self.kv_settings["startup kv files"]}')
+        self.logDebug(f'Used kivy.lang.Builder to load files {self.kv_settings["startup kv files"]}')
 
         # Create a ScreenManager instance with no transition movement
         self.sm = InventoryScreenManager(transition=self.settings['startup transition'])
         log = 'Created self.sm, instance of InventoryScreenManager with startup transition as '
         log += f'{self.settings["startup transition"]} --- {self.sm}'
-        self.logDebug('App', log)
+        self.logDebug(log)
 
         # Allow children of the WindowManager instance to access self.settings in the App instance
         self.sm.app = self
@@ -119,31 +119,31 @@ class MyInventoryApp(App, KivyExtensions, IOHandler, LogMethods):
 
         log = f'Created login, account, and create account screens with "screens" var: '
         log += f'{pformat(screens, indent=4)}'
-        self.logDebug('App', log)
+        self.logDebug(log)
 
         # Make sure sm knows how to handle changes to self.current
         # such as self.current = 'account window'
         for screen in screens:
             self.sm.add_widget(screen)
-        self.logDebug('KvOps', 'Added the screens to self.sm InventoryScreenManager instance')
+        self.logDebug('Added the screens to self.sm InventoryScreenManager instance')
 
         # Set the current screen to login window
         self.sm.current = self.settings['start screen']
         self.sm.transition = self.settings['app transition type']
-        self.logDebug('KvOps', 'Set the first screen to settings["start screen"]')
+        self.logDebug('Set the first screen to settings["start screen"]')
 
     def build(self):
         '''Without returning self.sm, the app would be a blank screen.'''
-        self.logDebug('KvOps', 'self.build called')
+        self.logDebug('self.build called')
         self.title = 'My Inventory'
         return self.sm
 
     def on_stop(self):
         '''Execute this function when the application is exited'''
-        self.logDebug('db_ops', 'Saving data...')
+        self.logDebug('Saving data...')
         # Save the user data to a file if necessary
         self.saveData()
-        self.logDebug('IO Ops', 'Exiting the application..')
+        self.logDebug('Exiting the application..')
 
 
 if __name__ == '__main__':

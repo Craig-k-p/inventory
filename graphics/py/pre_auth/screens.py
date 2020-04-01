@@ -41,7 +41,7 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         }
         self.widgets['TextInputs']['account'] = self.account
         self.widgets['TextInputs']['pswd'] = self.pswd
-        self.logDebug('KvLogic', f'self.widgets was created:\n{pprint.pformat(self.widgets, indent=4)}')
+        self.logDebug(f'self.widgets was created:\n{pprint.pformat(self.widgets, indent=4)}')
 
     def checkUserInputFormat(self):
         '''Check if the user input is valid.  Return user input (tuple) or False'''
@@ -59,7 +59,7 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         #     check = False
 
         if check is True:
-            self.logInfo('AUTH', f'self.checkFormat accepted {self.account.text}')
+            self.logInfo(f'self.checkFormat accepted {self.account.text}')
             check = (user, pw)
 
         return check
@@ -79,7 +79,7 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         self.popup_text['title'] = 'Invalid Login'
 
         log = f'Init\'d self.popup_text dictionary:\n{pprint.pformat(self.popup_text, indent=4)}'
-        self.logDebug('App', log)
+        self.logDebug(log)
 
 
 class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
@@ -119,7 +119,7 @@ class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
                 'username': self.username
             }
         }
-        self.logDebug('KvLogic', f'Created self.widgets:\n{pprint.pformat(self.widgets, indent=4)}')
+        self.logDebug(f'Created self.widgets:\n{pprint.pformat(self.widgets, indent=4)}')
 
     def checkUserInputFormat(self):
         '''Check if the user input is valid.  Return '''
@@ -134,26 +134,26 @@ class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
         check = True
 
         if len(user) < self.manager.app.settings['username min length']:
-            self.logDebug('App', f'{user} did NOT pass as valid input')
+            self.logDebug(f'{user} did NOT pass as valid input')
             msg = f'{user} is not {self.manager.app.settings["username min length"]} characters long'
             self.manager.app.popup_errors.append(msg)
             check = False
 
         if self.isEmail(email) is False:
-            self.logDebug('App', f'{email} did NOT pass as valid input')
+            self.logDebug(f'{email} did NOT pass as valid input')
             msg = f'"{email}" is not proper email format'
             self.manager.app.popup_errors.append(msg)
             check = False
 
         if self.checkPw(pw, pw2) is False:
-            self.logDebug('App', 'Password inputs did NOT pass as valid')
+            self.logDebug('Password inputs did NOT pass as valid')
             msg = 'Passwords do not match or are not '
             msg += f'{self.manager.app.settings["username min length"]} characters long'
             self.manager.app.popup_errors.append(msg)
             check = False
 
         if check is True:
-            self.logDebug('App', 'User create account input passed as valid input in screens.py')
+            self.logDebug('User create account input passed as valid input in screens.py')
             check = (user, email, pw)
 
         return check
@@ -176,7 +176,6 @@ class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
             'title': 'Invalid Account Creation Attempt'
         }
         self.logDebug(
-            'App',
             f'Init\'d self.popup_text dictionary:\n{pprint.pformat(self.popup_text, indent=4)}'
         )
 
@@ -190,4 +189,4 @@ class InventoryScreenManager(ScreenManager, LogMethods):
             file_str='pre_auth_screens',
             class_str='InventoryScreenManager'
         )
-        self.logDebug('KvOps', 'Instantiated an InventoryScreenManager')
+        self.logDebug('Instantiated an InventoryScreenManager')

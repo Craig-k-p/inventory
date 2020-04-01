@@ -28,7 +28,7 @@ class ContainerHeadingRow(GridLayout, LogMethods):
             'ContainerHeadingRow'
         )
 
-        self.logDebug('kv Ops', 'Creating a ContainerHeadingRow instance')
+        self.logDebug('Creating a ContainerHeadingRow instance')
 
     def setHeadingText(self,
                        container='Container',
@@ -41,8 +41,8 @@ class ContainerHeadingRow(GridLayout, LogMethods):
         '''Set the heading text for each child widget Label'''
         log = f'Setting heading Label text values to {container}, {weight}, {value}, '
         log += f'{location}, {tags}, and {options}'
-        self.logDebug('kv Logic', log)
-        self.logDebug('kv Logic', f'self.weight.label = {self.weight_label.text}')
+        self.logDebug(log)
+        self.logDebug(f'self.weight.label = {self.weight_label.text}')
 
         self.obj_label.text = 'HELP'
         self.weight_label.text = weight
@@ -51,10 +51,10 @@ class ContainerHeadingRow(GridLayout, LogMethods):
         self.tag_button.text = tags
         self.opt_button.text = options
 
-        self.logDebug('kv Logic', f'container.label = {self.obj_label.text}')
+        self.logDebug(f'container.label = {self.obj_label.text}')
 
         log = f'Values: {self.obj_label.text}, {self.weight_label.text}, {self.val_label.text}'
-        self.logDebug('kv Logic', log)
+        self.logDebug(log)
 
 
 class ContainerDataRow(GridLayout, LogMethods):
@@ -82,7 +82,7 @@ class ContainerDataRow(GridLayout, LogMethods):
             'ContainerDataRow'
         )
 
-        self.logDebug('kv Ops', 'Creating a ContainerDataRow instance')
+        self.logDebug('Creating a ContainerDataRow instance')
 
         self.UID = UID
         self.object_doc = object_doc
@@ -93,7 +93,7 @@ class ContainerDataRow(GridLayout, LogMethods):
         self.assignValues()
 
     def assignValues(self):
-        self.logDebug('KV Logic', f'self.object_doc: {self.object_doc}')
+        self.logDebug(f'self.object_doc: {self.object_doc}')
 
         self.obj_label.text = str(self.object_doc["description"])
         self.loc_label.text = 'Home'

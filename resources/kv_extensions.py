@@ -48,7 +48,7 @@ class KivyExtensions():
         log += f'\n\tscreen: {screen}'
         log += f'\n\tcall: {call}'
         log += f'\n\tdirection: {direction}'
-        self.logDebug('KvFeedback', log)
+        self.logDebug(log)
 
         # If call is among the allowed calls or, in other words, if the string matches a
         # method name
@@ -70,7 +70,7 @@ class KivyExtensions():
 
         else:
             log = f"Call {call} is not in self.validations['allowed button calls']"
-            self.logCritical('KvFeedback', log)
+            self.logCritical(log)
 
     def changeScreen(self, screen, direction):
         '''Change to a screen using direction.  Make sure the screen does not need
@@ -83,28 +83,27 @@ class KivyExtensions():
             # If an attempt to change screens to a screen that needs login information
             # is made
             if self.validations['authentication needed'][screen] is True:
-                self.logWarning('Kv Logic',
-                    f'Received a call to change to {screen} without authentication')
+                self.logWarning(f'Received a call to change to {screen} without authentication')
 
             # If someone tries to switch to a valid screen that doesn't need authentication
             elif self.validations['authentication needed'][screen] is False:
                 self.sm.current_screen.resetTextInputs()
                 self.sm.transition.direction = direction
                 self.sm.current = screen
-                self.logInfo('Kv Ops', f'Changed to {screen} going in direction {direction}')
+                self.logInfo(f'Changed to {screen} going in direction {direction}')
 
             # If self.validations['authentication needed'][screen] value is not a boolean
             else:
                 log = f"self.validations['authentication needed'][screen] should be boolean.\
                  Got "
                 log += f'{self.authentication_needed[screen]}'
-                self.logWarning('App', log)
+                self.logWarning(log)
 
         # The user is logged in, so let them do what they want
         elif self.isLoggedIn() is True:
             self.sm.transition.direction = direction
             self.sm.current = screen
-            self.logInfo('Kv Ops', f'Changed to {screen} going in direction {direction}')
+            self.logInfo(f'Changed to {screen} going in direction {direction}')
 
         else:
             raise Exception('self.isLoggedIn did not return a boolean')
@@ -121,7 +120,6 @@ class KivyExtensions():
         if len(self.popup_errors) == 0:
 
             self.logInfo(
-                'Kv Feedback',
                 f'No errors were found for user input on new_screen {new_screen}'
             )
 
@@ -129,24 +127,24 @@ class KivyExtensions():
             if check is not False and isinstance(check, tuple):
 
                 # Try to create an account
-                self.logDebug('Kv Ops', 'Requesting account creation..')
+                self.logDebug('Requesting account creation..')
                 is_logged_in = self.createUser(*check)
 
                 # If the user was successfully created and logged in
                 if is_logged_in is True:
 
-                    self.logInfo('Kv Ops', 'User was successfully logged in! Changing screen')
+                    self.logInfo('User was successfully logged in! Changing screen')
                     # Change the screen
                     self.sm.transition.direction = direction
                     self.sm.current = new_screen
 
                 # If the account creation failed
                 else:
-                    self.logError('DB Ops', 'Account creation failed! Creating popup')
+                    self.logError('Account creation failed! Creating popup')
                     self.popup_errors.append('Account creation failed for an unknown reason!')
 
             else:
-                self.logError('KvFeedback', 'Formatting errors were not caught by \
+                self.logError('Formatting errors were not caught by \
                     createAccount method')
 
         else:
@@ -171,13 +169,12 @@ class KivyExtensions():
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
-        self.logDebug('Kv Logic', f'kivy.lang.Builder loaded the file\
+        self.logDebug(f'kivy.lang.Builder loaded the file\
          {self.kv_settings["kv popup file"]}')
 
         # Create an instance of popup content found in popup.py and popups.kv
         popup_content = PopupErrorContent(self._createPopupErrorLabels(), current_screen)
         self.logDebug(
-            'Kv Ops',
             f'Created a PopupErrorContent instance with popup error labels for screen\
              {self.sm.current}'
         )
@@ -196,27 +193,25 @@ class KivyExtensions():
         log += f'''\n\t\t\tsize_hint = {self.kv_settings['popup size_hint']},'''
         log += f'''\n\t\t\tauto_dismiss = {self.kv_settings['popup auto_dismiss']}'''
         log += f'\n\t\t\t)'
-        self.logDebug('Kv Ops', log)
+        self.logDebug(log)
 
         # Assign the popup
-        self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
+        self.logDebug('Assigning parent method to popup_content')
         popup_content.assignParentMethod(self.pop.dismiss)
 
         # Open the popup
-        self.logDebug('Kv Ops', 'Opening the popup..')
+        self.logDebug('Opening the popup..')
         self.pop.open()
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
         self.logDebug(
-            'Kv Logic',
             f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
         )
 
     def createContainerPopup(self, screen=None, direction=None):
         # Load the popup content from file and create an instance of PopupContent
         self.logDebug(
-            'Kv Logic',
             f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}'
         )
         Builder.load_file(self.kv_settings['kv popup file'])
@@ -224,7 +219,6 @@ class KivyExtensions():
         # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
         popup_content = PopupCreateContainerContent()
         self.logDebug(
-            'Kv Ops',
             f'Created a PopupCreateContainerContent instance for screen "{self.sm.current}"'
         )
 
@@ -243,35 +237,30 @@ class KivyExtensions():
         log += f'''\n\t\t\tsize_hint = {self.kv_settings['popup size_hint']},'''
         log += f'''\n\t\t\tauto_dismiss = {self.kv_settings['popup auto_dismiss']}'''
         log += f'\n\t\t\t)'
-        self.logDebug('Kv Ops', log)
+        self.logDebug(log)
 
         # # Assign the popup
         # self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
         # popup_content.assignParentMethod(self.pop.dismiss)
 
         # Open the popup
-        self.logDebug('Kv Ops', 'Opening the popup..')
+        self.logDebug('Opening the popup..')
         self.pop.open()
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
         self.logDebug(
-            'Kv Logic',
             f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
         )
 
     def createThingPopup(self, screen=None, direction=None):
         # Load the popup content from file and create an instance of PopupContent
-        self.logDebug(
-            'Kv Logic',
-            f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}'
-        )
+        self.logDebug(f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}')
         Builder.load_file(self.kv_settings['kv popup file'])
 
         # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
         popup_content = PopupCreateThingContent()
         self.logDebug(
-            'Kv Ops',
             f'Created a PopupCreateThingContent instance for screen "{self.sm.current}"'
         )
 
@@ -290,20 +279,19 @@ class KivyExtensions():
         log += f'''\n\t\t\tsize_hint = {self.kv_settings['popup size_hint']},'''
         log += f'''\n\t\t\tauto_dismiss = {self.kv_settings['popup auto_dismiss']}'''
         log += f'\n\t\t\t)'
-        self.logDebug('Kv Ops', log)
+        self.logDebug(log)
 
         # # Assign the popup
         # self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
         # popup_content.assignParentMethod(self.pop.dismiss)
 
         # Open the popup
-        self.logDebug('Kv Ops', 'Opening the popup..')
+        self.logDebug('Opening the popup..')
         self.pop.open()
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
         self.logDebug(
-            'Kv Logic',
             f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
         )
 
@@ -339,7 +327,7 @@ class KivyExtensions():
                 self.sm.current = new_screen
             # Username or pass is invalid.  Create a popup
             else:
-                self.logDebug('DB Ops', 'Login rejected, creating error popup')
+                self.logDebug('Login rejected, creating error popup')
                 self.popup_errors.append('Invalid username or password')
                 self.createPopup()
         else:
@@ -356,7 +344,7 @@ class KivyExtensions():
 
         log = 'Creating popup error label widgets for a popup with errors:'
         log += f'\n\t\t\t{pprint.pformat(self.popup_errors, indent=4)}'
-        self.logDebug('Kv Logic', log)
+        self.logDebug(log)
 
         # List to keep the widgets
         error_labels = []
@@ -376,15 +364,11 @@ class KivyExtensions():
                 )
 
             self.logDebug(
-                'Kv Ops',
                 f'Added Labels to error_labels:\n{pprint.pformat(error_labels, indent=4)}'
             )
 
             self._clearPopupErrors()
-            self.logDebug(
-                'Kv Logic',
-                'self.popup_errors reset to [] and error_labels returned'
-            )
+            self.logDebug('self.popup_errors reset to [] and error_labels returned')
             return error_labels
 
         else:
@@ -392,22 +376,22 @@ class KivyExtensions():
             log = 'ERROR: self.popup_errors is either too short or not a list:'
             log += f'\n\t\t\tlength: {len(self.popup_errors)}'
             log += f'\n\t\t\ttype: {type(self.popup_errors)}'
-            self.logWarning('Kv Logic', log)
-            self.logWarning('Kv Logic', self.popup_errors)
+            self.logWarning(log)
+            self.logWarning(self.popup_errors)
             self._clearPopupErrors()
             return None
 
     def _isValidPopupUserInput(self, popup_content):
         '''Verify that user input from the popup is valid'''
         required = self.kv_settings['popup required fields']
-        self.logDebug('KV Logic', f'Required input keys: {required}')
+        self.logDebug(f'Required input keys: {required}')
 
         # Loop through the popup_content.ids (text_inputs) keys and check if they're required
         # Add the key of required TextInputs with empty text fields to the error_keys list
         error_keys = []
         for key in popup_content.ids:
             if key in required and popup_content.ids[key].text == '':
-                self.logDebug('KV Logic', f'Found error for key: {key}')
+                self.logDebug(f'Found error for key: {key}')
                 error_keys.append(key)
 
         if len(error_keys) > 0:
@@ -432,11 +416,8 @@ class KivyExtensions():
         for key in popup_content.ids:
             # Check that the child widget is a TextInput to avoid AttributeErrors
             if isinstance(popup_content.ids[key], TextInput):
-                # Ignore empty fields
-                if popup_content.ids[key].text is not '':
-                    # Add the key and string to the kwargs dictionary
-                    data[key] = popup_content.ids[key].text
+                data[key] = popup_content.ids[key].text
 
-        self.logDebug('KV Logic', f'data: {data}')
+        self.logDebug(f'data: {data}')
 
         return data

@@ -4,10 +4,9 @@ import shutil
 
 class IOHandler():
     def __init__(self):
-        self.things = {}
-        self.containers = {}
-        self.data_hash = None
-        self.data = None
+        self.inventory_hash = None
+        self.inventory_kv = {}
+        self.inventory = None
 
     def authenticate(self, user, pd):
         '''Method not needed with a local save.'''
@@ -28,16 +27,22 @@ class IOHandler():
 
             self.logInfo('IO Ops', f'User input:\n{json.dumps(data, indent=4)}')
 
-            # # Get the proper method from self for saving data
+            # Get the method (thing or container) from IOHandler for creating a new object
             createObject = getattr(self, object_class_str)
 
             # Create a new object with user's input and dismiss the popup
             UID = self.getUniqueID()
             new_object_doc = createObject(data, UID)
-            self.logDebug('IO Ops', f'Saved a new {data["description"]}')
+            self.logDebug(
+                'IO Ops',
+                f'Saved a new {self.inventory[object_class_str][UID]["description"]}'
+            )
             self.pop.dismiss()
 
-            self.logDebug('IO Ops', f'New data: {json.dumps(self.data, indent=4)}')
+            self.logDebug(
+                'IO Ops',
+                f'New data: {json.dumps(self.inventory[object_class_str][UID], indent=4)}'
+            )
 
             # Add a new row with the new data to the user's screen
             self.sm.current_screen.data_grid.addDataRow(data, UID)
@@ -54,14 +59,11 @@ class IOHandler():
             'IO Ops', f'app.getObjects called with object_class_str {object_class_str}.'
         )
 
-        if self.data == None:
+        if self.inventory == None:
             # Load any available data into self.data
             self.loadData()
 
-        # Change the class string to a usable key for the data dict
-        data = self.things if object_class_str == 'Thing' else self.containers
-
-        return data
+        return self.inventory[object_class_str]
 
     def getUniqueID(self):
         '''Increment self.uid_counter and return the value'''
@@ -73,41 +75,41 @@ class IOHandler():
             self.logInfo('DEBUG', f'app.uid_counter incremented to {self.uid_counter}')
 
             # Do nothing if UID already exists
-            if str(self.uid_counter) in self.things.keys():
-                self.logDebug('DEBUG', f'{self.uid_counter} found in self.things.keys()')
+            if str(self.uid_counter) in self.inventory['thing'].keys():
+                self.logDebug('DEBUG', f'{self.uid_counter} found in things')
                 pass
             # Do nothing if UID already exists
-            elif str(self.uid_counter) in self.containers.keys():
-                self.logDebug('DEBUG', f'{self.uid_counter} found in self.containers.keys()')
+            elif str(self.uid_counter) in self.inventory['container'].keys():
+                self.logDebug('DEBUG', f'{self.uid_counter} found in containers')
                 pass
             # Return the UID if it doesn't exist
             else:
                 self.logInfo('kvLogic', f'Returning app.uid_counter {self.uid_counter}')
                 return str(self.uid_counter)
 
-    def Thing(self, data, UID):
+    def thing(self, data, UID):
         '''Create a new thing'''
         self.logDebug('IO Ops', f'Creating a thing with UID {UID}:')
         self.logDebug('IO Ops', f'\n{json.dumps(data, indent=4)}')
-        self.things[UID] = data
+        self.inventory['thing'][UID] = data
         return data
 
-    def Container(self, data, UID):
+    def container(self, data, UID):
         '''Create a new container'''
         self.logDebug('IO Ops', f'Creating a container with UID {UID}:')
         self.logDebug('IO Ops', f'\n{json.dumps(data, indent=4)}')
-        self.containers[UID] = data
+        self.inventory['container'][UID] = data
         return data
 
-    def deleteObj(self, UID):
+    def deleteObject(self, UID):
         '''Delete the object in self.data using the UID'''
         UID = str(UID)
-        if UID in self.things:
-            del self.things[UID]
-        elif UID in self.containers:
-            del self.containers[UID]
+        if UID in self.inventory['thing']:
+            del self.inventory['thing'][UID]
+        elif UID in self.inventory['container']:
+            del self.inventory['container'][UID]
         else:
-            raise KeyError(f'UID [{UID}] not found in self.things or self.containers')
+            raise KeyError(f'UID [{UID}] not found in self.inventory')
 
         self.logInfo('IO Logic', f'Deleted object with UID {UID}')
 
@@ -121,37 +123,35 @@ class IOHandler():
             # Open the file in read mode with utf-8 encoding
             with open(self.settings['save file'], 'r', encoding='utf-8') as f:
                 # Load the data as a dictionary
-                self.data = json.load(f)
-                self.logInfo('IO Ops', f'loaded data:\n{json.dumps(self.data, indent=4)}')
+                self.inventory = json.load(f)
+                self.logInfo('IO Ops', f'loaded data:\n{json.dumps(self.inventory, indent=4)}')
 
         except FileNotFoundError:
             # If the load data is None, set the data to its default
             self.logDebug('IO Ops', f'No save file found')
-            self.data = {
-                'containers': {},
-                'things': {}
+            self.inventory = {
+                'container': {},
+                'thing': {}
             }
 
-        self.data_hash = hash(str(self.data))
-        self.things = self.data['things']
-        self.containers = self.data['containers']
+        self.inventory_hash = hash(str(self.inventory))
 
 
     def saveData(self):
         '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
 
-        self.logDebug('IO Ops', f'data: {json.dumps(self.data, indent=4)}')
-        self.logDebug('IO Ops', f'data hash: {hash(str(self.data))}')
-        self.logDebug('IO Ops', f'Previous hash: {self.data_hash}')
+        self.logDebug('IO Ops', f'data: {json.dumps(self.inventory, indent=4)}')
+        self.logDebug('IO Ops', f'data hash: {hash(str(self.inventory))}')
+        self.logDebug('IO Ops', f'Previous hash: {self.inventory_hash}')
 
         # Check if any changes were made to the user's data
-        if hash(str(self.data)) != self.data_hash:
+        if hash(str(self.inventory)) != self.inventory_hash:
             self.logDebug('IO Ops', f'Data to be saved didn\'t match old data. Saving..')
 
             self.logDebug('IO Ops', f'Saving the JSON data to the save file')
             # Open the save file and write json data to the file
             with open(self.settings['save file'], 'w', encoding='utf-8') as f:
-                json.dump(self.data, f, ensure_ascii=False, indent=4)
+                json.dump(self.inventory, f, ensure_ascii=False, indent=4)
 
         else:
             self.logInfo('IO Ops', 'Data hashes matched. Skipping save')

@@ -14,10 +14,10 @@ from json import dumps
 
 class DataGrid(GridLayout, LogMethods):
 
-    categories = ('Container', 'Thing')
+    categories = ('container', 'thing')
 
-    # Store the ContainerDataRow instances here
-    dataRows = {'containers': {}, 'things': {}}
+    # # Store the ContainerDataRow instances here
+    # dataRows = {'containers': {}, 'things': {}}
 
     def __init__(self, **kwargs):
         '''Creates the widgets in a user-defined manner'''
@@ -29,7 +29,7 @@ class DataGrid(GridLayout, LogMethods):
             class_str='DataGrid'
         )
 
-        self.logInfo('kv_ops', f'Creating DataGrid instance')
+        self.logInfo('kv_ops', 'Creating DataGrid instance')
 
         self.app = None
 
@@ -38,7 +38,8 @@ class DataGrid(GridLayout, LogMethods):
         self.row_1_color = None
         self.row_2_color = None
         self.category = None
-        self.dataRows = None
+        self.inventory_kv = {}
+        self.inventory = None
 
     def addDataRow(self, data, UID):
         '''Add a row of fields to the GridLayout with the given data
@@ -47,38 +48,39 @@ class DataGrid(GridLayout, LogMethods):
         if self.app == None:
             # Allow easy access to the app instance for IO calls
             self.app = self.parent.parent.parent.parent.app
+        if self.inventory_kv == {}:
+            self.inventory_kv = self.app.inventory_kv
+        if self.inventory == None:
+            self.inventory = self.app.inventory
 
         self.logDebug('Kv Ops', f'Adding a new {data["description"]} data row to the DataGrid')
 
         # Instantiate a data row with UID and data
-        DataRow = self.getDataRowClass()
+        RowClass = self.getInventoryRowClass()
         self.logDebug('KV Ops', f'new_row:')
         self.logDebug('KV Ops', f'  UID: {UID}, data: {data}')
-        new_row = DataRow(UID, data)
+        new_row = RowClass(UID, data)
 
         # new_row: <graphics.py.account.rows_container.ContainerDataRow object at 0x0B2E3538>
-        # type: <class 'graphics.py.account.rows_container.ContainerDataRow'>
 
-        # Add the [Thing/Container]DataRow instance to the dataRows dictionary and link it to
-        # IOHandler instance
-        self.dataRows[UID] = {
-            'row': new_row,
-            'data': data
-        }
+        # Add the [Thing/Container]DataRow instance to the inventory_kv
+        self.inventory_kv[UID] = new_row
+        # self.inventory[self.category][UID] = data
 
-        # Link the data rows to the MyInventoryApp instance for IO operations
-        if self.dataRows == None:
-            # Link to the appropriate dictionary found in IOHandler.__init__
-            if self.category == 'Thing':
-                self.app.things = self.dataRows
-                self.logDebug('IO Logic', f'Linked self.dataRows to Thing dictionary')
-            elif self.category == 'Container':
-                self.app.containers = self.dataRows
-                self.logDebug('IO Logic', f'Linked self.dataRows to Container dictionary')
+
+        # # Link the data rows to the MyInventoryApp instance for IO operations
+        # if self.dataRows == None:
+        #     # Link to the appropriate dictionary found in IOHandler.__init__
+        #     if self.category == 'thing':
+        #         self.app.things = self.dataRows
+        #         self.logDebug('IO Logic', f'Linked self.dataRows to Thing dictionary')
+        #     elif self.category == 'container':
+        #         self.app.containers = self.dataRows
+        #         self.logDebug('IO Logic', f'Linked self.dataRows to Container dictionary')
 
         self.logDebug('Kv Ops', f'Adding a row for the {data["description"]} to the grid')
         # Add the ***DataRow instance to the DataGrid widget
-        self.add_widget(self.dataRows[UID]['row'])
+        self.add_widget(self.inventory_kv[UID])
 
 
     def fillUserData(self, app):
@@ -100,16 +102,16 @@ class DataGrid(GridLayout, LogMethods):
             self.logDebug('KV Logic', f'data[{key}]:\n{dumps(data[key], indent=4)}')
 
             # Create the ContainerDataRow or ThingDataRow instance
-            row = self.getDataRowClass()(key, data[key])
+            row_kv = self.getInventoryRowClass()(key, data[key])
 
             # Add the DataRow instance to the dictionary
-            self.dataRows[key] = row
+            self.inventory_kv[key] = row_kv
 
         # Add the rows to the screen to be drawn
-        for row in self.dataRows:
-            self.add_widget(self.dataRows[row])
+        for row in self.inventory_kv:
+            self.add_widget(self.inventory_kv[row])
 
-    def getDataRowClass(self):
+    def getInventoryRowClass(self):
         ''' Return a reference to ContainerDataRow or ThingDataRow class def for instantiating
             new rows'''
         self.logDebug('KV Logic', f'Returning self._DataRowCls: {self._DataRowCls}')
@@ -120,16 +122,19 @@ class DataGrid(GridLayout, LogMethods):
         self.logDebug('KV Logic', f'Returning self._HeadingCls: {self._HeadingCls}')
         return self._HeadingCls
 
-    def removeDataRow(self, UID):
-        '''Remove a row of fields from the GridLayout in the DataGrid. Also, remove the
-           object data from app.data'''
+    def deleteObject(self, UID):
+        '''Delete a row from the GridLayout in the DataGrid. Also, remove the
+           object data from app.inventory'''
         self.logDebug('KV Ops', f'Removing row {UID}..')
-        self.logDebug('KV Ops', f'{self.dataRows[UID]}..')
-        self.remove_widget(self.dataRows[UID])
-        del self.dataRows[UID]
-        self.app.deleteObj(UID)
+        self.logDebug('KV Ops', f'{self.inventory_kv[UID]}..')
+        # Remove the widget from the DataGrid instance
+        self.remove_widget(self.inventory_kv[UID])
+        # Delete the object from the dictionary
+        del self.inventory_kv[UID]
+        # Delete the inventory object data
+        self.app.deleteObject(UID)
 
-    def setObjectCategory(self, category):
+    def setDataGridObjectType(self, category):
         '''Set the category of object that this grid will be dealing with - ie "containers" or
            "things" - which will allow the instance to check which type of row/heading it will
            be instantiating
@@ -143,24 +148,19 @@ class DataGrid(GridLayout, LogMethods):
         else:
             self.logCritical(
                 'kvLogic',
-                f'category was {category}, not "things" or "containers."  Expect failures'
+                f'category was {category}, not "thing" or "container."  Expect failures'
             )
-            raise Exception(f'self.category must be "things" or "containers", not {category}')
 
         self.logDebug('kvLogic', 'Assigning references to the approprate classes..')
 
         # Set references to the proper classes for this instance
-        if self.category == 'Thing':
+        if self.category == 'thing':
             self._HeadingCls = ThingHeadingRow
             self._DataRowCls = ThingDataRow
-            # Link the correct dictionary stored in DataGrid.dataRows for storing row instances
-            self.dataRows = DataGrid.dataRows['things']
 
-        elif self.category == 'Container':
+        elif self.category == 'container':
             self._HeadingCls = ContainerHeadingRow
             self._DataRowCls = ContainerDataRow
-            # Link the correct dictionary stored in DataGrid.dataRows for storing row instances
-            self.dataRows = DataGrid.dataRows['containers']
 
         self.logDebug('KV Ops', 'Creating the heading..')
 

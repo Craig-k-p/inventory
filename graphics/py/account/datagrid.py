@@ -36,8 +36,6 @@ class DataGrid(GridLayout, LogMethods):
         self.row_2_color = None
 
         self.category = None
-        self.inventory_kv = {}
-        self.inventory = None
 
     def __repr__(self):
         s = f'<<{self.category} DataGrid>>'
@@ -107,14 +105,10 @@ class DataGrid(GridLayout, LogMethods):
     def deleteObject(self, UID):
         '''Delete a row from the GridLayout in the DataGrid. Also, remove the
            object data from app.inventory'''
-        self.logDebug(f'Removing row {UID}..')
-        self.logDebug(f'{self.inventory_kv[UID]}..')
-        # Remove the widget from the DataGrid instance
-        self.remove_widget(self.inventory_kv[UID])
-        # Delete the object from the dictionary
-        del self.inventory_kv[UID]
-        # Delete the inventory object data
-        self.app.deleteObject(UID)
+        obj = InventoryObject.getByUID(UID)
+        self.logDebug(f'Removing row {obj}..')
+        # Delete the inventory object and its data
+        obj.delete()
 
     def setDataGridObjectType(self, category):
         '''Set the category of object that this grid will be dealing with - ie "containers" or

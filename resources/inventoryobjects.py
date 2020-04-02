@@ -3,6 +3,7 @@ from resources.utilities import LogMethods
 class InventoryObject():
     objs = {}
     selected = None
+    changes_made = False
     def __init__(
             self,
             UID='0',
@@ -28,6 +29,7 @@ class InventoryObject():
         '''Take a string of user-input tags and turn them into a list of searchable tags'''
         if isinstance(tags, list):
             self.tags += tags
+            self.changes_made = True
         elif isinstance(tags, str) and tags != '':
             # Remove surrounding blank characters and split the tags up by spaces
             tags = tags.strip()
@@ -36,6 +38,12 @@ class InventoryObject():
             for n in range(len(tags)):
                 tags[n] = tags[n].replace('_', ' ')
             self.tags += tags
+            self.changes_made = True
+
+    def delete(self):
+        self.widget.object = None
+        self.grid.remove_widget(self.widget)
+        del InventoryObject.objs[self.UID]
 
     def drawWidget(self):
         if self.widget not in self.grid.children:
@@ -68,11 +76,20 @@ class InventoryObject():
                 if tag in self.tags:
                     self.tags.remove(tag)
 
+            self.changes_made = True
+
     def undrawWidget(self):
         if self.widget in self.grid.children:
             self.logDebug(f'Removing widget {self.widget}')
             self.grid.remove_widget(self.widget)
 
+    def saveNeeded(self):
+        if self.changes_made == True:
+            return True
+        elif self.changes_made == False:
+            return False
+        else:
+            raise Exception(f'self.changes_made was unexpected: {self.changes_made}')
 
     @classmethod
     def getByUID(cls, UID):
@@ -80,6 +97,38 @@ class InventoryObject():
             return cls.objs[UID]
         else:
             return None
+
+    @classmethod
+    def getSaveData(cls):
+        '''Return a dictionary of json serializable data for safe keeping'''
+        data = {
+            'thing': {},
+            'container': {}
+        }
+        for o in cls.objs:
+            obj = cls.objs[o]
+
+            if isinstance(obj, Thing):
+                d = data['thing']
+                c['container'] = obj.UID
+
+            elif isinstance(obj, Container):
+                d = data['container']
+                d['things'] = list(obj.things.keys())
+
+            else:
+                self.logCritical(
+                    'There is an unidentified object type in InventoryObject.objs'
+                )
+
+            d['description'] = obj.description
+            d['value'] = obj.value
+            d['weight'] = obj.weight
+            d['tags'] = obj.tags
+
+        return data
+
+
 
 
 
@@ -99,8 +148,9 @@ class Thing(InventoryObject, LogMethods):
         return s
 
     def delete(self):
+        InventoryObject.changes_made = True
         del Thing.objs[self.UID]
-        del InventoryObject.objs[self.UID]
+        super(Thing, self).delete()
 
     def inContainer(self):
         if self.container != None:
@@ -110,9 +160,6 @@ class Thing(InventoryObject, LogMethods):
 
     def isInside(self):
         return self.getByUID(self.container)
-
-    def updateContainer(self, container):
-        self.container = container
 
     def updateWidget(self, grid=None):
         self.logDebug(f'Updating widgets for selected: {self.selected}')
@@ -134,6 +181,12 @@ class Thing(InventoryObject, LogMethods):
             self._container = InventoryObject.getByUID(self._container)
         return self._container
 
+    @container.setter
+    def container(self, container):
+        self._container = container
+        InventoryObject.changes_made = True
+
+
 
 
 class Container(InventoryObject, LogMethods):
@@ -154,13 +207,12 @@ class Container(InventoryObject, LogMethods):
         '''Add a thing to the container'''
         thing.updateContainer(self)
         self.things[thing.UID] = thing
+        InventoryObject.changes_made = True
 
     def delete(self):
+        InventoryObject.changes_made = True
         del Container.objs[self.UID]
-        del InventoryObject.objs[self.UID]
-
-    def getType(self):
-        return 'container'
+        super(Container, self).delete()
 
     def hasContents(self):
         if len(self.things) > 0:
@@ -176,6 +228,7 @@ class Container(InventoryObject, LogMethods):
 
     def removeThing(self, thing):
         if thing.UID in self.things:
+            InventoryObject.changes_made = True
             thing.updateContainer(None)
             del self.things[thing.UID]
 

@@ -5,10 +5,9 @@ from resources.inventoryobjects import Thing, Container, InventoryObject
 
 class InventoryHandler():
     def __init__(self):
-        self.loaded_data_hash = None
         self.selected = None
         self.search_term = None
-        self.loaded_data = None
+        self.data_was_loaded = False
 
     def authenticate(self, user, pd):
         '''Method not needed with a local save.'''
@@ -84,16 +83,6 @@ class InventoryHandler():
             self.select(new_container)
         return new_container
 
-    def deleteObject(self, obj):
-        '''Delete the object'''
-        # Deselect the object
-        if obj == self.selected:
-            self.selected == None
-
-        self.logInfo(f'Deleting {obj}')
-        obj.delete()
-
-
     def loadData(self):
         '''Make a backup of the save file and load and hash the user's data'''
 
@@ -124,28 +113,21 @@ class InventoryHandler():
             things[key]['UID'] = key
             self.thing(things[key])
 
-        self.loaded_data_hash = hash(str(inventory))
-        self.loaded_data = inventory
+        self.data_was_loaded = True
 
 
     def saveData(self):
         '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
 
-        self.logDebug(f'data: {json.dumps(self.inventory, indent=4)}')
-        self.logDebug(f'data hash: {hash(str(self.inventory))}')
-        self.logDebug(f'Previous hash: {self.loaded_data_hash}')
-
-        # # Check if any changes were made to the user's data
-        # if hash(str(self.inventory)) != self.loaded_data_hash:
-        #     self.logDebug(f'Data to be saved didn\'t match old data. Saving..')
-
-        #     self.logDebug(f'Saving the JSON data to the save file')
-        #     # Open the save file and write json data to the file
-        #     with open(self.settings['save file'], 'w', encoding='utf-8') as f:
-        #         json.dump(self.inventory, f, ensure_ascii=False, indent=4)
-
-        # else:
-        #     self.logInfo('Data hashes matched. Skipping save')
+        if InventoryObject.changes_made == True:
+            self.logDebug('Changes were made. Getting data to save')
+            data = InventoryObject.getSaveData()
+            self.logDebug('Saving the JSON data to the save file')
+            # Open the save file and write json data to the file
+            with open(self.settings['save file'], 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        else:
+            self.logInfo('No changes made. Skipping save')
 
     def select(self, selection):
         '''Set the selected object directly or by using the UID'''
@@ -164,7 +146,7 @@ class InventoryHandler():
     def verifyObjectsLoaded(self):
         '''Verify that the data has been loaded from the file'''
         self.logDebug('Verifying that the objects were loaded')
-        if self.loaded_data != None:
+        if self.data_was_loaded == True:
             return True
         else:
             self.loadData()

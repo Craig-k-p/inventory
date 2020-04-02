@@ -6,6 +6,7 @@ from kivy.graphics.instructions import InstructionGroup
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 
 from resources.utilities import LogMethods
+from resources.inventoryobjects import Thing, Container, InventoryObject
 from graphics.py.account.rows_container import ContainerHeadingRow, ContainerDataRow
 from graphics.py.account.rows_thing import ThingHeadingRow, ThingDataRow
 
@@ -24,103 +25,84 @@ class DataGrid(GridLayout, LogMethods):
         # Init the parent, ScrollView
         super().__init__(**kwargs)
         # Setup the logger
-        self.__initLog__(
-            file_str='kv_DG.py',
-            class_str='DataGrid'
-        )
+        self.__initLog__(file_str='kv_DG.py', class_str='DataGrid')
 
         self.logInfo('Creating DataGrid instance')
 
         self.app = None
 
-        # Colors for each row
         self.heading_color = None
         self.row_1_color = None
         self.row_2_color = None
+
         self.category = None
         self.inventory_kv = {}
         self.inventory = None
 
-    def addDataRow(self, data, UID):
+    def __repr__(self):
+        s = f'<<{self.category} DataGrid>>'
+        return s
+
+    def addDataRow(self, inventory_object):
         '''Add a row of fields to the GridLayout with the given data
            data is a dict of user input'''
 
         if self.app == None:
             # Allow easy access to the app instance for IO calls
             self.app = self.parent.parent.parent.parent.app
-        if self.inventory_kv == {}:
-            self.inventory_kv = self.app.inventory_kv
-        if self.inventory == None:
-            self.inventory = self.app.inventory
+        # if self.inventory_kv == {}:
+        #     self.inventory_kv = self.app.inventory_kv
+        # if self.inventory == None:
+        #     self.inventory = self.app.inventory
 
-        self.logDebug(f'Adding a new {data["description"]} data row to the DataGrid')
+        self.logDebug(f'Creating a widget for {inventory_object}')
 
         # Instantiate a data row with UID and data
         RowClass = self.getInventoryRowClass()
-        self.logDebug(f'new_row:')
-        self.logDebug(f'  UID: {UID}, data: {data}')
-        new_row = RowClass(UID, data)
+        new_row = RowClass(inventory_object)
 
-        # new_row: <graphics.py.account.rows_container.ContainerDataRow object at 0x0B2E3538>
-
-        # Add the [Thing/Container]DataRow instance to the inventory_kv
-        self.inventory_kv[UID] = new_row
-        # self.inventory[self.category][UID] = data
-
-
-        # # Link the data rows to the MyInventoryApp instance for IO operations
-        # if self.dataRows == None:
-        #     # Link to the appropriate dictionary found in IOHandler.__init__
-        #     if self.category == 'thing':
-        #         self.app.things = self.dataRows
-        #         self.logDebug('IO Logic', f'Linked self.dataRows to Thing dictionary')
-        #     elif self.category == 'container':
-        #         self.app.containers = self.dataRows
-        #         self.logDebug('IO Logic', f'Linked self.dataRows to Container dictionary')
-
-        self.logDebug(f'Adding a row for the {data["description"]} to the grid')
-        # Add the ***DataRow instance to the DataGrid widget
-        self.add_widget(self.inventory_kv[UID])
+        self.logDebug(f'Adding a row for the {new_row.object.description} to the grid')
+        self.add_widget(new_row)
 
 
     def fillUserData(self, app):
-        ''' Populate the data rows with user data and add them to the data grid'''
+        '''Populate the data rows with user data during application startup'''
+        self.logDebug(f'Filling the{self.category} DataGrid with objects')
 
         # Get access to the application instance
         if self.app == None:
             self.app = app
 
-        self.logDebug(f'Getting data for the data grid in category {self.category}')
         # Get the containers or things to fill the data grid
-        data = self.app.getObjects(self.category)
+        self.app.verifyObjectsLoaded()
 
-        self.logInfo(f'{self.category} data:\n{dumps(data, indent=4)}')
-        self.logDebug('Looping through the data')
+        self.logDebug('Looping through the objects')
+        if self.category == 'thing':
+            objects = Thing.objs
+        elif self.category == 'container':
+            objects = Container.objs
 
         # Loop through the data and instantiate DataRows
-        for key in data:
-            self.logDebug(f'data[{key}]:\n{dumps(data[key], indent=4)}')
+        for key in objects:
+            # Create the kv ContainerDataRow or ThingDataRow instance
+            row_kv = self.getInventoryRowClass()(objects[key])
 
-            # Create the ContainerDataRow or ThingDataRow instance
-            row_kv = self.getInventoryRowClass()(key, data[key])
+        self.updateWidgets()
 
-            # Add the DataRow instance to the dictionary
-            self.inventory_kv[key] = row_kv
-
-        # Add the rows to the screen to be drawn
-        for row in self.inventory_kv:
-            self.add_widget(self.inventory_kv[row])
 
     def getInventoryRowClass(self):
-        ''' Return a reference to ContainerDataRow or ThingDataRow class def for instantiating
-            new rows'''
-        self.logDebug(f'Returning self._DataRowCls: {self._DataRowCls}')
-        return self._DataRowCls
+        ''' Return a reference to ContainerDataRow or ThingDataRow class'''
+        if self.category == 'thing':
+            return ThingDataRow
+        elif self.category == 'container':
+            return ContainerDataRow
 
     def getHeadingClass(self):
-        ''' Return a reference to ****HeadingRow class def '''
-        self.logDebug(f'Returning self._HeadingCls: {self._HeadingCls}')
-        return self._HeadingCls
+        ''' Return a reference to ContainerHeadingRow or ThingHeadingRow class'''
+        if self.category == 'thing':
+            return ThingHeadingRow
+        elif self.category == 'container':
+            return ContainerHeadingRow
 
     def deleteObject(self, UID):
         '''Delete a row from the GridLayout in the DataGrid. Also, remove the
@@ -145,39 +127,27 @@ class DataGrid(GridLayout, LogMethods):
         # Make sure the category is valid
         if category in DataGrid.categories:
             self.category = category
-        else:
-            self.logCritical(
-                f'category was {category}, not "thing" or "container."  Expect failures'
-            )
-
-        self.logDebug('Assigning references to the approprate classes..')
-
-        # Set references to the proper classes for this instance
-        if self.category == 'thing':
-            self._HeadingCls = ThingHeadingRow
-            self._DataRowCls = ThingDataRow
-
-        elif self.category == 'container':
-            self._HeadingCls = ContainerHeadingRow
-            self._DataRowCls = ContainerDataRow
-
-        self.logDebug('Creating the heading..')
 
         # Create the heading widgets used to label the top of the data fields
-        self.headings = self.getHeadingClass()()
-        self.add_widget(self.headings)
+        self.heading_row = self.getHeadingClass()()
+        self.add_widget(self.heading_row)
+
+    def updateWidgets(self):
+        '''Update the visible Kivy objects on the DataGrid instance'''
+        self.logInfo('Updating visible widgets..')
+        for UID in InventoryObject.objs:
+            self.logDebug(f'{InventoryObject.objs[UID]}')
+            InventoryObject.objs[UID].updateWidget(self)
 
     def _assignColumnWidths(self):
         '''Loop thru each child widget that needs a fixed width and set its width.  This
            makes sure that each row has a uniform width.
         Comments:
-            Not working.  Recieving 0 and 10 for x and y not matter the actual size
+            Not working.  Recieving 0 and 10 for x and y no matter the actual size
         Future maybe's:
             -Set the column width to the minimum needed width to fit the values
            '''
-
         self.logInfo('Assigning column widths')
-
         for row in self.dataRows:
             tex_width = self.dataRows[row].val_lo.width
             self.logDebug(f'Label size: {tex_width}')

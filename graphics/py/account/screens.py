@@ -108,7 +108,7 @@ class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
             class_str='AccountOverviewScreen'
         )
 
-        self.logInfo('Creating an ThingOverviewScreen instance..')
+        self.logInfo('Creating a ThingOverviewScreen instance..')
 
         # Put input widgets here so we can grab the user input at some point
         self.widgets = {

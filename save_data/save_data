@@ -2,42 +2,42 @@
     "thing": {
         "5": {
             "description": "Flour",
-            "usd_value": "3",
+            "value": "3",
             "weight": "5",
-            "in": null,
+            "container": "7",
             "tags": []
         },
         "4": {
             "description": "Boots",
-            "usd_value": "60",
+            "value": "60",
             "weight": "3",
-            "in": null,
+            "container": "7",
             "tags": []
         },
         "6": {
             "description": "Boot socks",
-            "usd_value": "5",
+            "value": "5",
             "weight": ".1",
-            "in": null,
+            "container": "7",
             "tags": []
         },
         "1": {
             "description": "Pens",
-            "usd_value": "5",
+            "value": "5",
             "weight": "1",
             "tags": "",
-            "in": "2"
+            "container": "2"
         },
         "8": {
             "description": "headphones",
-            "usd_value": "20",
+            "value": "20",
             "weight": "1",
             "tags": "",
-            "in": "9"
+            "container": "9"
         },
         "11": {
             "description": "Flour",
-            "usd_value": "10",
+            "value": "10",
             "weight": "25",
             "tags": [
                 "food",
@@ -45,44 +45,47 @@
                 "powder",
                 "thickening agent"
             ],
-            "in": "3"
+            "container": "3"
         }
     },
     "container": {
         "9": {
             "description": "Crate",
-            "usd_value": "50",
+            "value": "50",
             "weight": "15",
-            "contains": [
-                "8",
-                "10"
+            "things": [
+                "8"
             ],
             "tags": []
         },
         "2": {
             "description": "Storage bin",
-            "usd_value": "10",
+            "value": "10",
             "weight": "2",
-            "contains": [
+            "things": [
                 "1"
             ],
             "tags": []
         },
         "3": {
             "description": "Box 5",
-            "usd_value": "5",
+            "value": "5",
             "weight": "10",
-            "contains": [
+            "things": [
                 "11"
             ],
             "tags": []
         },
         "7": {
             "description": "box",
-            "usd_value": "80",
+            "value": "80",
             "weight": "20",
             "tags": [],
-            "contains": []
+            "things": [
+                "4",
+                "6",
+                "5"
+            ]
         }
     }
 }

@@ -164,7 +164,7 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f'{filename}: [{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.debug(log_str)
 
@@ -178,7 +178,7 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f'{filename}: [{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.info(log_str)
 
@@ -192,7 +192,7 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f'{filename}: [{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.warning(log_str)
 
@@ -206,7 +206,7 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f'{filename}: [{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.error(log_str)
 
@@ -220,7 +220,7 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f'{filename}: [{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.critical(log_str)
 
@@ -235,7 +235,7 @@ class LogMethods():
                 return
         lineno = caller[2]
         function = caller[3]
-        log_str = f': [{filename}][{self.calling_class}.{function}][{lineno}]'
+        log_str = f'{filename}: [{self.calling_class}.{function}][{lineno}]'
         log_str += f' {message}\n'
         Logger.trace(log_str)
 

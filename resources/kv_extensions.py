@@ -1,5 +1,5 @@
 import pprint
-
+from json import dumps
 from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -7,6 +7,9 @@ from kivy.uix.textinput import TextInput
 # from kivy.graphics.context_instructions import Color
 # from kivy.graphics.vertex_instructions import Rectangle
 
+
+from graphics.py.account.rows_container import ContainerDataRow
+from graphics.py.account.rows_thing import ThingDataRow
 from graphics.py.pre_auth.popups import PopupErrorContent, PopupCreateThingContent, PopupCreateContainerContent
 from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
 
@@ -107,6 +110,9 @@ class KivyExtensions():
 
         else:
             raise Exception('self.isLoggedIn did not return a boolean')
+
+        # Update visible inventory widgets
+        self.sm.current_screen.data_grid.updateWidgets()
 
     def createAccount(self, new_screen, direction):
 
@@ -301,6 +307,104 @@ class KivyExtensions():
         self.sm.add_widget(AccountOverviewScreen())
         self.sm.add_widget(ContainerOverviewScreen())
         self.sm.add_widget(ThingOverviewScreen())
+
+    def updateVisibility(self, widget, grid):
+        '''Determine if the individual object is visible'''
+
+        self.logDebug(f'Updating visibility for {widget}')
+
+        if isinstance(widget, str):
+            self.logDebug('widget is a string. Returning..')
+            return
+
+        if self.selected_object == '-1':
+            visible = True
+        elif widget.UID in self.inventory['container'][self.selected_object]['contains']:
+            visible = True
+        # elif self.search_term in self.inventory[]
+        else:
+            visible = False
+
+        if visible == True:
+            if widget in grid.children:
+                pass
+            elif widget.parent != None:
+                pass
+            elif widget not in grid.children:
+                grid.add_widget(widget)
+
+        if visible == False:
+            if widget not in grid.children:
+                pass
+            elif widget in grid.children:
+                grid.remove_widget(widget)
+
+
+
+    def updateVisibleInventory(self, grid):
+        '''Get the visible inventory based on searched tags, selection, etc
+           Changes self.visible_inventory and removes grid.children if necessary'''
+
+
+        for UID in self.inventory_kv:
+            visible = self.updateVisibility(self.inventory_kv[UID], grid)
+
+
+
+        # self.visible_inventory = []
+
+        # # Get the visible items based on search term
+
+        # # Get the things that should be drawn
+        # # If an object is selected
+        # if self.selected_object != '-1':
+        #     self.logDebug(f'Selected object exists: {self.inventory_kv[self.selected_object]}')
+        #     # Loop through the widget UIDs
+        #     for UID in self.inventory_kv.keys():
+        #         self.logDebug(f' Looping through inventory_kv with {self.inventory_kv[UID]}')
+        #         # If the UID is found in the container's contained object UID list
+
+        # # If nothing's selected
+        # elif self.selected_object == '-1':
+        #     # Loop through the thing UIDs
+        #     for UID in self.inventory['thing']:
+        #         self.logDebug('Adding all things to visible_inventory')
+        #         # And add the UIDs to the visible_inventory list
+        #         self.visible_inventory.append(UID)
+
+
+        # # Remove invisible widgets
+        # widgets = self.inventory_kv
+        # for widget in widgets:
+        #     if isinstance(widget, grid.getInventoryRowClass()):
+        #         # And the widget isn't in self.visible_inventory
+        #         if widget.UID not in self.visible_inventory and widget in grid.children:
+        #             self.logDebug('  The widget was not found in visible_inventory and must be removed')
+        #             # Remove it
+        #             grid.remove_widget(widget)
+        #             self.logDebug(f'   Removed widget {widget.UID}')
+
+        # # Add visible widgets
+        # self.logInfo(f'Adding visible widgets if valid')
+        # for UID in widgets:
+        #     self.logDebug(f' Checking {widgets[UID]}')
+        #     # If the widget class belongs to the DataGrid instance
+        #     if isinstance(widgets[UID], grid.getInventoryRowClass()):
+        #         self.logDebug(f'  Widget is {grid.getInventoryRowClass()} class')
+        #         # And if the UID is in self.visible_inventory
+        #         if UID in self.visible_inventory:
+        #             self.logDebug(f'  Widget UID is in visible_inventory')
+        #             # If the widget isn't already assigned
+        #             if widgets[UID] not in grid.children:
+        #                 self.logDebug('   Widget isn\'t a child of grid yet')
+        #                 # Add it
+        #                 grid.add_widget(widgets[UID])
+        #                 self.logDebug(f'Added widget {UID}')
+        #             # If the widget is already assigned
+        #             else:
+        #                 self.logDebug(f'{widgets[UID]} already has a parent')
+
+
 
     def login(self, new_screen, direction):
         '''Handles the graphics operations of logging in and calls the self.authenticate

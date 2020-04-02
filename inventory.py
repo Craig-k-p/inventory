@@ -38,10 +38,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
     def __init__(self, **kwargs):
         super(MyInventoryApp, self).__init__(**kwargs)
-        self.__initLog__(
-            file_str='inventory',
-            class_str='MyInventoryApp'
-        )
+        self.__initLog__(file_str='inventory', class_str='MyInventoryApp')
 
         self.logInfo('Creating MyInventoryApp instance')
 

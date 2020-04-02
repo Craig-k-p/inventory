@@ -22,7 +22,7 @@ class ContainerHeadingRow(GridLayout, LogMethods):
     }
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(ContainerHeadingRow, self).__init__(**kwargs)
         self.__initLog__(
             'rows_inventory.py',
             'ContainerHeadingRow'
@@ -68,34 +68,35 @@ class ContainerDataRow(GridLayout, LogMethods):
     weight_col_width = NumericProperty(50)
     val_col_width = NumericProperty(65)
 
-    settings = {
-        'row_1_color': Color(.1, .1, .1, 0.2),
-        'row_2_color': Color(.1, .1, .1, 0.2)
-    }
+    # settings = {
+    #     'row_1_color': Color(.1, .1, .1, 0.2),
+    #     'row_2_color': Color(.1, .1, .1, 0.2)
+    # }
 
-    def __init__(self, UID, object_doc, **kwargs):
-        '''Get the information from database to put into the label widgets'''
-        super().__init__(**kwargs)
-        # self.data = data
-        self.__initLog__(
-            'rows_inventory.py',
-            'ContainerDataRow'
-        )
+    def __init__(self, inventory_object, **kwargs):
+        '''Get the information from the saved inventory object to put into the label widgets'''
+        self.object = inventory_object
+        self.object.widget = self
+        self.UID = self.object.UID
 
+        super(ContainerDataRow, self).__init__(**kwargs)
+        self.__initLog__('rows_inventory.py', 'ContainerDataRow')
         self.logDebug('Creating a ContainerDataRow instance')
-
-        self.UID = UID
-        self.object_doc = object_doc
 
         self.value_col_width = 65
         self.weight_col_width = 45
 
         self.assignValues()
 
-    def assignValues(self):
-        self.logDebug(f'self.object_doc: {self.object_doc}')
+    def __repr__(self):
+        s = \
+        f'<<ContainerDataRow widget for {self.object} with parent widget: {self.parent}>>'
+        return s
 
-        self.obj_label.text = str(self.object_doc["description"])
+    def assignValues(self):
+        self.logDebug(f'Assigning data from {self.object}')
+
+        self.obj_label.text = str(self.object.description)
+        self.val_label.text = str(self.object.value)
         self.loc_label.text = 'Home'
-        self.val_label.text = str(self.object_doc["usd_value"])
-        self.weight_label.text = str(self.object_doc["weight"])
+        self.weight_label.text = str(self.object.weight)

@@ -33,13 +33,13 @@ class ContainerHeadingRow(GridLayout, LogMethods):
     def setHeadingText(self,
                        container='Container',
                        weight='LBS',
-                       value='$$',
+                       usd_value='$$',
                        location='Location',
                        tags='Tags',
                        options='Opts'
                        ):
         '''Set the heading text for each child widget Label'''
-        log = f'Setting heading Label text values to {container}, {weight}, {value}, '
+        log = f'Setting heading Label text values to {container}, {weight}, {usd_value}, '
         log += f'{location}, {tags}, and {options}'
         self.logDebug(log)
         self.logDebug(f'self.weight.label = {self.weight_label.text}')
@@ -76,27 +76,28 @@ class ContainerDataRow(GridLayout, LogMethods):
     def __init__(self, inventory_object, **kwargs):
         '''Get the information from the saved inventory object to put into the label widgets'''
         self.object = inventory_object
-        self.object.widget = self
         self.UID = self.object.UID
 
         super(ContainerDataRow, self).__init__(**kwargs)
         self.__initLog__('rows_inventory.py', 'ContainerDataRow')
         self.logDebug('Creating a ContainerDataRow instance')
 
-        self.value_col_width = 65
+        self.usd_value_col_width = 65
         self.weight_col_width = 45
 
         self.assignValues()
 
+        self.object.widget = self
+
     def __repr__(self):
         s = \
-        f'<<ContainerDataRow widget for {self.object} with parent widget: {self.parent}>>'
+        f'<<ContainerDataRow widget for {self.object.description} with parent widget: {self.parent}>>'
         return s
 
     def assignValues(self):
         self.logDebug(f'Assigning data from {self.object}')
 
         self.obj_label.text = str(self.object.description)
-        self.val_label.text = str(self.object.value)
+        self.val_label.text = str(self.object.usd_value)
         self.loc_label.text = 'Home'
         self.weight_label.text = str(self.object.weight)

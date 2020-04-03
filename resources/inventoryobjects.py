@@ -1,29 +1,34 @@
 from resources.utilities import LogMethods
+from kivy.logger import Logger
+from json import dumps
 
 class InventoryObject():
+    debug = True
+    # Unique ID for each of the user's objects
+    uid_counter = 0
     objs = {}
     selected = None
     changes_made = False
+    # last_created = None
     def __init__(
             self,
             UID='0',
             description='A void InventoryObject instance',
-            value=0,
+            usd_value=0,
             weight=0,
             tags='',
             things=None,
             container=None     ):
-        # super(InventoryObject, self).__init__()
-        # self.__initLog__(file_str='inventoryobjects.py', class_str='InventoryObject')
         self.UID = UID
         self.description = description
-        self.value = value
+        self.usd_value = usd_value
         self.weight = weight
         self.tags = []
         self.widget = None
         self.grid = None
         self.addTags(tags)
-        InventoryObject.objs[UID] = self
+        InventoryObject.objs[self.UID] = self
+        # InventoryObject.last_created = self
 
     def addTags(self, tags):
         '''Take a string of user-input tags and turn them into a list of searchable tags'''
@@ -110,23 +115,46 @@ class InventoryObject():
 
             if isinstance(obj, Thing):
                 d = data['thing']
-                c['container'] = obj.UID
+                d[o] = {}
+                d[o]['container'] = obj.container.UID
 
             elif isinstance(obj, Container):
                 d = data['container']
-                d['things'] = list(obj.things.keys())
+                d[o] = {}
+                d[o]['things'] = list(obj.things)
 
             else:
-                self.logCritical(
-                    'There is an unidentified object type in InventoryObject.objs'
+                Logger.critical(
+                    ':There is an unidentified object type in InventoryObject.objs'
                 )
 
-            d['description'] = obj.description
-            d['value'] = obj.value
-            d['weight'] = obj.weight
-            d['tags'] = obj.tags
+            d[o]['description'] = obj.description
+            d[o]['usd_value'] = obj.usd_value
+            d[o]['weight'] = obj.weight
+            d[o]['tags'] = obj.tags
+
+        Logger.debug(dumps(data))
 
         return data
+
+    @classmethod
+    def getNewUID(cls):
+        '''Increment cls.uid_counter and return the usd_value'''
+
+        invalid = True
+        while invalid:
+            cls.uid_counter += 1  # Increment the ID counter
+            Logger.debug(f':app.uid_counter incremented to {cls.uid_counter}')
+            if str(cls.uid_counter) not in cls.objs:
+                Logger.debug(f':Returning app.uid_counter {cls.uid_counter}')
+                return str(cls.uid_counter)
+
+    @classmethod
+    def updateWidgets(cls, grid):
+        Logger.debug(f': Updating widgets for {cls.selected}')
+        for UID in cls.objs:
+            Logger.debug(f':Updating: {cls.objs[UID]}')
+            cls.objs[UID].updateWidget(grid)
 
 
 
@@ -138,14 +166,20 @@ class Thing(InventoryObject, LogMethods):
         super(Thing, self).__init__(**kwargs)
         self.__initLog__(file_str='inventoryobjects.py', class_str='Thing')
 
-        self._container = kwargs['container']
+        try:
+            self._container = kwargs['container']
+        except KeyError:
+            self._container = self.selected
+
         Thing.objs[self.UID] = self
         self.category = 'thing'
 
     def __repr__(self):
         s = f'<Thing object {self.description}({self.UID})'
-        s += f'in {self.container.description}>'
-        return s
+        s += f'in {self.container.description}'
+        if InventoryObject.debug == True:
+            s += f'|{self.widget}'
+        return s + '>'
 
     def delete(self):
         InventoryObject.changes_made = True
@@ -162,21 +196,27 @@ class Thing(InventoryObject, LogMethods):
         return self.getByUID(self.container)
 
     def updateWidget(self, grid=None):
-        self.logDebug(f'Updating widgets for selected: {self.selected}')
+        self.logDebug(f'{self.description} is checking for a grid: ({self.grid}')
+        self.logDebug(f'{self.description} is checking categories for self: {self.category}')
+        self.logDebug(f'and for grid: {grid.category}')
+        self.logDebug('Eval: if self.grid == None and grid != None and self.category == grid.category:')
         if self.grid == None and grid != None and self.category == grid.category:
-            self.logDebug(f'Added {grid} for {self}')
+            self.logDebug(f'Added {grid} to {self}')
             self.grid = grid
+        else:
+            self.logDebug(f'No grid was added to {self.description}')
 
-        if self.selected != None and self.selected.isInside(self) == True:
+        self.logDebug(f'Checking if {self.description} needs to be drawn')
+        if self.selected != None and self.selected.contains(self) == True:
             self.logDebug(f'Drawing widget {self}')
             self.drawWidget()
-        elif self.selected != None and self.selected.isInside(self) == False:
+        elif self.selected != None and self.selected.contains(self) == False:
             self.logDebug(f'Undrawing widget {self}')
             self.undrawWidget()
 
     @property
     def container(self):
-        self.logDebug(f'Called container property. Container: {self._container}')
+        # self.logDebug(f'Called container property. Container: {self._container}')
         if isinstance(self._container, str):
             self._container = InventoryObject.getByUID(self._container)
         return self._container
@@ -192,7 +232,10 @@ class Thing(InventoryObject, LogMethods):
 class Container(InventoryObject, LogMethods):
     objs = {}
     def __init__(self, kwargs):
-        self.things = kwargs['things']
+        try:
+            self.things = kwargs['things']
+        except KeyError:
+            self.things = {}
         super(Container, self).__init__(**kwargs)
         self.__initLog__(file_str='inventoryobjects.py', class_str='Container')
         Container.objs[self.UID] = self
@@ -200,12 +243,19 @@ class Container(InventoryObject, LogMethods):
 
     def __repr__(self):
         s = f'<Container object {self.description}({self.UID}) '
-        s += f'with {len(self.things)} Thing(s)>'
-        return s
+        s += f'with {len(self.things)} Thing(s)'
+        if InventoryObject.debug == True:
+            s += f'|{self.widget}'
+        return s + '>'
 
     def addThing(self, thing):
         '''Add a thing to the container'''
-        thing.updateContainer(self)
+
+        if isinstance(self.things, list):
+            self._fixThings()
+
+        self.logDebug(f'Adding a {thing} to self.things')
+        thing.container = self
         self.things[thing.UID] = thing
         InventoryObject.changes_made = True
 
@@ -220,7 +270,7 @@ class Container(InventoryObject, LogMethods):
         else:
             return False
 
-    def isInside(self, obj):
+    def contains(self, obj):
         if obj.UID in self.things:
             return True
         else:
@@ -233,8 +283,21 @@ class Container(InventoryObject, LogMethods):
             del self.things[thing.UID]
 
     def updateWidget(self, grid=None):
+        self.logDebug(f'{self.description} is checking for a grid: ({self.grid})')
+        self.logDebug(f'{self.description} is checking CATEGORY for self: {self.category}')
+        self.logDebug(f'and for grid: {grid.category}')
+        self.logDebug('Eval: if self.grid == None and grid != None and self.category == grid.category:')
         if self.grid == None and grid != None and self.category == grid.category:
-            self.logDebug(f'Added {grid} for {self}')
+            self.logDebug(f'Added {grid} to {self}')
             self.grid = grid
+        else:
+            self.logDebug(f'No grid was added to {self.description}')
 
-        self.drawWidget()
+        if self.category == grid.category:
+            self.drawWidget()
+
+    def _fixThings(self):
+        things = {}
+        for UID in self.things:
+            things[UID] = InventoryObject.getByUID(UID)
+        self.things = things

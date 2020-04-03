@@ -44,12 +44,12 @@ class ThingHeadingRow(GridLayout, LogMethods):
     def setHeadingText(self,
                        container='Thing',
                        weight='LBs',
-                       value='$$',
+                       usd_value='$$',
                        tags='Tags',
                        options='Opts'
                        ):
         '''Set the heading text for each child widget Label'''
-        log = f'Setting heading Label text values to {container}, {weight}, {value}, '
+        log = f'Setting heading Label text values to {container}, {weight}, {usd_value}, '
         log += f'{tags}, and {options}'
         self.logDebug(log)
 
@@ -78,7 +78,6 @@ class ThingDataRow(GridLayout, LogMethods):
     def __init__(self, inventory_object, **kwargs):
         '''Get the information from database to put into the label widgets'''
         self.object = inventory_object
-        self.object.widget = self
         self.UID = self.object.UID
 
         super(ThingDataRow, self).__init__(**kwargs)
@@ -90,14 +89,16 @@ class ThingDataRow(GridLayout, LogMethods):
 
         self.assignValues()
 
+        self.object.widget = self
+
     def __repr__(self):
         s = \
-        f'<<ThingDataRow widget for {self.object} with parent widget: {self.parent}>>'
+        f'<<ThingDataRow widget for {self.object.description} with parent widget: {self.parent}>>'
         return s
 
     def assignValues(self):
         self.logDebug(f'Assigning data from {self.object}')
 
         self.obj_label.text = str(self.object.description)
-        self.val_label.text = str(self.object.value)
+        self.val_label.text = str(self.object.usd_value)
         self.weight_label.text = str(self.object.weight)

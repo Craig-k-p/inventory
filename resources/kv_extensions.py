@@ -7,7 +7,7 @@ from kivy.uix.textinput import TextInput
 # from kivy.graphics.context_instructions import Color
 # from kivy.graphics.vertex_instructions import Rectangle
 
-
+from resources.inventoryobjects import InventoryObject
 from graphics.py.account.rows_container import ContainerDataRow
 from graphics.py.account.rows_thing import ThingDataRow
 from graphics.py.pre_auth.popups import PopupErrorContent, PopupCreateThingContent, PopupCreateContainerContent
@@ -111,8 +111,11 @@ class KivyExtensions():
         else:
             raise Exception('self.isLoggedIn did not return a boolean')
 
-        # Update visible inventory widgets
-        self.sm.current_screen.data_grid.updateWidgets()
+        try:
+            # Update visible inventory widgets
+            InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
+        except AttributeError:
+            pass
 
     def createAccount(self, new_screen, direction):
 

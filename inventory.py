@@ -32,10 +32,6 @@ from resources.utilities import LogMethods
 
 
 class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
-
-    # Unique ID for each of the user's objects
-    uid_counter = 0
-
     def __init__(self, **kwargs):
         super(MyInventoryApp, self).__init__(**kwargs)
         self.__initLog__(file_str='inventory', class_str='MyInventoryApp')

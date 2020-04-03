@@ -17,7 +17,7 @@ class InventoryHandler():
         '''Method not needed with a local save.'''
         return True
 
-    def createInventoryObject(self, object_class_str, kv_obj_reference, is_new=False):
+    def createInventoryObject(self, object_class_str, kv_obj_reference):
         '''Create a new object using the popup user input'''
 
         if self._isValidPopupUserInput(kv_obj_reference) is True:
@@ -28,15 +28,16 @@ class InventoryHandler():
             # Get the data for the new object
             # Add the object's UID
             data = self._getObjectCreationUserInput(kv_obj_reference)
-            data['UID'] = self.getUniqueID()
+            data['UID'] = InventoryObject.getNewUID()
             self.logInfo(f'User input:\n{json.dumps(data, indent=4)}')
 
             # Create a new object with user's input and dismiss the popup
-            new_object = createObject(data, is_new)
+            new_object = createObject(data)
             self.pop.dismiss()
             self.logDebug(f'Saved a new {new_object}')
 
             # Add a new row with the new data to the user's screen
+            self.logDebug(f'------->{new_object}')
             self.sm.current_screen.data_grid.addDataRow(new_object)
 
             # Return the object's data
@@ -45,42 +46,21 @@ class InventoryHandler():
         else:
             pass
 
-    def getUniqueID(self):
-        '''Increment self.uid_counter and return the value'''
-
-        # Make sure only unique IDs are used
-        invalid = True
-        while invalid:
-            self.uid_counter += 1  # Increment the ID counter
-            self.logInfo(f'app.uid_counter incremented to {self.uid_counter}')
-
-            # Do nothing if UID already exists
-            if str(self.uid_counter) in self.inventory['thing'].keys():
-                self.logDebug(f'{self.uid_counter} found in things')
-                pass
-            # Do nothing if UID already exists
-            elif str(self.uid_counter) in self.inventory['container'].keys():
-                self.logDebug(f'{self.uid_counter} found in containers')
-                pass
-            # Return the UID if it doesn't exist
-            else:
-                self.logInfo(f'Returning app.uid_counter {self.uid_counter}')
-                return str(self.uid_counter)
-
-    def thing(self, data, is_new=False):
+    def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''
         self.logDebug(f'Creating a thing with UID {data["UID"]}:')
         new_thing = Thing(data)
-        if is_new == True:
+        if self.data_was_loaded == True:
             self.selected.addThing(new_thing)
+            InventoryObject.changes_made = True
         return new_thing
 
-    def container(self, data, is_new=False):
+    def container(self, data):  # createObject
         '''Create a new container'''
         self.logDebug(f'Creating a container with UID {data["UID"]}:')
         new_container = Container(data)
-        if is_new == True:
-            self.select(new_container)
+        if self.data_was_loaded == True:
+            InventoryObject.changes_made = True
         return new_container
 
     def loadData(self):
@@ -125,7 +105,7 @@ class InventoryHandler():
             self.logDebug('Saving the JSON data to the save file')
             # Open the save file and write json data to the file
             with open(self.settings['save file'], 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+                json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
         else:
             self.logInfo('No changes made. Skipping save')
 

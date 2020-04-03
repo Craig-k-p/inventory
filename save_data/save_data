@@ -1,91 +1,91 @@
 {
+    "container": {
+        "2": {
+            "description": "Storage bin",
+            "tags": [],
+            "things": [
+                "1"
+            ],
+            "usd_value": "10",
+            "weight": "2"
+        },
+        "3": {
+            "description": "Box 5",
+            "tags": [],
+            "things": [
+                "11"
+            ],
+            "usd_value": "5",
+            "weight": "10"
+        },
+        "7": {
+            "description": "box",
+            "tags": [],
+            "things": [
+                "4",
+                "6",
+                "5"
+            ],
+            "usd_value": "80",
+            "weight": "20"
+        },
+        "9": {
+            "description": "Crate",
+            "tags": [],
+            "things": [
+                "8"
+            ],
+            "usd_value": "50",
+            "weight": "15"
+        }
+    },
     "thing": {
-        "5": {
-            "description": "Flour",
-            "value": "3",
-            "weight": "5",
-            "container": "7",
-            "tags": []
-        },
-        "4": {
-            "description": "Boots",
-            "value": "60",
-            "weight": "3",
-            "container": "7",
-            "tags": []
-        },
-        "6": {
-            "description": "Boot socks",
-            "value": "5",
-            "weight": ".1",
-            "container": "7",
-            "tags": []
-        },
         "1": {
+            "container": "2",
             "description": "Pens",
-            "value": "5",
-            "weight": "1",
-            "tags": "",
-            "container": "2"
-        },
-        "8": {
-            "description": "headphones",
-            "value": "20",
-            "weight": "1",
-            "tags": "",
-            "container": "9"
+            "tags": [],
+            "usd_value": "5",
+            "weight": "1"
         },
         "11": {
+            "container": "3",
             "description": "Flour",
-            "value": "10",
-            "weight": "25",
             "tags": [
                 "food",
                 "baking",
                 "powder",
                 "thickening agent"
             ],
-            "container": "3"
-        }
-    },
-    "container": {
-        "9": {
-            "description": "Crate",
-            "value": "50",
-            "weight": "15",
-            "things": [
-                "8"
-            ],
-            "tags": []
+            "usd_value": "10",
+            "weight": "25"
         },
-        "2": {
-            "description": "Storage bin",
-            "value": "10",
-            "weight": "2",
-            "things": [
-                "1"
-            ],
-            "tags": []
-        },
-        "3": {
-            "description": "Box 5",
-            "value": "5",
-            "weight": "10",
-            "things": [
-                "11"
-            ],
-            "tags": []
-        },
-        "7": {
-            "description": "box",
-            "value": "80",
-            "weight": "20",
+        "4": {
+            "container": "7",
+            "description": "Boots",
             "tags": [],
-            "things": [
-                "4",
-                "6",
-                "5"
-            ]
+            "usd_value": "60",
+            "weight": "3"
+        },
+        "5": {
+            "container": "7",
+            "description": "Flour",
+            "tags": [],
+            "usd_value": "3",
+            "weight": "5"
+        },
+        "6": {
+            "container": "7",
+            "description": "Boot socks",
+            "tags": [],
+            "usd_value": "5",
+            "weight": ".1"
+        },
+        "8": {
+            "container": "9",
+            "description": "headphones",
+            "tags": [],
+            "usd_value": "20",
+            "weight": "1"
         }
     }
 }

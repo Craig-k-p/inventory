@@ -48,16 +48,14 @@ class DataGrid(GridLayout, LogMethods):
         if self.app == None:
             # Allow easy access to the app instance for IO calls
             self.app = self.parent.parent.parent.parent.app
-        # if self.inventory_kv == {}:
-        #     self.inventory_kv = self.app.inventory_kv
-        # if self.inventory == None:
-        #     self.inventory = self.app.inventory
 
         self.logDebug(f'Creating a widget for {inventory_object}')
 
         # Instantiate a data row with UID and data
         RowClass = self.getInventoryRowClass()
         new_row = RowClass(inventory_object)
+
+        inventory_object.widget = new_row
 
         self.logDebug(f'Adding a row for the {new_row.object.description} to the grid')
         self.add_widget(new_row)
@@ -85,7 +83,7 @@ class DataGrid(GridLayout, LogMethods):
             # Create the kv ContainerDataRow or ThingDataRow instance
             row_kv = self.getInventoryRowClass()(objects[key])
 
-        self.updateWidgets()
+        InventoryObject.updateWidgets(self)
 
 
     def getInventoryRowClass(self):
@@ -125,13 +123,6 @@ class DataGrid(GridLayout, LogMethods):
         # Create the heading widgets used to label the top of the data fields
         self.heading_row = self.getHeadingClass()()
         self.add_widget(self.heading_row)
-
-    def updateWidgets(self):
-        '''Update the visible Kivy objects on the DataGrid instance'''
-        self.logInfo('Updating visible widgets..')
-        for UID in InventoryObject.objs:
-            self.logDebug(f'{InventoryObject.objs[UID]}')
-            InventoryObject.objs[UID].updateWidget(self)
 
     def _assignColumnWidths(self):
         '''Loop thru each child widget that needs a fixed width and set its width.  This

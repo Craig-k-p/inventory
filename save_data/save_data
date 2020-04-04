@@ -1,19 +1,11 @@
 {
     "container": {
-        "2": {
-            "description": "Storage bin",
-            "tags": [],
-            "things": [
-                "1"
-            ],
-            "usd_value": "10",
-            "weight": "2"
-        },
         "3": {
             "description": "Box 5",
             "tags": [],
             "things": [
-                "11"
+                "8",
+                "1"
             ],
             "usd_value": "5",
             "weight": "10"
@@ -28,15 +20,6 @@
             ],
             "usd_value": "80",
             "weight": "20"
-        },
-        "9": {
-            "description": "Crate",
-            "tags": [],
-            "things": [
-                "8"
-            ],
-            "usd_value": "50",
-            "weight": "15"
         }
     },
     "thing": {
@@ -46,18 +29,6 @@
             "tags": [],
             "usd_value": "5",
             "weight": "1"
-        },
-        "11": {
-            "container": "3",
-            "description": "Flour",
-            "tags": [
-                "food",
-                "baking",
-                "powder",
-                "thickening agent"
-            ],
-            "usd_value": "10",
-            "weight": "25"
         },
         "4": {
             "container": "7",

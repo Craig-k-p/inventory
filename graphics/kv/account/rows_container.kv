@@ -23,7 +23,7 @@
         size_hint: (1, 1)
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .15, .15, .15, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -31,7 +31,7 @@
             id: obj_label
             text: 'Containers'
             bold: True
-            color: app.kv_settings['text color']
+            color: .95,.95,.95,1
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
             size_hint: (None, 1)
@@ -48,7 +48,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .15, .15, .15, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -64,6 +64,7 @@
             # https://stackoverflow.com/questions/24803773/...
             # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
             size: (self.texture_size[0]+10, self.texture_size[1])
+            color: .95,.95,.95,1
 
     # Value heading
     AnchorLayout:
@@ -73,7 +74,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .15, .15, .15, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -88,6 +89,7 @@
             # https://stackoverflow.com/questions/...
             # ...24803773/how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
             size: (self.texture_size[0]+10, self.texture_size[1])
+            color: .95,.95,.95,1
 
     # Location heading
     AnchorLayout:
@@ -98,7 +100,7 @@
         size_hint: (.5, 1)
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .15, .15, .15, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -116,6 +118,7 @@
             # https://stackoverflow.com/questions/24803773/...
             # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
             size: (self.texture_size[0]+10, self.texture_size[1])
+            color: .95,.95,.95,1
 
     # Tag heading
     FloatLayout:
@@ -124,7 +127,7 @@
         size_hint: (None, 1)
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .15, .15, .15, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -133,6 +136,7 @@
             bold: True
             text: f'Tags'
             pos_hint: {'x': 0, 'y': 0}
+            color: .95,.95,.95,1
 
     # Options heading
     FloatLayout:
@@ -140,7 +144,7 @@
         size_hint: app.kv_settings['overview options button size_hint']
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .15, .15, .15, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -149,6 +153,7 @@
             bold: True
             text: 'Opts'
             pos_hint: {'x': 0, 'y': 0}
+            color: .95,.95,.95,1
 
 
 <ContainerDataRow>:
@@ -177,7 +182,7 @@
         size_hint: (1, 1)
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .2, .2, .2, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -203,7 +208,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .2, .2, .2, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -221,7 +226,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .2, .2, .2, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -244,7 +249,7 @@
         size_hint: (.5, 1)
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .2, .2, .2, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -262,7 +267,7 @@
         size_hint: (None, 1)
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .2, .2, .2, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -280,7 +285,7 @@
         size_hint: app.kv_settings['overview options button size_hint']
         canvas:
             Color:
-                rgba: random.random(), random.random(), random.random(), 1
+                rgba: .2, .2, .2, 1
             Rectangle:
                 pos: self.pos
                 size: self.size

@@ -76,7 +76,7 @@ class ContainerDataRow(GridLayout, LogMethods):
     def __init__(self, inventory_object, **kwargs):
         '''Get the information from the saved inventory object to put into the label widgets'''
         self.object = inventory_object
-        self.UID = self.object.UID
+        self.ID = self.object.ID
 
         super(ContainerDataRow, self).__init__(**kwargs)
         self.__initLog__('rows_inventory.py', 'ContainerDataRow')
@@ -85,13 +85,13 @@ class ContainerDataRow(GridLayout, LogMethods):
         self.usd_value_col_width = 65
         self.weight_col_width = 45
 
-        self.assignValues()
-
         self.object.widget = self
 
+        self.assignValues()
+
     def __repr__(self):
-        s = \
-        f'<<ContainerDataRow widget for {self.object.description} with parent widget: {self.parent}>>'
+        s = f'<<ContainerDataRow widget for {self.object.description} with parent '
+        s += f'widget: {self.parent}>>'
         return s
 
     def assignValues(self):

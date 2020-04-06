@@ -51,7 +51,7 @@ class DataGrid(GridLayout, LogMethods):
 
         self.logDebug(f'Creating a widget for {inventory_object}')
 
-        # Instantiate a data row with UID and data
+        # Instantiate a data row with ID and data
         RowClass = self.getInventoryRowClass()
         new_row = RowClass(inventory_object)
 
@@ -70,19 +70,7 @@ class DataGrid(GridLayout, LogMethods):
             self.app = app
 
         # Get the containers or things to fill the data grid
-        self.app.verifyObjectsLoaded()
-
-        self.logDebug('Looping through the objects')
-        if self.category == 'thing':
-            objects = Thing.objs
-        elif self.category == 'container':
-            objects = Container.objs
-
-        # Loop through the data and instantiate DataRows
-        for key in objects:
-            # Create the kv ContainerDataRow or ThingDataRow instance
-            row_kv = self.getInventoryRowClass()(objects[key])
-
+        self.app.loadData()
         InventoryObject.updateWidgets(self)
 
 
@@ -100,10 +88,10 @@ class DataGrid(GridLayout, LogMethods):
         elif self.category == 'container':
             return ContainerHeadingRow
 
-    def deleteObject(self, UID):
+    def deleteObject(self, ID):
         '''Delete a row from the GridLayout in the DataGrid. Also, remove the
            object data from app.inventory'''
-        obj = InventoryObject.getByUID(UID)
+        obj = InventoryObject.getByID(ID)
         self.logDebug(f'Removing row {obj}..')
         # Delete the inventory object and its data
         obj.delete()

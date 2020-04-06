@@ -78,18 +78,20 @@ class ThingDataRow(GridLayout, LogMethods):
     def __init__(self, inventory_object, **kwargs):
         '''Get the information from database to put into the label widgets'''
         self.object = inventory_object
-        self.UID = self.object.UID
+        self.ID = self.object.ID
 
         super(ThingDataRow, self).__init__(**kwargs)
         self.__initLog__('rows_thing.py', 'ThingDataRow')
         self.logDebug('Creating a ThingDataRow instance')
 
+        self.logDebug(f'self.object = {self.object}')
+
         self.value_col_width = 65
         self.weight_col_width = 40
 
-        self.assignValues()
-
         self.object.widget = self
+
+        self.assignValues()
 
     def __repr__(self):
         s = \

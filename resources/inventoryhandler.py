@@ -1,6 +1,8 @@
 import json
 import shutil
 from resources.inventoryobjects import Thing, Container, InventoryObject
+from graphics.py.account.rows_container import ContainerDataRow
+from graphics.py.account.rows_thing import ThingDataRow
 
 
 class InventoryHandler():
@@ -26,9 +28,9 @@ class InventoryHandler():
             createObject = getattr(self, object_class_str)
 
             # Get the data for the new object
-            # Add the object's UID
+            # Add the object's ID
             data = self._getObjectCreationUserInput(kv_obj_reference)
-            data['UID'] = InventoryObject.getNewUID()
+            data['ID'] = InventoryObject.getNewID()
             self.logInfo(f'User input:\n{json.dumps(data, indent=4)}')
 
             # Create a new object with user's input and dismiss the popup
@@ -48,23 +50,26 @@ class InventoryHandler():
 
     def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''
-        self.logDebug(f'Creating a thing with UID {data["UID"]}:')
+        self.logDebug(f'Creating a thing with ID {data["ID"]}:')
         new_thing = Thing(data)
         if self.data_was_loaded == True:
             self.selected.addThing(new_thing)
-            InventoryObject.changes_made = True
+            InventoryObject.changeMade()
         return new_thing
 
     def container(self, data):  # createObject
         '''Create a new container'''
-        self.logDebug(f'Creating a container with UID {data["UID"]}:')
+        self.logDebug(f'Creating a container with ID {data["ID"]}:')
         new_container = Container(data)
         if self.data_was_loaded == True:
-            InventoryObject.changes_made = True
+            new_container.changeMade()
         return new_container
 
     def loadData(self):
         '''Make a backup of the save file and load and hash the user's data'''
+
+        if self.data_was_loaded == True:
+            return
 
         # Catch errors if the file doesn't exist
         try:
@@ -86,20 +91,29 @@ class InventoryHandler():
         # Create the inventory objects with the loaded data
         containers = inventory['container']
         things = inventory['thing']
+
         for key in containers:
-            containers[key]['UID'] = key
+            containers[key]['ID'] = int(key)
             self.container(containers[key])
         for key in things:
-            things[key]['UID'] = key
+            things[key]['ID'] = int(key)
             self.thing(things[key])
 
+        for key in Container.objs:
+            ContainerDataRow(Container.objs[key])
+        for key in Thing.objs:
+            ThingDataRow(Thing.objs[key])
+
+
         self.data_was_loaded = True
+
+        InventoryObject.checkLoad()
 
 
     def saveData(self):
         '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
 
-        if InventoryObject.changes_made == True:
+        if InventoryObject.wasChanged() == True:
             self.logDebug('Changes were made. Getting data to save')
             data = InventoryObject.getSaveData()
             self.logDebug('Saving the JSON data to the save file')
@@ -110,7 +124,7 @@ class InventoryHandler():
             self.logInfo('No changes made. Skipping save')
 
     def select(self, selection):
-        '''Set the selected object directly or by using the UID'''
+        '''Set the selected object directly or by using the ID'''
 
         if selection == None:
             self.selected = None
@@ -119,15 +133,6 @@ class InventoryHandler():
             self.selected = selection
             InventoryObject.selected = selection
         else:
-            self.selected = InventoryObject.getByUID(selection)
+            self.selected = InventoryObject.getByID(selection)
             InventoryObject.selected = selection
             self.logInfo(f'Selected {self.selected}')
-
-    def verifyObjectsLoaded(self):
-        '''Verify that the data has been loaded from the file'''
-        self.logDebug('Verifying that the objects were loaded')
-        if self.data_was_loaded == True:
-            return True
-        else:
-            self.loadData()
-            return True

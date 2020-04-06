@@ -24,7 +24,7 @@
     },
     "thing": {
         "1": {
-            "container": "2",
+            "container": "3",
             "description": "Pens",
             "tags": [],
             "usd_value": "5",
@@ -52,7 +52,7 @@
             "weight": ".1"
         },
         "8": {
-            "container": "9",
+            "container": "3",
             "description": "headphones",
             "tags": [],
             "usd_value": "20",

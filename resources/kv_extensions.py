@@ -322,7 +322,7 @@ class KivyExtensions():
 
         if self.selected_object == '-1':
             visible = True
-        elif widget.UID in self.inventory['container'][self.selected_object]['contains']:
+        elif widget.ID in self.inventory['container'][self.selected_object]['contains']:
             visible = True
         # elif self.search_term in self.inventory[]
         else:
@@ -349,8 +349,8 @@ class KivyExtensions():
            Changes self.visible_inventory and removes grid.children if necessary'''
 
 
-        for UID in self.inventory_kv:
-            visible = self.updateVisibility(self.inventory_kv[UID], grid)
+        for ID in self.inventory_kv:
+            visible = self.updateVisibility(self.inventory_kv[ID], grid)
 
 
 
@@ -362,18 +362,18 @@ class KivyExtensions():
         # # If an object is selected
         # if self.selected_object != '-1':
         #     self.logDebug(f'Selected object exists: {self.inventory_kv[self.selected_object]}')
-        #     # Loop through the widget UIDs
-        #     for UID in self.inventory_kv.keys():
-        #         self.logDebug(f' Looping through inventory_kv with {self.inventory_kv[UID]}')
-        #         # If the UID is found in the container's contained object UID list
+        #     # Loop through the widget IDs
+        #     for ID in self.inventory_kv.keys():
+        #         self.logDebug(f' Looping through inventory_kv with {self.inventory_kv[ID]}')
+        #         # If the ID is found in the container's contained object ID list
 
         # # If nothing's selected
         # elif self.selected_object == '-1':
-        #     # Loop through the thing UIDs
-        #     for UID in self.inventory['thing']:
+        #     # Loop through the thing IDs
+        #     for ID in self.inventory['thing']:
         #         self.logDebug('Adding all things to visible_inventory')
-        #         # And add the UIDs to the visible_inventory list
-        #         self.visible_inventory.append(UID)
+        #         # And add the IDs to the visible_inventory list
+        #         self.visible_inventory.append(ID)
 
 
         # # Remove invisible widgets
@@ -381,31 +381,31 @@ class KivyExtensions():
         # for widget in widgets:
         #     if isinstance(widget, grid.getInventoryRowClass()):
         #         # And the widget isn't in self.visible_inventory
-        #         if widget.UID not in self.visible_inventory and widget in grid.children:
+        #         if widget.ID not in self.visible_inventory and widget in grid.children:
         #             self.logDebug('  The widget was not found in visible_inventory and must be removed')
         #             # Remove it
         #             grid.remove_widget(widget)
-        #             self.logDebug(f'   Removed widget {widget.UID}')
+        #             self.logDebug(f'   Removed widget {widget.ID}')
 
         # # Add visible widgets
         # self.logInfo(f'Adding visible widgets if valid')
-        # for UID in widgets:
-        #     self.logDebug(f' Checking {widgets[UID]}')
+        # for ID in widgets:
+        #     self.logDebug(f' Checking {widgets[ID]}')
         #     # If the widget class belongs to the DataGrid instance
-        #     if isinstance(widgets[UID], grid.getInventoryRowClass()):
+        #     if isinstance(widgets[ID], grid.getInventoryRowClass()):
         #         self.logDebug(f'  Widget is {grid.getInventoryRowClass()} class')
-        #         # And if the UID is in self.visible_inventory
-        #         if UID in self.visible_inventory:
-        #             self.logDebug(f'  Widget UID is in visible_inventory')
+        #         # And if the ID is in self.visible_inventory
+        #         if ID in self.visible_inventory:
+        #             self.logDebug(f'  Widget ID is in visible_inventory')
         #             # If the widget isn't already assigned
-        #             if widgets[UID] not in grid.children:
+        #             if widgets[ID] not in grid.children:
         #                 self.logDebug('   Widget isn\'t a child of grid yet')
         #                 # Add it
-        #                 grid.add_widget(widgets[UID])
-        #                 self.logDebug(f'Added widget {UID}')
+        #                 grid.add_widget(widgets[ID])
+        #                 self.logDebug(f'Added widget {ID}')
         #             # If the widget is already assigned
         #             else:
-        #                 self.logDebug(f'{widgets[UID]} already has a parent')
+        #                 self.logDebug(f'{widgets[ID]} already has a parent')
 
 
 

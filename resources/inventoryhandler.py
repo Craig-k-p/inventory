@@ -11,14 +11,6 @@ class InventoryHandler():
         self.search_term = None
         self.data_was_loaded = False
 
-    def authenticate(self, user, pd):
-        '''Method not needed with a local save.'''
-        return True
-
-    def isLoggedIn(self):
-        '''Method not needed with a local save.'''
-        return True
-
     def createInventoryObject(self, object_class_str, kv_obj_reference):
         '''Create a new object using the popup user input'''
 

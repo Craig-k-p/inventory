@@ -80,36 +80,13 @@ class KivyExtensions():
         authentication.
         Implement method to check whether the user is logged in.
         '''
-
-        # Check if the user is logged in
-        if self.isLoggedIn() is False:
-            # If an attempt to change screens to a screen that needs login information
-            # is made
-            if self.validations['authentication needed'][screen] is True:
-                self.logWarning(f'Received a call to change to {screen} without authentication')
-
-            # If someone tries to switch to a valid screen that doesn't need authentication
-            elif self.validations['authentication needed'][screen] is False:
-                self.sm.current_screen.resetTextInputs()
-                self.sm.transition.direction = direction
-                self.sm.current = screen
-                self.logInfo(f'Changed to {screen} going in direction {direction}')
-
-            # If self.validations['authentication needed'][screen] value is not a boolean
-            else:
-                log = f"self.validations['authentication needed'][screen] should be boolean.\
-                 Got "
-                log += f'{self.authentication_needed[screen]}'
-                self.logWarning(log)
-
-        # The user is logged in, so let them do what they want
-        elif self.isLoggedIn() is True:
-            self.sm.transition.direction = direction
-            self.sm.current = screen
-            self.logInfo(f'Changed to {screen} going in direction {direction}')
-
-        else:
-            raise Exception('self.isLoggedIn did not return a boolean')
+        try:
+            self.sm.current_screen.resetTextInputs()
+        except AttributeError:
+            pass
+        self.sm.transition.direction = direction
+        self.sm.current = screen
+        self.logInfo(f'Changed to {screen} going in direction {direction}')
 
         try:
             # Update visible inventory widgets
@@ -118,49 +95,7 @@ class KivyExtensions():
             pass
 
     def createAccount(self, new_screen, direction):
-
-        old_screen = self.sm.current_screen
-
-        # Check user input format
-        check = old_screen.checkUserInputFormat()
-        old_screen.resetTextInputs()
-
-        # If there were no errors
-        if len(self.popup_errors) == 0:
-
-            self.logInfo(
-                f'No errors were found for user input on new_screen {new_screen}'
-            )
-
-            # If the formatting is correct
-            if check is not False and isinstance(check, tuple):
-
-                # Try to create an account
-                self.logDebug('Requesting account creation..')
-                is_logged_in = self.createUser(*check)
-
-                # If the user was successfully created and logged in
-                if is_logged_in is True:
-
-                    self.logInfo('User was successfully logged in! Changing screen')
-                    # Change the screen
-                    self.sm.transition.direction = direction
-                    self.sm.current = new_screen
-
-                # If the account creation failed
-                else:
-                    self.logError('Account creation failed! Creating popup')
-                    self.popup_errors.append('Account creation failed for an unknown reason!')
-
-            else:
-                self.logError('Formatting errors were not caught by \
-                    createAccount method')
-
-        else:
-            # Errors existed, make a popup
-            self.createPopup()
-
-        old_screen.resetTextInputs()
+        pass
 
     def createPopup(self):
         '''Method that does the following:
@@ -311,69 +246,17 @@ class KivyExtensions():
         self.sm.add_widget(ContainerOverviewScreen())
         self.sm.add_widget(ThingOverviewScreen())
 
-    def updateVisibility(self, widget, grid):
-        '''Determine if the individual object is visible'''
-
-        self.logDebug(f'Updating visibility for {widget}')
-
-        if isinstance(widget, str):
-            self.logDebug('widget is a string. Returning..')
-            return
-
-        if self.selected_object == '-1':
-            visible = True
-        elif widget.ID in self.inventory['container'][self.selected_object]['contains']:
-            visible = True
-        # elif self.search_term in self.inventory[]
-        else:
-            visible = False
-
-        if visible == True:
-            if widget in grid.children:
-                pass
-            elif widget.parent != None:
-                pass
-            elif widget not in grid.children:
-                grid.add_widget(widget)
-
-        if visible == False:
-            if widget not in grid.children:
-                pass
-            elif widget in grid.children:
-                grid.remove_widget(widget)
-
-
-
     def login(self, new_screen, direction):
         '''Handles the graphics operations of logging in and calls the self.authenticate
         method'''
 
         old_screen = self.sm.current_screen
+        # Create the screens
+        self.createUserScreens()
 
-        # Check formatting of user input
-        check = old_screen.checkUserInputFormat()
-
-        # See if check is not False and is also a tuple
-        if check is not False and isinstance(check, tuple):
-
-            # Unpack the tuple as individual arguments to self.authenticate
-            is_logged_in = self.authenticate(*check)
-
-            # If user successfully logged in
-            if is_logged_in is True:
-                # Create the screens now that the user is logged in!
-                self.createUserScreens()
-
-                # Change the transition properties and current screen
-                self.sm.transition.direction = direction
-                self.sm.current = new_screen
-            # Username or pass is invalid.  Create a popup
-            else:
-                self.logDebug('Login rejected, creating error popup')
-                self.popup_errors.append('Invalid username or password')
-                self.createPopup()
-        else:
-            self.createPopup()
+        # Change the transition properties and current screen
+        self.sm.transition.direction = direction
+        self.sm.current = new_screen
 
         old_screen.resetTextInputs()
 

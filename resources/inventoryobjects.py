@@ -55,10 +55,6 @@ class InventoryObject():
             self.tags += tags
             self.changes_made = True
 
-    def changeMade(self):
-        '''Set the changes_made flag for saving data in the future'''
-        self.changes_made = True
-
     def delete(self):
         '''Remove the widget and delete the instance from the InventoryObject.objs dict'''
         self.widget.object = None
@@ -121,6 +117,11 @@ class InventoryObject():
             return False
 
     @classmethod
+    def changeMade(cls):
+        '''Set the changes_made flag for saving data in the future'''
+        cls.changes_made = True
+
+    @classmethod
     def getByID(cls, ID):
         '''Return an object with the give ID (str)'''
         if ID in cls.objs.keys():
@@ -178,8 +179,15 @@ class InventoryObject():
         for ID in cls.objs:
             if ID not in cls.objs:
                 raise KeyError(f'Key {ID} not found in cls.objs')
-            Logger.debug(f': Updating: {cls.objs[ID]}')
+            try:
+                Logger.debug(f': Updating: {cls.objs[ID]} with container: {cls.objs[ID].container}')
+            except AttributeError:
+                Logger.debug(f': Updating: {cls.objs[ID]}')
             cls.objs[ID].updateWidget(grid)
+
+
+
+        Logger.debug(f'DEBUGGER: {InventoryObject.objs}')
 
     @classmethod
     def checkLoad(cls):
@@ -188,6 +196,23 @@ class InventoryObject():
                 Logger.debug(f': {cls.objs[ID].description} container: {cls.objs[ID].container}')
             else:
                 Logger.debug(f': {cls.objs[ID].description} things: {cls.objs[ID].things}')
+
+    @classmethod
+    def debugDump(cls):
+        for ID in cls.objs:
+            o = cls.objs[ID]
+            if isinstance(o, Thing):
+                Logger.debug(f'DEBUGING:-Thing - {o.description}---')
+                Logger.debug(f'DEBUGING:    ID: {o.ID} t: {type(o.ID)}')
+                Logger.debug(f'DEBUGING:    container: {o.container} t: {type(o.container)}')
+                Logger.debug(f'DEBUGING:    category: {o.category}')
+            else:
+                Logger.debug(f'DEBUGING:-Container - {o.description}---')
+                Logger.debug(f'DEBUGING:    ID: {o.ID} t: {type(o.ID)}')
+                Logger.debug(f'DEBUGING:    category: {o.category}')
+                Logger.debug(f'DEBUGING:    contents:')
+                for ID in o.things:
+                    Logger.debug(f'DEBUGING:        ID: {ID} t: {type(ID)}')
 
 
 
@@ -208,7 +233,7 @@ class Thing(InventoryObject, LogMethods):
             self.container = kwargs['container']
         # ..or as a newly created instance without one
         except KeyError:
-            self.container = self.selected
+            self.container = str(self.selected.ID)
 
         Thing.objs[self.ID] = self
         self.category = 'thing'
@@ -259,7 +284,11 @@ class Thing(InventoryObject, LogMethods):
             self.logDebug(f'Undrawing widget for {self}')
             self.undrawWidget()
 
+        elif self.selected == None:
+            pass
 
+        else:
+            raise AttributeError('self.updateWidget was unable to resolve choice draw/undraw')
 
 
 class Container(InventoryObject, LogMethods):
@@ -293,8 +322,8 @@ class Container(InventoryObject, LogMethods):
         '''Add a thing to the container. Turn self.things into a dict if it hasn't been,
            add the Thing to self.things and flag a change'''
         self.logDebug(f'Adding Thing {ID} to Container {self.ID}')
-        InventoryObject.getByID(ID).container = self.ID
-        self.things.append(ID)
+        # InventoryObject.getByID(ID).container = self.ID
+        self.things.append(str(ID))
         self.changeMade()
 
     def delete(self):
@@ -320,7 +349,7 @@ class Container(InventoryObject, LogMethods):
 
     def contains(self, thing):
         '''Check if a specific Thing or ID is in the Container and return True or False'''
-        if isinstance(thing, int):
+        if isinstance(thing, (int, str)):
             if str(thing) in self.things:
                 self.logDebug(f'{self.description} contains {thing} in {self.things}')
                 return True
@@ -329,8 +358,10 @@ class Container(InventoryObject, LogMethods):
                 return False
         elif isinstance(thing, (Thing, Container)):
             if str(thing.ID) in self.things:
+                self.logDebug(f'{self.description} contains {thing} in {self.things}')
                 return True
             else:
+                self.logDebug(f'{self.description} doesn\'t contain {thing} in {self.things}')
                 return False
         else:
             raise TypeError(f'Type {type(thing)} not valid. Must be int, Thing, or Container')
@@ -368,3 +399,9 @@ class Container(InventoryObject, LogMethods):
         if self.category == grid.category:
             self.drawWidget()
 
+        # Containers don't need to be filtered yet.  No need to undraw
+        elif self.category != grid.category:
+            pass
+
+        else:
+            raise AttributeError('self.updateWidget was unable to resolve draw/undraw choice')

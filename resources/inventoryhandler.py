@@ -36,11 +36,11 @@ class InventoryHandler():
             # Create a new object with user's input and dismiss the popup
             new_object = createObject(data)
             self.pop.dismiss()
-            self.logDebug(f'Saved a new {new_object}')
 
             # Add a new row with the new data to the user's screen
-            self.logDebug(f'------->{new_object}')
             self.sm.current_screen.data_grid.addDataRow(new_object)
+
+            InventoryObject.debugDump()
 
             # Return the object's data
             return data
@@ -53,7 +53,7 @@ class InventoryHandler():
         self.logDebug(f'Creating a thing with ID {data["ID"]}:')
         new_thing = Thing(data)
         if self.data_was_loaded == True:
-            self.selected.addThing(new_thing)
+            self.selected.addThing(new_thing.ID)
             InventoryObject.changeMade()
         return new_thing
 
@@ -136,3 +136,7 @@ class InventoryHandler():
             self.selected = InventoryObject.getByID(selection)
             InventoryObject.selected = selection
             self.logInfo(f'Selected {self.selected}')
+
+    def getObjects(self):
+        for ID in InventoryObject.objs:
+            self.logDebug(f'{InventoryObject.objs[ID].description} has grid: {InventoryObject.objs[ID].grid}')

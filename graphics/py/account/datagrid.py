@@ -45,11 +45,14 @@ class DataGrid(GridLayout, LogMethods):
         '''Add a row of fields to the GridLayout with the given data
            data is a dict of user input'''
 
+
+        # Allow easy access to the app instance
         if self.app == None:
-            # Allow easy access to the app instance for IO calls
             self.app = self.parent.parent.parent.parent.app
 
-        self.logDebug(f'Creating a widget for {inventory_object}')
+        # Add the datagrid to the widget
+        if inventory_object.grid == None and self.category == inventory_object.category:
+            inventory_object.grid = self
 
         # Instantiate a data row with ID and data
         RowClass = self.getInventoryRowClass()

@@ -30,14 +30,4 @@ class Toolbar(BoxLayout, LogMethods):
         '''Call self.getObjects and put them into the log'''
         self.logInfo(f'Toolbar.logObjects called')
 
-        objects = app.getObjects("Container")
-        self.logInfo(f'objects found: {objects}')
-
-        for obj in objects:
-            self.logInfo(f'Object: {obj.description}, ${obj.usd_value}, {obj.weight} lbs')
-
-        objects = app.getObjects("Thing")
-        self.logInfo(f'objects found: {objects}')
-
-        for obj in objects:
-            self.logInfo(f'Object: {obj.description}, ${obj.usd_value}, {obj.weight} lbs')
+        objects = app.getObjects()

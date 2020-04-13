@@ -124,10 +124,14 @@ class InventoryObject():
     @classmethod
     def getByID(cls, ID):
         '''Return an object with the give ID (str)'''
-        if ID in cls.objs.keys():
-            return cls.objs[ID]
+        if int(ID) in cls.objs.keys():
+            return cls.objs[int(ID)]
+        elif str(ID) in cls.objs.keys():
+            return cls.objs[str(ID)]
         else:
-            return None
+            s = f'ID {ID} {type(ID)} was not found in InventoryObject.objs'
+            s += f'\n{cls.objs.keys()}'
+            raise ValueError(s)
 
     @classmethod
     def getSaveData(cls):
@@ -156,8 +160,6 @@ class InventoryObject():
             d[ID]['usd_value'] = obj.usd_value
             d[ID]['weight'] = obj.weight
             d[ID]['tags'] = obj.tags
-
-        Logger.debug(dumps(data))
 
         return data
 
@@ -245,8 +247,13 @@ class Thing(InventoryObject, LogMethods):
     def delete(self):
         '''Delete references to the instance and call the parent's delete method'''
         self.changeMade()
+        try:
+            InventoryObject.getByID(self.container).things.remove(self.ID)
+        except ValueError:
+            InventoryObject.getByID(self.container).things.remove(str(self.ID))
         del Thing.objs[self.ID]
         super(Thing, self).delete()
+        InventoryObject.getByID(self.container).widget.assignValues()
 
     def getContainer(self):
         '''Return the Thing's Container object'''
@@ -312,6 +319,7 @@ class Container(InventoryObject, LogMethods):
         # Add the instance to the Container.objs dict and set the category of the object
         Container.objs[self.ID] = self
         self.category = 'container'
+        self.content_changed = False
 
     def __repr__(self):
         s = f'<Container object {self.description} with ID {self.ID} '
@@ -322,8 +330,8 @@ class Container(InventoryObject, LogMethods):
         '''Add a thing to the container. Turn self.things into a dict if it hasn't been,
            add the Thing to self.things and flag a change'''
         self.logDebug(f'Adding Thing {ID} to Container {self.ID}')
-        # InventoryObject.getByID(ID).container = self.ID
         self.things.append(str(ID))
+        self.contentChanged()
         self.changeMade()
 
     def delete(self):
@@ -340,12 +348,9 @@ class Container(InventoryObject, LogMethods):
         del Container.objs[self.ID]
         super(Container, self).delete()
 
-    def hasContents(self):
-        '''Check for contents and return True or False'''
-        if len(self.things) > 0:
-            return True
-        else:
-            return False
+    def contentChanged(self):
+        '''Set the self.content_changed flag to True'''
+        self.content_changed = True
 
     def contains(self, thing):
         '''Check if a specific Thing or ID is in the Container and return True or False'''
@@ -366,30 +371,58 @@ class Container(InventoryObject, LogMethods):
         else:
             raise TypeError(f'Type {type(thing)} not valid. Must be int, Thing, or Container')
 
+    def getValue(self):
+        '''Return the total value of the container and its contents'''
+        usd_value = float(self.usd_value)
+        for ID in self.things:
+            usd_value += float(InventoryObject.getByID(ID).usd_value)
+            # self.logDebug(ID)
+        return int(usd_value)
+
+    def getWeight(self):
+        '''Return the total weight of the container and its contents'''
+        weight = float(self.weight)
+        self.logDebug(f'things {self.things}')
+        for ID in self.things:
+            weight += float(InventoryObject.getByID(ID).weight)
+            self.logDebug(f'ID: {ID}')
+        return int(weight)
+
+    def hasContents(self):
+        '''Check for contents and return True or False'''
+        if len(self.things) > 0:
+            return True
+        else:
+            return False
+
     def removeThing(self, thing):
         '''Remove the provided Thing object if it is inside the Container'''
-        if isinstance(thing, int):
+        if isinstance(thing, (int, str)):
             if thing in self.things:
                 self.changeMade()
-                InventoryObject.getByID(thing).updateContainer(None)
-                del self.things[thing]
+                InventoryObject.getByID(str(thing)).updateContainer(None)
+                self.things.remove(thing)
+                self.widget.assignValues(update=True)
+            else:
+                raise Exception(f'{thing} {type(thing)} was not deleted')
         elif isinstance(thing, (Thing, Container)):
             if thing.ID in self.things:
                 self.changeMade()
                 thing.updateContainer(None)
-                del self.things[thing.ID]
+                self.things.remove(thing)
+                self.widget.assignValues(update=True)
+            else:
+                raise Exception(f'{thing} {type(thing)} was not deleted')
         else:
-            raise TypeError(f'Type {type(thing)} not valid. Must be int, Thing, or Container')
-
-        if thing.ID in self.things:
-            self.changeMade()
-            thing.updateContainer(None)
-            del self.things[thing.ID]
+            raise TypeError(f'Type {type(thing)} not valid. Must be str, int, Thing, or Container')
 
     def updateWidget(self, grid=None):
         '''Make sure the widget has a DataGrid assigned and the widget category matches the
            grid's. Add the grid if necessary.  Check if the widget needs to be drawn and
            draw if necessary.'''
+        if self.content_changed == True:
+            self.widget.assignValues(update=True)
+            self.content_changed = False
 
         self.logDebug(f'{self.description} is checking for a grid')
         if self.grid == None and grid != None and self.category == grid.category:
@@ -398,10 +431,8 @@ class Container(InventoryObject, LogMethods):
 
         if self.category == grid.category:
             self.drawWidget()
-
         # Containers don't need to be filtered yet.  No need to undraw
         elif self.category != grid.category:
             pass
-
         else:
             raise AttributeError('self.updateWidget was unable to resolve draw/undraw choice')

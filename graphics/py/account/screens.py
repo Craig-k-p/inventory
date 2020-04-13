@@ -38,8 +38,6 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
         # Make sure the data_grid knows what format to follow
         self.data_grid.setDataGridObjectType('container')
 
-        self.logInfo('Calling self.data_grid.fillUserData')
-
         # Fill the user data into rows
         self.data_grid.fillUserData(self.miapp)
 
@@ -80,8 +78,6 @@ class ContainerOverviewScreen(Screen, LogMethods):
         # Make sure the data_grid knows what format to follow
         self.data_grid.setDataGridObjectType('thing')
 
-        self.logInfo('Calling self.data_grid.fillUserData')
-
         # Fill the user data into rows
         self.data_grid.fillUserData(self.miapp)
 
@@ -107,8 +103,6 @@ class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
             file_str='screens.py',
             class_str='AccountOverviewScreen'
         )
-
-        self.logInfo('Creating a ThingOverviewScreen instance..')
 
         # Put input widgets here so we can grab the user input at some point
         self.widgets = {

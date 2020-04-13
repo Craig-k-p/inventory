@@ -94,10 +94,13 @@ class ContainerDataRow(GridLayout, LogMethods):
         s += f'widget: {self.parent}>>'
         return s
 
-    def assignValues(self):
+    def assignValues(self, update=False):
         self.logDebug(f'Assigning data from {self.object}')
+        self.val_label.text = str(self.object.getValue())
+        self.weight_label.text = str(self.object.getWeight())
 
-        self.obj_label.text = str(self.object.description)
-        self.val_label.text = str(self.object.usd_value)
-        self.loc_label.text = 'Home'
-        self.weight_label.text = str(self.object.weight)
+        self.logDebug(f'assignValues: lbs {self.object.getWeight()}, ${self.object.getValue()}')
+
+        if update == False:
+            self.obj_label.text = str(self.object.description)
+            self.loc_label.text = 'Home'

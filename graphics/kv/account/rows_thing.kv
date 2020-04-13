@@ -184,7 +184,7 @@
                 size: self.size
         Button:
             id: tag_button
-            text: f'{random.randint(1,11)}'
+            text: str(data_row.object.ID)
             pos_hint: {'x': 0, 'y': 0}
             on_press:
                 data_row.parent.deleteObject(data_row.ID)

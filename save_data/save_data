@@ -1,5 +1,15 @@
 {
     "container": {
+        "2": {
+            "description": "NEW",
+            "tags": [],
+            "things": [
+                "9",
+                "10"
+            ],
+            "usd_value": "5",
+            "weight": "5"
+        },
         "3": {
             "description": "Box 5",
             "tags": [],
@@ -55,6 +65,24 @@
             "container": "3",
             "description": "headphones",
             "tags": [],
+            "usd_value": "20",
+            "weight": "1"
+        },
+        "9": {
+            "container": "2",
+            "description": "NEWTHING",
+            "tags": [
+                "heavy"
+            ],
+            "usd_value": "100",
+            "weight": "100"
+        },
+        "10": {
+            "container": "2",
+            "description": "NEW hat",
+            "tags": [
+                "headwear"
+            ],
             "usd_value": "20",
             "weight": "1"
         }

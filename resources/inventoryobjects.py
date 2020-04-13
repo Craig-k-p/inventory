@@ -143,12 +143,16 @@ class InventoryObject():
             'thing': {},
             'container': {}
         }
-        for ID, obj in cls.objs:
+        for ID in cls.objs:
+            obj = cls.objs[ID]
+
+            # Save the things
             if isinstance(obj, Thing):
                 d = data['thing']
                 d[ID] = {}
-                d[ID]['container'] = obj.container.ID
+                d[ID]['container'] = obj.container  # The container's ID
 
+            # Save the containers
             elif isinstance(obj, Container):
                 d = data['container']
                 d[ID] = {}
@@ -162,7 +166,7 @@ class InventoryObject():
             d[ID]['description'] = obj.description
             d[ID]['usd_value'] = obj.usd_value
             d[ID]['weight'] = obj.weight
-            d[ID]['tags'] = obj.tags
+            d[ID]['tags'] = list(obj.tags)
 
         return data
 

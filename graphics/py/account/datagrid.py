@@ -92,12 +92,12 @@ class DataGrid(GridLayout, LogMethods):
             return ContainerHeadingRow
 
     def deleteObject(self, ID):
-        '''Delete a row from the GridLayout in the DataGrid. Also, remove the
-           object data from app.inventory'''
+        '''Delete an object and its row from the GridLayout in the DataGrid'''
         obj = InventoryObject.getByID(ID)
         self.logDebug(f'Removing row {obj}..')
         # Delete the inventory object and its data
         obj.delete()
+        InventoryObject.changeMade()
 
     def setDataGridObjectType(self, category):
         '''Set the category of object that this grid will be dealing with - ie "containers" or

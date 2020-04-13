@@ -52,8 +52,11 @@ class InventoryObject():
             self.tags = tags | self.tags  # Combine the elements of each set into one set
             self.changes_made = True
 
+        elif tags == '':
+            pass
+
         else:
-            raise ValueError('addTags received wrong type')
+            raise ValueError(f'addTags received wrong type: {type(tags)}')
 
     def delete(self):
         '''Remove the widget and delete the instance from the InventoryObject.objs dict'''

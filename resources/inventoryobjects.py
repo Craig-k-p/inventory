@@ -32,7 +32,7 @@ class InventoryObject():
         self.description = description
         self.usd_value = usd_value
         self.weight = weight
-        self.tags = []
+        self.tags = set()
         self.widget = None
         self.grid = None
         self.addTags(tags)
@@ -42,18 +42,18 @@ class InventoryObject():
         '''Take a string or list of tags and adds them to self.tags as a list'''
         # Combine the list of tags
         if isinstance(tags, list):
-            self.tags += tags
+            tags = set(tags)
+        elif isinstance(tags, set):
+            self.tags = tags | self.tags  # Combine the elements of each set into one set
             self.changes_made = True
         # Turn the string into a list of tags and combine it with tags
         elif isinstance(tags, str) and tags != '':
-            # Remove surrounding blank characters and split the tags up by spaces
-            tags = tags.strip()
-            tags = tags.split(' ')
-            # Replace underscores with spaces
-            for n in range(len(tags)):
-                tags[n] = tags[n].replace('_', ' ')
-            self.tags += tags
+            tags = self._fixTags(tags)
+            self.tags = tags | self.tags  # Combine the elements of each set into one set
             self.changes_made = True
+
+        else:
+            raise ValueError('addTags received wrong type')
 
     def delete(self):
         '''Remove the widget and delete the instance from the InventoryObject.objs dict'''
@@ -84,17 +84,8 @@ class InventoryObject():
     def removeTags(self, tags):
         '''Take a string of user-input tags and remove them from searchable tags'''
         if tags != '':
-            # Remove surrounding blank characters and split the tags up by spaces
-            tags = tags.strip()
-            tags = tags.split(' ')
-            # Replace underscores with spaces
-            for n in range(len(tags)):
-                tags[n] = tags[n].replace('_', ' ')
-
-            for tag in tags:
-                if tag in self.tags:
-                    self.tags.remove(tag)
-
+            tags = self._fixTags(tags)
+            self.tags = self.tags - tags
             self.changes_made = True
 
     def saveNeeded(self):
@@ -103,6 +94,17 @@ class InventoryObject():
             return True
         else:
             return False
+
+    def _fixTags(self, tags):
+        '''Turn the string of tags into a set of tags'''
+        # Remove surrounding blank characters and split the tags up by spaces
+        tags = tags.strip()
+        tags = set(tags.split(' '))
+        # Replace underscores with spaces
+        for n in tags:
+            n = n.replace('_', ' ')
+
+        return tags
 
     def undrawWidget(self):
         '''Undraw the widget if it is drawn'''
@@ -166,8 +168,7 @@ class InventoryObject():
     @classmethod
     def getNewID(cls):
         '''Increment cls.ID_counter and return it as a ID'''
-        invalid = True
-        while invalid:
+        while str(cls.ID_counter) not in cls.objs:
             cls.ID_counter += 1  # Increment the ID counter
             Logger.debug(f':app.ID_counter incremented to {cls.ID_counter}')
             if cls.ID_counter not in cls.objs:

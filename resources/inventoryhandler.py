@@ -54,7 +54,7 @@ class InventoryHandler():
         self.logDebug(f'Creating a container with ID {data["ID"]}:')
         new_container = Container(data)
         if self.data_was_loaded == True:
-            new_container.changeMade()
+            InventoryObject.changeMade()
         return new_container
 
     def loadData(self):

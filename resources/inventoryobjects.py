@@ -115,11 +115,9 @@ class InventoryObject():
             self.logDebug(f'Undrawing widget {self.widget}')
             self.grid.remove_widget(self.widget)
 
-    def wasChanged(self):
-        if InventoryObject.changes_made == True:
-            return True
-        else:
-            return False
+    @classmethod
+    def wasChanged(cls):
+        return InventoryObject.changes_made
 
     @classmethod
     def changeMade(cls):

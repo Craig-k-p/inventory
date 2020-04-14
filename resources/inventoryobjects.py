@@ -253,13 +253,20 @@ class Thing(InventoryObject, LogMethods):
     def delete(self):
         '''Delete references to the instance and call the parent's delete method'''
         self.changeMade()
-        try:
-            InventoryObject.getByID(self.container).things.remove(self.ID)
-        except ValueError:
-            InventoryObject.getByID(self.container).things.remove(str(self.ID))
+        self.logDebug(f'Thing.delete: ID-{self.ID} container-{self.container}')
+        # When self.container is deleted, use this to update the container's widgets
+        container = self.container
+        InventoryObject.getByID(self.container).removeThing(self.ID)
         del Thing.objs[self.ID]
         super(Thing, self).delete()
-        InventoryObject.getByID(self.container).widget.assignValues()
+        InventoryObject.getByID(container).widget.assignValues()
+
+    def containerDelete(self):
+        '''Delete the thing object specifically when the container is deleting its contents'''
+        container = self.container
+        self.container = None
+        del Thing.objs[self.ID]
+        super(Thing, self).delete()
 
     def getContainer(self):
         '''Return the Thing's Container object'''
@@ -347,8 +354,11 @@ class Container(InventoryObject, LogMethods):
 
         # Check for and delete any contents
         if self.hasContents():
+            self.logDebug(f'hasContents returned True!')
             for ID in self.things:
-                InventoryObject.getByID(ID).delete()
+                InventoryObject.getByID(ID).containerDelete()
+
+        self.logDebug(f'self.things: {self.things}')
 
         # Delete any other references to the Container
         del Container.objs[self.ID]
@@ -403,22 +413,31 @@ class Container(InventoryObject, LogMethods):
 
     def removeThing(self, thing):
         '''Remove the provided Thing object if it is inside the Container'''
+        log = f'Container.removeThing: ID-{self.ID} things-{self.things}'
+        log += f'\n\tthing-{thing}'
+        self.logDebug(log)
         if isinstance(thing, (int, str)):
-            if thing in self.things:
+            if int(thing) in self.things:
                 self.changeMade()
-                InventoryObject.getByID(str(thing)).updateContainer(None)
-                self.things.remove(thing)
+                InventoryObject.getByID(thing).container = None
+                self.things.remove(int(thing))
                 self.widget.assignValues(update=True)
+            elif str(thing) in self.things:
+                self.changeMade()
+                InventoryObject.getByID(thing).container = None
+                self.things.remove(str(thing))
+                self.widget.assignValues(update=True)
+
             else:
                 raise Exception(f'{thing} {type(thing)} was not deleted')
-        elif isinstance(thing, (Thing, Container)):
-            if thing.ID in self.things:
-                self.changeMade()
-                thing.updateContainer(None)
-                self.things.remove(thing)
-                self.widget.assignValues(update=True)
-            else:
-                raise Exception(f'{thing} {type(thing)} was not deleted')
+        # elif isinstance(thing, (Thing, Container)):
+        #     if thing.ID in self.things:
+        #         self.changeMade()
+        #         thing.container = None
+        #         self.things.remove(thing)
+        #         self.widget.assignValues(update=True)
+        #     else:
+        #         raise Exception(f'{thing} {type(thing)} was not deleted')
         else:
             raise TypeError(f'Type {type(thing)} not valid. Must be str, int, Thing, or Container')
 

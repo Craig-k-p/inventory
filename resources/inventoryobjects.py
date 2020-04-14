@@ -250,6 +250,13 @@ class Thing(InventoryObject, LogMethods):
         s = f'<Thing object {self.description} with ID {self.ID}>'
         return s
 
+    def containerDelete(self):
+        '''Delete the thing object specifically when the container is deleting its contents'''
+        container = self.container
+        self.container = None
+        del Thing.objs[self.ID]
+        super(Thing, self).delete()
+
     def delete(self):
         '''Delete references to the instance and call the parent's delete method'''
         self.changeMade()
@@ -260,13 +267,6 @@ class Thing(InventoryObject, LogMethods):
         del Thing.objs[self.ID]
         super(Thing, self).delete()
         InventoryObject.getByID(container).widget.assignValues()
-
-    def containerDelete(self):
-        '''Delete the thing object specifically when the container is deleting its contents'''
-        container = self.container
-        self.container = None
-        del Thing.objs[self.ID]
-        super(Thing, self).delete()
 
     def getContainer(self):
         '''Return the Thing's Container object'''
@@ -282,6 +282,16 @@ class Thing(InventoryObject, LogMethods):
     def isInside(self):
         '''Return the Container for this Thing'''
         return self.getByID(self.container)
+
+    def moveTo(self, destination):
+        '''Move the the Thing instance. Accepts a container ID or None as destination'''
+        if destination == None:
+            self.container = destination
+        elif isinstance(destination, (str, int)):
+            self.container = destination
+        else:
+            raise TypeError(f'Recieved the wrong type! ({type(destination)})')
+
 
     def updateWidget(self, grid=None):
         '''Make sure the widget has a DataGrid assigned and the widget category matches the
@@ -377,15 +387,15 @@ class Container(InventoryObject, LogMethods):
             else:
                 self.logDebug(f'{self.description} doesn\'t contain {thing} in {self.things}')
                 return False
-        elif isinstance(thing, (Thing, Container)):
-            if str(thing.ID) in self.things:
-                self.logDebug(f'{self.description} contains {thing} in {self.things}')
-                return True
-            else:
-                self.logDebug(f'{self.description} doesn\'t contain {thing} in {self.things}')
-                return False
+        # elif isinstance(thing, (Thing, Container)):
+        #     if str(thing.ID) in self.things:
+        #         self.logDebug(f'{self.description} contains {thing} in {self.things}')
+        #         return True
+        #     else:
+        #         self.logDebug(f'{self.description} doesn\'t contain {thing} in {self.things}')
+        #         return False
         else:
-            raise TypeError(f'Type {type(thing)} not valid. Must be int, Thing, or Container')
+            raise TypeError(f'Type {type(thing)} not valid. Must be int or str')
 
     def getValue(self):
         '''Return the total value of the container and its contents'''

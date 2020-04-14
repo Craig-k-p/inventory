@@ -387,13 +387,13 @@ class Container(InventoryObject, LogMethods):
             else:
                 self.logDebug(f'{self.description} doesn\'t contain {thing} in {self.things}')
                 return False
-        # elif isinstance(thing, (Thing, Container)):
-        #     if str(thing.ID) in self.things:
-        #         self.logDebug(f'{self.description} contains {thing} in {self.things}')
-        #         return True
-        #     else:
-        #         self.logDebug(f'{self.description} doesn\'t contain {thing} in {self.things}')
-        #         return False
+        elif isinstance(thing, (Thing, Container)):
+            if str(thing.ID) in self.things:
+                self.logDebug(f'{self.description} contains {thing} in {self.things}')
+                return True
+            else:
+                self.logDebug(f'{self.description} doesn\'t contain {thing} in {self.things}')
+                return False
         else:
             raise TypeError(f'Type {type(thing)} not valid. Must be int or str')
 

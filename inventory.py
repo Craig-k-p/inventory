@@ -59,7 +59,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'kv popup file': 'graphics/kv/pre_auth/popups.kv',
             'row heading color': (.15, .15, .15, 1),
             'row color': (.2, .2, .2, 1),
-            'row heading text color': (.95,.95,.95,1),
+            'row selection color': (.2, .4, .2, 1)
+            'row heading text color': (.95, .95, .95, 1),
             'overview options button size_hint': (None, 1),
             'overview options button width': 35,
             'overview weight field width': 60,

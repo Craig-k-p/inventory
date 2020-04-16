@@ -7,8 +7,8 @@ from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 
 from resources.utilities import LogMethods
 from resources.inventoryobjects import Thing, Container, InventoryObject
-from graphics.py.account.rows_container import ContainerHeadingRow, ContainerDataRow
-from graphics.py.account.rows_thing import ThingHeadingRow, ThingDataRow
+from graphics.py.account.row import ContainerHeadingRow, ContainerDataRow
+from graphics.py.account.row import ThingHeadingRow, ThingDataRow, DataRow
 
 from json import dumps
 
@@ -41,6 +41,18 @@ class DataGrid(GridLayout, LogMethods):
         s = f'<<{self.category} DataGrid>>'
         return s
 
+    def on_touch_down(self, touch):
+        '''This allows me to get click/touch coordinates from the user. Without calling
+           the super method, buttons and other UI elements don't respond to clicks.'''
+        super().on_touch_down(touch)
+        self.logDebug('\n')
+        self.logDebug(f'Click-{touch.pos}')
+        InventoryObject.setBounds(self, touch)
+
+        for w in self.children:
+            if isinstance(w, (ContainerDataRow, ThingDataRow)):
+                self.logDebug(f'{w.object.description} clicked: {w.wasClicked(touch)}')
+
     def addDataRow(self, inventory_object):
         '''Add a row of fields to the GridLayout with the given data
            data is a dict of user input'''
@@ -63,6 +75,14 @@ class DataGrid(GridLayout, LogMethods):
         self.logDebug(f'Adding a row for the {new_row.object.description} to the grid')
         self.add_widget(new_row)
 
+    def checkClick(self, touch):
+        '''Check the click and see if it's within the boundaries of a
+           DataRow widget'''
+        self.logDebug('Checking click')
+
+        # for ID in InventoryObject.objs:
+        #     if InventoryObject.objs[ID].isDrawn() == True:
+        #         .checkBounds(touch)
 
     def fillUserData(self, app):
         '''Populate the data rows with user data during application startup'''
@@ -100,9 +120,9 @@ class DataGrid(GridLayout, LogMethods):
         InventoryObject.changeMade()
 
     def setDataGridObjectType(self, category):
-        '''Set the category of object that this grid will be dealing with - ie "containers" or
-           "things" - which will allow the instance to check which type of row/heading it will
-           be instantiating
+        '''Set the category of object that this grid will be dealing with - ie "containers"
+           or "things" - which will allow the instance to check which type of row/heading
+           it will be instantiating
            Called in screens.py'''
 
         self.logDebug(f'Setting the DataGrid category to {category}')

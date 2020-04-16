@@ -1,8 +1,7 @@
 import json
 import shutil
 from resources.inventoryobjects import Thing, Container, InventoryObject
-from graphics.py.account.rows_container import ContainerDataRow
-from graphics.py.account.rows_thing import ThingDataRow
+from graphics.py.account.row import ContainerDataRow, ThingDataRow
 
 
 class InventoryHandler():

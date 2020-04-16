@@ -31,7 +31,7 @@
             id: obj_label
             text: 'Containers'
             bold: True
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
             size_hint: (None, 1)
@@ -64,7 +64,7 @@
             # https://stackoverflow.com/questions/24803773/...
             # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
             size: (self.texture_size[0]+10, self.texture_size[1])
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
     # Value heading
     AnchorLayout:
@@ -89,7 +89,7 @@
             # https://stackoverflow.com/questions/...
             # ...24803773/how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
             size: (self.texture_size[0]+10, self.texture_size[1])
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
     # Location heading
     AnchorLayout:
@@ -118,7 +118,7 @@
             # https://stackoverflow.com/questions/24803773/...
             # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
             size: (self.texture_size[0]+10, self.texture_size[1])
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
     # Tag heading
     FloatLayout:
@@ -136,7 +136,7 @@
             bold: True
             text: f'Tags'
             pos_hint: {'x': 0, 'y': 0}
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
     # Options heading
     FloatLayout:
@@ -153,7 +153,7 @@
             bold: True
             text: 'Opts'
             pos_hint: {'x': 0, 'y': 0}
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
 
 <ContainerDataRow>:
@@ -182,7 +182,7 @@
         size_hint: (1, 1)
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -208,7 +208,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -226,7 +226,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -249,7 +249,7 @@
         size_hint: (.5, 1)
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -267,7 +267,7 @@
         size_hint: (None, 1)
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -285,7 +285,7 @@
         size_hint: app.kv_settings['overview options button size_hint']
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size

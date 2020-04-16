@@ -19,7 +19,7 @@
         # size_hint: (1, 1)
         canvas:
             Color:
-                rgba: .15, .15, .15, 1
+                rgba: app.kv_settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -27,7 +27,7 @@
             id: obj_label
             text: 'Things'
             bold: True
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
             # Allow parent layout to modify the x position of Label
             size_hint: (None, 1)
             size: (self.texture_size[0]+10, self.texture_size[1])
@@ -40,7 +40,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: .15, .15, .15, 1
+                rgba: app.kv_settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -51,7 +51,7 @@
             bold: True
             size_hint: (None, 1)
             size: (self.texture_size[0]+10, self.texture_size[1])
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
     # Value heading
     AnchorLayout:
@@ -60,7 +60,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: .15, .15, .15, 1
+                rgba: app.kv_settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -70,7 +70,7 @@
             bold: True
             size_hint: (None, 1)
             size: (self.texture_size[0]+10, self.texture_size[1])
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
     # Tag heading
     FloatLayout:
@@ -79,7 +79,7 @@
         size_hint: (None, 1)
         canvas:
             Color:
-                rgba: .15, .15, .15, 1
+                rgba: app.kv_settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -88,7 +88,7 @@
             bold: True
             text: 'Tags'
             pos_hint: {'x': 0, 'y': 0}
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
     # Options heading
     FloatLayout:
@@ -96,7 +96,7 @@
         size_hint: app.kv_settings['overview options button size_hint']
         canvas:
             Color:
-                rgba: .15, .15, .15, 1
+                rgba: app.kv_settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -105,7 +105,7 @@
             bold: True
             text: '~'
             pos_hint: {'x': 0, 'y': 0}
-            color: .95,.95,.95,1
+            color: app.kv_settings['row heading text color']
 
 
 <ThingDataRow>:
@@ -128,7 +128,7 @@
         size_hint: (1, 1)
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -146,7 +146,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -163,7 +163,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -178,7 +178,7 @@
         size_hint: (None, 1)
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -195,7 +195,7 @@
         size_hint: app.kv_settings['overview options button size_hint']
         canvas:
             Color:
-                rgba: .2, .2, .2, 1
+                rgba: app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size

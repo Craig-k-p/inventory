@@ -84,6 +84,17 @@ class InventoryObject():
         else:
             return False
 
+    def isSelected(self):
+        '''Check if the current object is selected'''
+        self.logDebug(f'Checking if {self.description} is selected')
+        self.logDebug(f'Selected: {self.selected}, type: {type(self.selected)}')
+        if InventoryObject.selected == self or InventoryObject.selected == self.ID:
+            self.logDebug(f'True')
+            return True
+        else:
+            self.logDebug(f'True')
+            return False
+
     def removeTags(self, tags):
         '''Take a string of user-input tags and remove them from searchable tags'''
         if tags != '':

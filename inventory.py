@@ -52,8 +52,14 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'backup save file': 'save_data/backup_save_data',
             'log filtering': 'InventoryHandler.py' }
         self.kv_settings = {
-            'startup kv files': ['graphics/kv/pre_auth/screens.kv', 'graphics/kv/account/screens.kv'],
+            'startup kv files': [
+                'graphics/kv/pre_auth/screens.kv',
+                'graphics/kv/account/screens.kv'
+            ],
             'kv popup file': 'graphics/kv/pre_auth/popups.kv',
+            'row heading color': (.15, .15, .15, 1),
+            'row color': (.2, .2, .2, 1),
+            'row heading text color': (.95,.95,.95,1),
             'overview options button size_hint': (None, 1),
             'overview options button width': 35,
             'overview weight field width': 60,

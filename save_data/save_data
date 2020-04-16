@@ -8,41 +8,9 @@
             ],
             "usd_value": "5",
             "weight": "10"
-        },
-        "7": {
-            "description": "box",
-            "tags": [],
-            "things": [
-                "4",
-                "6",
-                "5"
-            ],
-            "usd_value": "80",
-            "weight": "20"
         }
     },
     "thing": {
-        "4": {
-            "container": "7",
-            "description": "Boots",
-            "tags": [],
-            "usd_value": "60",
-            "weight": "3"
-        },
-        "5": {
-            "container": "7",
-            "description": "Flour",
-            "tags": [],
-            "usd_value": "3",
-            "weight": "5"
-        },
-        "6": {
-            "container": "7",
-            "description": "Boot socks",
-            "tags": [],
-            "usd_value": "5",
-            "weight": ".1"
-        },
         "8": {
             "container": "3",
             "description": "headphones",

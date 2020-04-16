@@ -8,8 +8,7 @@ from kivy.uix.textinput import TextInput
 # from kivy.graphics.vertex_instructions import Rectangle
 
 from resources.inventoryobjects import InventoryObject
-from graphics.py.account.rows_container import ContainerDataRow
-from graphics.py.account.rows_thing import ThingDataRow
+from graphics.py.account.row import ContainerDataRow, ThingDataRow
 from graphics.py.pre_auth.popups import PopupErrorContent, PopupCreateThingContent, PopupCreateContainerContent
 from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
 

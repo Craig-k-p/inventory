@@ -190,10 +190,3 @@ class InventoryScreenManager(ScreenManager, LogMethods):
             class_str='InventoryScreenManager'
         )
         self.logDebug('Instantiated an InventoryScreenManager')
-
-    def on_touch_down(self, touch):
-        '''This allows me to get click/touch coordinates from the user. Without calling the super
-        method, buttons and other UI elements don't respond to clicks.'''
-        super().on_touch_down(touch)
-        self.logDebug(touch)
-        return False

@@ -15,8 +15,6 @@
 
     # Object heading
     AnchorLayout:
-        # anchor_x: 'center'
-        # size_hint: (1, 1)
         canvas:
             Color:
                 rgba: app.kv_settings['row heading color']
@@ -114,6 +112,7 @@
     #   Tag field should be a dropdown of all locations typed by user with the option to add one
     id: data_row
     rows: 1
+    fields: [_thing_field, weight_lo, val_lo]
     obj_label: obj_label
     weight_label: weight_label
     val_lo: val_lo
@@ -123,12 +122,13 @@
 
     # Thing field
     AnchorLayout:
+        id: _thing_field
         anchor_x: 'left'
         anchor_y: 'center'  # Has no effect if size_hint_y is 1
         size_hint: (1, 1)
         canvas:
             Color:
-                rgba: app.kv_settings['row color']
+                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -146,7 +146,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: app.kv_settings['row color']
+                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -163,7 +163,7 @@
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: app.kv_settings['row color']
+                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -178,7 +178,7 @@
         size_hint: (None, 1)
         canvas:
             Color:
-                rgba: app.kv_settings['row color']
+                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -195,7 +195,7 @@
         size_hint: app.kv_settings['overview options button size_hint']
         canvas:
             Color:
-                rgba: app.kv_settings['row color']
+                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size

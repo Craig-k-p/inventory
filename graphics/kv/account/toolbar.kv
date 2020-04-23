@@ -28,14 +28,10 @@
         direction: 'right'
         ToolbarButton:
             pos_hint: {'center_x': .25, 'center_y': .5}
-            text: 'get'
+            text: 'back'
             on_release:
-                toolbar.logObjects(app)
-        ToolbarButton:
-            pos_hint: {'center_x': .25, 'center_y': .5}
-        ToolbarButton:
-            pos_hint: {'center_x': .25, 'center_y': .5}
-        Widget:
+                app.buttonPress('changeScreen', screen='back')
+        Widget:  # Fill the rest of the ToolbarInner
 
             # Right side
     ToolbarInner:
@@ -47,7 +43,7 @@
             id: create_thing_button
             # Centers the widget on the y-axis
             pos_hint: {'center_y': .5}
-            text: '+T'
+            text: '+'
             on_release:
                 # Check that the proper screen is open before opening the popup
                 # Pass the instance of app to toolbar so it can reference needed attributes

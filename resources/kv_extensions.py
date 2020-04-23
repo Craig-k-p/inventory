@@ -1,4 +1,3 @@
-import pprint
 from json import dumps
 from kivy.lang import Builder
 from kivy.uix.label import Label
@@ -52,9 +51,12 @@ class KivyExtensions():
         log += f'\n\tdirection: {direction}'
         self.logDebug(log)
 
+        if screen == 'back':
+            self.changeScreen(screen)
+
         # If call is among the allowed calls or, in other words, if the string matches a
         # method name
-        if call in self.validations['allowed button calls']:
+        elif call in self.validations['allowed button calls']:
 
             # Access the class method by string name using getattr
             # self is passed to getattr so it knows in what object to search for call
@@ -74,24 +76,33 @@ class KivyExtensions():
             log = f"Call {call} is not in self.validations['allowed button calls']"
             self.logCritical(log)
 
-    def changeScreen(self, screen, direction):
+    def changeScreen(self, screen, direction=None):
         '''Change to a screen using direction.  Make sure the screen does not need
         authentication.
         Implement method to check whether the user is logged in.
         '''
-        try:
-            self.sm.current_screen.resetTextInputs()
-        except AttributeError:
-            pass
-        self.sm.transition.direction = direction
-        self.sm.current = screen
-        # self.logInfo(f'Changed to {screen} going in direction {direction}')
+        if screen == 'back':
+            self.sm.transition.direction = 'right'
 
-        try:
-            # Update visible inventory widgets
-            InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
-        except AttributeError:
-            pass
+            if self.sm.current_screen.name == 'account':
+                self.sm.current = 'login'
+            elif self.sm.current_screen.name == 'container':
+                self.sm.current = 'account'
+
+        else:
+            try:
+                self.sm.current_screen.resetTextInputs()
+            except AttributeError:
+                pass
+            self.sm.transition.direction = direction
+            self.sm.current = screen
+            # self.logInfo(f'Changed to {screen} going in direction {direction}')
+
+            try:
+                # Update visible inventory widgets
+                InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
+            except AttributeError:
+                pass
 
     def createAccount(self, new_screen, direction):
         pass
@@ -117,10 +128,6 @@ class KivyExtensions():
 
         # Create an instance of popup content found in popup.py and popups.kv
         popup_content = PopupErrorContent(self._createPopupErrorLabels(), current_screen)
-        # self.logDebug(
-        #     f'Created a PopupErrorContent instance with popup error labels for screen\
-        #      {self.sm.current}'
-        # )
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
@@ -130,13 +137,6 @@ class KivyExtensions():
                          size_hint=self.kv_settings['popup size_hint'],
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
-        # log = 'Assigned self.pop as Popup('
-        # log += f'\n\t\t\ttitle = {self.pop.title},'
-        # log += f'\n\t\t\tcontent = {popup_content},'
-        # log += f'''\n\t\t\tsize_hint = {self.kv_settings['popup size_hint']},'''
-        # log += f'''\n\t\t\tauto_dismiss = {self.kv_settings['popup auto_dismiss']}'''
-        # log += f'\n\t\t\t)'
-        # self.logDebug(log)
 
         # Assign the popup
         # self.logDebug('Assigning parent method to popup_content')
@@ -174,13 +174,6 @@ class KivyExtensions():
                          size_hint=(.9, .9),
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
-        # log = 'Assigned self.pop as Popup('
-        # log += f'\n\t\t\ttitle = {self.pop.title},'
-        # log += f'\n\t\t\tcontent = {popup_content},'
-        # log += f'''\n\t\t\tsize_hint = {self.kv_settings['popup size_hint']},'''
-        # log += f'''\n\t\t\tauto_dismiss = {self.kv_settings['popup auto_dismiss']}'''
-        # log += f'\n\t\t\t)'
-        # self.logDebug(log)
 
         # # Assign the popup
         # self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
@@ -216,13 +209,6 @@ class KivyExtensions():
                          size_hint=(.9, .9),
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
-        # log = 'Assigned self.pop as Popup('
-        # log += f'\n\t\t\ttitle = {self.pop.title},'
-        # log += f'\n\t\t\tcontent = {popup_content},'
-        # log += f'''\n\t\t\tsize_hint = {self.kv_settings['popup size_hint']},'''
-        # log += f'''\n\t\t\tauto_dismiss = {self.kv_settings['popup auto_dismiss']}'''
-        # log += f'\n\t\t\t)'
-        # self.logDebug(log)
 
         # # Assign the popup
         # self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
@@ -267,7 +253,6 @@ class KivyExtensions():
            child widgets to itself.'''
 
         # log = 'Creating popup error label widgets for a popup with errors:'
-        # log += f'\n\t\t\t{pprint.pformat(self.popup_errors, indent=4)}'
         # self.logDebug(log)
 
         # List to keep the widgets
@@ -286,10 +271,6 @@ class KivyExtensions():
                         pos_hint={'x': 0}
                     )
                 )
-
-            # self.logDebug(
-            #     f'Added Labels to error_labels:\n{pprint.pformat(error_labels, indent=4)}'
-            # )
 
             self._clearPopupErrors()
             # self.logDebug('self.popup_errors reset to [] and error_labels returned')

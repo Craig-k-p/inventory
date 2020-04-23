@@ -29,9 +29,6 @@ class DataRow():
         if self.x0 <= x <= self.x1 and self.y0 <= y <= self.y1:
             self.logDebug(f'{self.object.description} was clicked')
             self.selected = True
-            # if self.object.isSelected() == True:
-            #     for f in self.fields:
-            #         f.canvas.Color.rgba = app.kv_settings['row selection color']
             return True
         else:
             self.logDebug(f'{self.object.description} was not clicked')

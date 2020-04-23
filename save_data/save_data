@@ -1,5 +1,16 @@
 {
     "container": {
+        "1": {
+            "description": "Crate",
+            "tags": [],
+            "things": [
+                "2",
+                "4",
+                "5"
+            ],
+            "usd_value": "50",
+            "weight": "20"
+        },
         "3": {
             "description": "Box 5",
             "tags": [],
@@ -8,9 +19,46 @@
             ],
             "usd_value": "5",
             "weight": "10"
+        },
+        "6": {
+            "description": "box",
+            "tags": [],
+            "things": [
+                "7"
+            ],
+            "usd_value": "5",
+            "weight": "5"
         }
     },
     "thing": {
+        "2": {
+            "container": "1",
+            "description": "Hat",
+            "tags": [],
+            "usd_value": "20",
+            "weight": "1"
+        },
+        "4": {
+            "container": "1",
+            "description": "Tools",
+            "tags": [],
+            "usd_value": "240",
+            "weight": "55"
+        },
+        "5": {
+            "container": "1",
+            "description": "Contractor bags",
+            "tags": [],
+            "usd_value": "10",
+            "weight": "2"
+        },
+        "7": {
+            "container": "6",
+            "description": "hat",
+            "tags": [],
+            "usd_value": "5",
+            "weight": "1"
+        },
         "8": {
             "container": "3",
             "description": "headphones",

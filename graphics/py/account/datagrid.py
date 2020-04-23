@@ -74,10 +74,6 @@ class DataGrid(GridLayout, LogMethods):
         self.logDebug(f'Adding a row for the {new_row.object.description} to the grid')
         self.add_widget(new_row)
 
-    # def checkClick(self, touch):
-    #     '''Check the click and see if it's within the boundaries of a
-    #        DataRow widget'''
-    #     self.logDebug('Checking click')
 
     def fillUserData(self, app):
         '''Populate the data rows with user data during application startup'''

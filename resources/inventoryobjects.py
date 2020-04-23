@@ -9,6 +9,7 @@ class InventoryObject():
     objs = {}               # All InventoryObject and inherited instances
     selected = None         # The selected InventoryObject instance (or inherited)
     changes_made = False    # Flag to determine whether a save is needed
+    clicked = None
     def __init__(
             self,
             ID='0',
@@ -34,6 +35,7 @@ class InventoryObject():
         self.weight = weight
         self.tags = set()
         self.widget = None
+        # self.clicked = self.widget.selected
         self.grid = None
         self.addTags(tags)
         InventoryObject.objs[self.ID] = self
@@ -86,13 +88,11 @@ class InventoryObject():
 
     def isSelected(self):
         '''Check if the current object is selected'''
-        self.logDebug(f'Checking if {self.description} is selected')
-        self.logDebug(f'Selected: {self.selected}, type: {type(self.selected)}')
         if InventoryObject.selected == self or InventoryObject.selected == self.ID:
-            self.logDebug(f'True')
+            self.logDebug(f'{self.description} is selected')
             return True
         else:
-            self.logDebug(f'True')
+            self.logDebug(f'{self.description} is not selected')
             return False
 
     def removeTags(self, tags):
@@ -212,6 +212,21 @@ class InventoryObject():
                 Logger.debug(f':Returning app.ID_counter {cls.ID_counter}')
                 return cls.ID_counter
 
+    # def click(self):
+    #     if InventoryObject.clicked != None:
+    #         InventoryObject.clicked.declick()
+    #     self.clicked = True
+    #     InventoryObject.clicked = self
+
+    # def declick(self):
+    #     self.clicked = False
+
+
+    # @classmethod
+    # def clicked(cls, clicked):
+    #     cls.clicked.clicked = False
+    #     cls.clicked = clicked
+
     @classmethod
     def setBounds(cls, grid, touch):
         '''Set the bounds for each child widget of the grid'''
@@ -268,7 +283,8 @@ class Thing(InventoryObject, LogMethods):
         return s
 
     def containerDelete(self):
-        '''Delete the thing object specifically when the container is deleting its contents'''
+        '''Delete the thing object specifically when the container is deleting its
+           contents'''
         container = self.container
         self.container = None
         del Thing.objs[self.ID]
@@ -457,14 +473,6 @@ class Container(InventoryObject, LogMethods):
 
             else:
                 raise Exception(f'{thing} {type(thing)} was not deleted')
-        # elif isinstance(thing, (Thing, Container)):
-        #     if thing.ID in self.things:
-        #         self.changeMade()
-        #         thing.container = None
-        #         self.things.remove(thing)
-        #         self.widget.assignValues(update=True)
-        #     else:
-        #         raise Exception(f'{thing} {type(thing)} was not deleted')
         else:
             msg = f'Type {type(thing)} not valid. Must be str, int, Thing, or Container'
             raise TypeError(msg)

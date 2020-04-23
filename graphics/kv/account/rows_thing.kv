@@ -11,7 +11,7 @@
     weight_label: weight_label
     val_label: val_label
     tag_label: tag_label
-    opt_label: opt_label
+    # opt_label: opt_label
 
     # Object heading
     AnchorLayout:
@@ -88,22 +88,22 @@
             pos_hint: {'x': 0, 'y': 0}
             color: app.kv_settings['row heading text color']
 
-    # Options heading
-    FloatLayout:
-        width: app.kv_settings['overview options button width']
-        size_hint: app.kv_settings['overview options button size_hint']
-        canvas:
-            Color:
-                rgba: app.kv_settings['row heading color']
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            id: opt_label
-            bold: True
-            text: '~'
-            pos_hint: {'x': 0, 'y': 0}
-            color: app.kv_settings['row heading text color']
+    # # Options heading
+    # FloatLayout:
+    #     width: app.kv_settings['overview options button width']
+    #     size_hint: app.kv_settings['overview options button size_hint']
+    #     canvas:
+    #         Color:
+    #             rgba: app.kv_settings['row heading color']
+    #         Rectangle:
+    #             pos: self.pos
+    #             size: self.size
+    #     Label:
+    #         id: opt_label
+    #         bold: True
+    #         text: '~'
+    #         pos_hint: {'x': 0, 'y': 0}
+    #         color: app.kv_settings['row heading text color']
 
 
 <ThingDataRow>:
@@ -118,7 +118,7 @@
     val_lo: val_lo
     val_label: val_label
     tag_button: tag_button
-    opt_button: opt_button
+    # opt_button: opt_button
 
     # Thing field
     AnchorLayout:
@@ -189,20 +189,20 @@
             on_press:
                 data_row.parent.deleteObject(data_row.ID)
 
-    # Options button
-    FloatLayout:
-        width: app.kv_settings['overview options button width']
-        size_hint: app.kv_settings['overview options button size_hint']
-        canvas:
-            Color:
-                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Button:
-            id: opt_button
-            text: 's'
-            pos_hint: {'x': 0, 'y': 0}
-            on_press:
-                app.select(None)
-                app.buttonPress('changeScreen', 'account', 'right')
+    # # Options button
+    # FloatLayout:
+    #     width: app.kv_settings['overview options button width']
+    #     size_hint: app.kv_settings['overview options button size_hint']
+    #     canvas:
+    #         Color:
+    #             rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
+    #         Rectangle:
+    #             pos: self.pos
+    #             size: self.size
+    #     Button:
+    #         id: opt_button
+    #         text: 's'
+    #         pos_hint: {'x': 0, 'y': 0}
+    #         on_press:
+    #             app.select(None)
+    #             app.buttonPress('changeScreen', 'account', 'right')

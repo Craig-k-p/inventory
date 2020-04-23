@@ -79,13 +79,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
                 'createThingPopup',
                 'createContainerPopup',
                 'createInventoryObject'
-            ),
-            'authentication needed': {
-                'account': False,
-                'container': False,
-                'thing': False,
-                'login': False,
-                'create account': False}}
+            )
+        }
 
         self.logInfo(f'Started session with settings:\n{pformat(self.settings, indent=4)}')
         self.logInfo(f'Started session with settings:\n{pformat(self.kv_settings, indent=4)}')

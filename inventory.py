@@ -12,19 +12,19 @@ Create a .bat file with commands:
 
 Create a shortcut for the .bat file
 Right click and edit target to say:
-    cmd /k already_existing_filepath_that_you_should_not_edit
+    cmd /k already_existing_filepath_that_you_should_not_edit'''
 
-Voilla!
 
-'''
 from pprint import pformat
 
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
+from kivy.properties import NumericProperty
 
-from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen, InventoryScreenManager
+from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen
+from graphics.py.pre_auth.screens import InventoryScreenManager
 from graphics.py.account.datagrid import DataGrid, ContainerHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.inventoryhandler import InventoryHandler
@@ -32,6 +32,7 @@ from resources.utilities import LogMethods
 
 
 class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
+
     def __init__(self, **kwargs):
         super(MyInventoryApp, self).__init__(**kwargs)
         self.__initLog__(file_str='inventory', class_str='MyInventoryApp')
@@ -59,7 +60,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'kv popup file': 'graphics/kv/pre_auth/popups.kv',
             'row heading color': (.15, .15, .15, 1),
             'row color': (.2, .2, .2, 1),
-            'row selection color': (.2, .4, .2, 1)
+            'row selected color': (.2, .75, .8, 1),
             'row heading text color': (.95, .95, .95, 1),
             'overview options button size_hint': (None, 1),
             'overview options button width': 35,

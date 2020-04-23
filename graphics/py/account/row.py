@@ -3,6 +3,7 @@ import random
 from kivy.uix.gridlayout import GridLayout
 from kivy.graphics import Color
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty
+from kivy.properties import BooleanProperty
 from resources.utilities import LogMethods
 
 
@@ -24,11 +25,17 @@ class DataRow():
         '''Check if this widget was clicked using the click/touch coordinates and the
            self.x0y0 (etc) bounds'''
 
-        self.logDebug(f'Checking if {self.object.description} was clicked..')
         x, y = touch.pos[0], touch.pos[1]
         if self.x0 <= x <= self.x1 and self.y0 <= y <= self.y1:
+            self.logDebug(f'{self.object.description} was clicked')
+            self.selected = True
+            # if self.object.isSelected() == True:
+            #     for f in self.fields:
+            #         f.canvas.Color.rgba = app.kv_settings['row selection color']
             return True
         else:
+            self.logDebug(f'{self.object.description} was not clicked')
+            self.selected = False
             return False
 
 
@@ -49,10 +56,7 @@ class ContainerHeadingRow(GridLayout, LogMethods):
 
     def __init__(self, **kwargs):
         super(ContainerHeadingRow, self).__init__(**kwargs)
-        self.__initLog__(
-            'rows_inventory.py',
-            'ContainerHeadingRow'
-        )
+        self.__initLog__('rows_inventory.py', 'ContainerHeadingRow')
 
         self.logDebug('Creating a ContainerHeadingRow instance')
 
@@ -85,6 +89,7 @@ class ContainerHeadingRow(GridLayout, LogMethods):
 
 class ContainerDataRow(GridLayout, DataRow, LogMethods):
 
+    app = ObjectProperty(None)
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
@@ -93,11 +98,7 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
     opt_button = ObjectProperty(None)
     weight_col_width = NumericProperty(50)
     val_col_width = NumericProperty(65)
-
-    # settings = {
-    #     'row_1_color': Color(.1, .1, .1, 0.2),
-    #     'row_2_color': Color(.1, .1, .1, 0.2)
-    # }
+    selected = BooleanProperty(False)
 
     def __init__(self, inventory_object, **kwargs):
         '''Get the information from the saved inventory object to put into the label widgets'''
@@ -131,12 +132,6 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
             self.obj_label.text = str(self.object.description)
             self.loc_label.text = 'Home'
 
-    # def on_touch_down(self, touch):
-    #     '''This allows me to get click/touch coordinates from the user. Without calling the super
-    #     method, buttons and other UI elements don't respond to clicks.'''
-    #     super().on_touch_down(touch)
-    #     self.logDebug(touch)
-
 
 class ThingHeadingRow(GridLayout, LogMethods):
     obj_label = ObjectProperty(None)
@@ -144,7 +139,6 @@ class ThingHeadingRow(GridLayout, LogMethods):
     val_label = ObjectProperty(None)
     tag_label = ObjectProperty(None)
     opt_label = ObjectProperty(None)
-    # my_text = StringProperty(None)
     weight_col_width = NumericProperty(50)
     val_col_width = NumericProperty(65)
 
@@ -154,10 +148,7 @@ class ThingHeadingRow(GridLayout, LogMethods):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.__initLog__(
-            'rows_box.py',
-            'ThingHeadingRow'
-        )
+        self.__initLog__('rows_box.py', 'ThingHeadingRow')
 
         self.logDebug('Creating a ThingHeadingRow instance..')
 
@@ -182,6 +173,7 @@ class ThingHeadingRow(GridLayout, LogMethods):
 
 class ThingDataRow(GridLayout, DataRow, LogMethods):
 
+    # fields = ListProperty(None)
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
@@ -189,11 +181,7 @@ class ThingDataRow(GridLayout, DataRow, LogMethods):
     opt_button = ObjectProperty(None)
     weight_col_width = NumericProperty(50)
     val_col_width = NumericProperty(65)
-
-    # settings = {
-    #     'row_1_color': Color(.1, .1, .1, 0.2),
-    #     'row_2_color': Color(.1, .1, .1, 0.2)
-    # }
+    selected = BooleanProperty(False)
 
     def __init__(self, inventory_object, **kwargs):
         '''Get the information from database to put into the label widgets'''
@@ -214,8 +202,8 @@ class ThingDataRow(GridLayout, DataRow, LogMethods):
         self.assignValues()
 
     def __repr__(self):
-        s = \
-        f'<<ThingDataRow widget for {self.object.description} with parent widget: {self.parent}>>'
+        s = f'<<ThingDataRow widget for {self.object.description} with parent widget:'
+        s += f' {self.parent}>>'
         return s
 
     def assignValues(self):

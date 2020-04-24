@@ -9,7 +9,6 @@
     loc_label: loc_label
     # Tag field should be a dropdown of all locations typed by user with the option to add one
     tag_button: tag_label
-    # opt_button: opt_label
 
     # Object heading
     AnchorLayout:
@@ -138,23 +137,6 @@
             pos_hint: {'x': 0, 'y': 0}
             color: app.kv_settings['row heading text color']
 
-    # # Options heading
-    # FloatLayout:
-    #     width: app.kv_settings['overview options button width']
-    #     size_hint: app.kv_settings['overview options button size_hint']
-    #     canvas:
-    #         Color:
-    #             rgba: .15, .15, .15, 1
-    #         Rectangle:
-    #             pos: self.pos
-    #             size: self.size
-    #     Label:
-    #         id: opt_label
-    #         bold: True
-    #         text: 'Opts'
-    #         pos_hint: {'x': 0, 'y': 0}
-    #         color: app.kv_settings['row heading text color']
-
 
 <ContainerDataRow>:
     id: data_row
@@ -168,7 +150,6 @@
     loc_label: loc_label
     # Tag field should be a dropdown of all locations typed by user with the option to add one
     tag_button: tag_button
-    # opt_button: opt_button
 
     # Object field
     AnchorLayout:
@@ -277,22 +258,3 @@
             pos_hint: {'x': 0, 'y': 0}
             on_press:
                 data_row.parent.deleteObject(data_row.ID)
-
-    # # Options button
-    # FloatLayout:
-    #     # button: button
-    #     width: app.kv_settings['overview options button width']
-    #     size_hint: app.kv_settings['overview options button size_hint']
-    #     canvas:
-    #         Color:
-    #             rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
-    #         Rectangle:
-    #             pos: self.pos
-    #             size: self.size
-    #     Button:
-    #         id: opt_button
-    #         text: 's'
-    #         pos_hint: {'x': 0, 'y': 0}
-    #         on_release:
-    #             app.select(data_row.object)
-    #             app.buttonPress('changeScreen', 'container', 'left')

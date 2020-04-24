@@ -212,21 +212,6 @@ class InventoryObject():
                 Logger.debug(f':Returning app.ID_counter {cls.ID_counter}')
                 return cls.ID_counter
 
-    # def click(self):
-    #     if InventoryObject.clicked != None:
-    #         InventoryObject.clicked.declick()
-    #     self.clicked = True
-    #     InventoryObject.clicked = self
-
-    # def declick(self):
-    #     self.clicked = False
-
-
-    # @classmethod
-    # def clicked(cls, clicked):
-    #     cls.clicked.clicked = False
-    #     cls.clicked = clicked
-
     @classmethod
     def setBounds(cls, grid, touch):
         '''Set the bounds for each child widget of the grid'''
@@ -247,6 +232,7 @@ class InventoryObject():
             except AttributeError:
                 Logger.debug(f': Updating: {cls.objs[ID]}')
             cls.objs[ID].updateWidget(grid)
+
 
         Logger.debug(f'DEBUGGER: {InventoryObject.objs}')
 

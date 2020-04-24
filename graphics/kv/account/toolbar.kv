@@ -9,6 +9,7 @@
 
 
 <Toolbar>:
+    toolbar_right: toolbar_right
     id: toolbar
     create_item_button: create_item_button
     size_hint_y: None  # Prevents the Box layout from taking up 50% of the screen
@@ -22,7 +23,7 @@
             pos: self.pos
             size: self.size
 
-        # Left side
+    # Left side
     ToolbarInner:
         direction: 'right'
         ToolbarButton:
@@ -32,8 +33,9 @@
                 app.buttonPress('changeScreen', screen='back')
         Widget:  # Fill the rest of the ToolbarInner
 
-            # Right side
+    # Right side
     ToolbarInner:
+        id: toolbar_right
         direction: 'right'
         # Pushes all widgets to the side!  Since the other widgets below have a fixed size,
         # this fills the rest of the space.
@@ -47,13 +49,3 @@
                 # Check that the proper screen is open before opening the popup
                 # Pass the instance of app to toolbar so it can reference needed attributes
                 toolbar.checkForScreen('container', app)
-
-        # Log out button
-        ToolbarButton:
-            anchor_x: 'center'
-            anchor_y: 'center'
-            size: ('70px', '30px')
-            pos_hint: {'x': .7, 'center_y': .5}
-            text: 'Log Out'
-            on_release:
-                app.buttonPress('changeScreen', 'login', 'up')

@@ -41,28 +41,6 @@ class DataGrid(GridLayout, LogMethods):
         s = f'<<{self.category} DataGrid>>'
         return s
 
-    # def on_touch_down(self, touch):
-    #     '''This allows me to get click/touch coordinates from the user. Without calling
-    #        the super method, buttons and other UI elements don't respond to clicks.'''
-    #     super().on_touch_down(touch)
-    #     self.logDebug('\n')
-    #     self.logDebug(f'Click-{touch.pos}')
-    #     InventoryObject.setBounds(self, touch)
-
-    #     for w in self.children:
-    #         if isinstance(w, (ContainerDataRow, ThingDataRow)):
-    #             self.logDebug(f'{w.object.description} clicked: {w.wasClicked(touch)}')
-
-    # def on_touch_down(self, touch):
-    #     if touch.is_double_tap:
-    #         print('Touch is a double tap !')
-    #         print(' - interval is', touch.double_tap_time)
-    #         print(' - distance between previous is', touch.double_tap_distance)
-
-    # def on_touch_down(self, touch):
-    #     if touch.is_double_tap:
-    #        self.on_double_press()
-
     def on_touch_down(self, touch):
         '''This allows me to get click/touch coordinates from the user. Without calling
            the super method, buttons and other UI elements don't respond to clicks.'''
@@ -78,6 +56,7 @@ class DataGrid(GridLayout, LogMethods):
                 self.logDebug(f'{w.object.description} clicked: {clicked}')
                 if clicked == True:
                     self.clicked = w
+                    self.app.sm.current_screen.toolbar.presentOptions(self.app)
 
         if touch.is_double_tap:
             self.logDebug(f'Is double tap: {touch.is_double_tap}')

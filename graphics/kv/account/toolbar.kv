@@ -10,8 +10,7 @@
 
 <Toolbar>:
     id: toolbar
-    create_thing_button: create_thing_button
-    create_container_button: create_container_button
+    create_item_button: create_item_button
     size_hint_y: None  # Prevents the Box layout from taking up 50% of the screen
     height: '50px'     # Sets the height of the toolbar to a fixed number of pixels
     orientation: 'horizontal'
@@ -40,23 +39,14 @@
         # this fills the rest of the space.
         Widget:
         ToolbarButton:
-            id: create_thing_button
+            id: create_item_button
             # Centers the widget on the y-axis
             pos_hint: {'center_y': .5}
             text: '+'
             on_release:
                 # Check that the proper screen is open before opening the popup
                 # Pass the instance of app to toolbar so it can reference needed attributes
-                toolbar.checkForScreen('container', app, 'createThingPopup')
-        ToolbarButton:
-            id: create_container_button
-            # Centers the widget on the y-axis
-            pos_hint: {'center_y': .5}
-            text: '+C'
-            on_release:
-                # Check that the proper screen is open before opening the popup
-                # Pass the instance of app to toolbar so it can reference needed attributes
-                toolbar.checkForScreen('account', app, 'createContainerPopup')
+                toolbar.checkForScreen('container', app)
 
         # Log out button
         ToolbarButton:

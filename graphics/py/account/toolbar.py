@@ -17,14 +17,15 @@ class Toolbar(BoxLayout, LogMethods):
             class_str='Toolbar'
         )
 
-    def checkForScreen(self, screen_str, app, popup_method_str):
+    def checkForScreen(self, screen_str, app):
         '''Make sure the screen_str is correct before we open a popup. Use app to reference the main
            application instance to check which screen we are using'''
         self.logDebug('Checking app.sm.current for a match')
         self.logDebug(f'app.sm.current = {app.sm.current}')
-        if screen_str == app.sm.current:
-            self.logDebug(f'Checked if screen_str was equal to app.sm.current and found True!')
-            app.buttonPress(popup_method_str, None, None)
+        if app.sm.current == 'container':
+            app.buttonPress('createThingPopup', None, None)
+        elif app.sm.current == 'account':
+            app.buttonPress('createContainerPopup', None, None)
 
     def logObjects(self, app):
         '''Call self.getObjects and put them into the log'''

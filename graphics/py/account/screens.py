@@ -14,6 +14,7 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
     parent_layout = ObjectProperty(None)
     data_grid = ObjectProperty(None)
     miapp = ObjectProperty(None)
+    toolbar = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()

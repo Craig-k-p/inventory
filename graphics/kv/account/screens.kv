@@ -10,7 +10,7 @@
 <AccountOverviewScreen>:
     name: 'account'
     # Pass these back to the class variable definitions that = ObjectProperty(None)
-    # toolbar: toolbar
+    toolbar: toolbar
     parent_layout: parent_layout
     data_grid: data_grid
     miapp: app
@@ -34,7 +34,7 @@
 <ContainerOverviewScreen>:
     name: 'container'
     # Pass these back to the class variable definitions that = ObjectProperty(None)
-    # toolbar: toolbar
+    toolbar: toolbar
     parent_layout: parent_layout
     data_grid: data_grid
     miapp: app
@@ -54,6 +54,7 @@
                 id: data_grid
 
 <ThingOverviewScreen>:
+    toolbar: toolbar
     name: 'thing'
 
     BoxLayout:
@@ -61,4 +62,5 @@
 
         # Toolbar goes on top
         Toolbar:
+            id: toolbar
         ThingView:

@@ -124,7 +124,7 @@ class InventoryHandler():
             InventoryObject.selected = selection
         else:
             self.selected = InventoryObject.getByID(selection)
-            InventoryObject.selected = selection
+            InventoryObject.selected = self.selected
             self.logInfo(f'Selected {self.selected}')
 
     def getObjects(self):

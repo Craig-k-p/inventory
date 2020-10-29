@@ -50,25 +50,40 @@ class DataGrid(GridLayout, LogMethods):
         super().on_touch_down(touch)
         InventoryObject.setBounds(self, touch)
 
+        row_clicked = False
         # Check which widget was clicked
         # For each widget in self.children
         for w in self.children:
+
             # Check if it is a DataRow instance rather than a heading row
             if isinstance(w, (ContainerDataRow, ThingDataRow)):
                 was_clicked = w.wasClicked(touch)
                 self.logDebug(f'{w.object.description} clicked: {was_clicked}')
-                if was_clicked == True:
-                    self.clicked = w
-                    self.app.sm.current_screen.toolbar.presentOptions(self.app)
 
+                if was_clicked == True:
+                    row_clicked = True
+                    self.clicked = w
+                    self.app.select(self.clicked.object.ID)
+
+                    # Check for a double-click
                     if touch.is_double_tap:
-                        self.logDebug(f'Is double tap: {touch.is_double_tap}')
-                        self.logDebug(f'double tap time: {touch.double_tap_time}')
-                        self.logDebug(f'double tap distance: {touch.double_tap_distance}')
-                        self.logDebug(f'CDR instance: {isinstance(self.clicked, ContainerDataRow)}')
+                        self.logDebug(f'Double-click detected')
+
                         if isinstance(self.clicked, ContainerDataRow):
-                            self.app.select(self.clicked.object)
+                            # self.app.select(self.clicked.object)
                             self.app.buttonPress('changeScreen', 'container', 'left')
+                        elif isinstance(self.clicked, ThingDataRow):
+                            pass
+                        # else:
+                        #     self.app.select(None)
+
+        if row_clicked == False:
+            self.app.select(None)
+
+
+        self.app.sm.current_screen.toolbar.presentOptions(self.app)
+
+
 
 
 

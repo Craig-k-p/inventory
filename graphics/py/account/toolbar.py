@@ -61,13 +61,13 @@ class Toolbar(BoxLayout, LogMethods):
                 for widget in self.options:
                     self.toolbar_right.add_widget(widget)
                 self.options_drawn = True
-            except WidgetException:
-                self.logDebug('WidgetException')
+            except WidgetException as e:
+                self.logDebug(f'EXCEPTION: {e}')
 
         else:
             try:
                 for widget in self.options:
                     self.toolbar_right.remove_widget(widget)
                 self.options_drawn = False
-            except WidgetException:
-                self.logDebug('WidgetException')
+            except WidgetException as e:
+                self.logDebug(f'EXCEPTION: {e}')

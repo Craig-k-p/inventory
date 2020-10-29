@@ -474,6 +474,7 @@ class Container(InventoryObject, LogMethods):
         self.logDebug(f'{self.description} is checking for a grid')
         if self.grid == None and grid != None and self.category == grid.category:
             self.logDebug(f'No grid found. Added to Container {self.ID}')
+            self.logDebug(grid)
             self.grid = grid
 
         if self.category == grid.category:

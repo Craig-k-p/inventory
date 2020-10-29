@@ -1,29 +1,54 @@
 {
     "container": {
+        "1": {
+            "description": "Crate",
+            "tags": [],
+            "things": [
+                "4"
+            ],
+            "usd_value": "30",
+            "weight": "20"
+        },
+        "2": {
+            "description": "Bag",
+            "tags": [],
+            "things": [
+                "6"
+            ],
+            "usd_value": "20",
+            "weight": "4"
+        },
         "3": {
             "description": "Box 5",
             "tags": [],
-            "things": [],
-            "usd_value": "5",
-            "weight": "10"
-        },
-        "6": {
-            "description": "box",
-            "tags": [],
             "things": [
-                "7"
+                "5"
             ],
             "usd_value": "5",
-            "weight": "5"
+            "weight": "10"
         }
     },
     "thing": {
-        "7": {
-            "container": "6",
-            "description": "hat",
+        "4": {
+            "container": "1",
+            "description": "Hat",
             "tags": [],
-            "usd_value": "5",
+            "usd_value": "15",
             "weight": "1"
+        },
+        "5": {
+            "container": "3",
+            "description": "Compass",
+            "tags": [],
+            "usd_value": "10",
+            "weight": "1"
+        },
+        "6": {
+            "container": "2",
+            "description": "Socks",
+            "tags": [],
+            "usd_value": "8",
+            "weight": "1.5"
         }
     }
 }

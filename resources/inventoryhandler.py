@@ -95,7 +95,6 @@ class InventoryHandler():
         for key in Thing.objs:
             ThingDataRow(Thing.objs[key])
 
-
         self.data_was_loaded = True
 
         InventoryObject.checkLoad()

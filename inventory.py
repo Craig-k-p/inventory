@@ -39,7 +39,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
         self.logInfo('Creating MyInventoryApp instance')
 
-        # Set window to white
+        # Set window color:  black: (0, 0, 0, 1), white: (1, 1, 1, 1)
         Window.clearcolor = (0, 0, 0, 1)
 
         self.popup_errors = []

@@ -52,9 +52,6 @@ class Toolbar(BoxLayout, LogMethods):
         elif app.sm.current == 'account':
             app.buttonPress('createContainerPopup', None, None)
 
-    def checkSelection(self, app):
-        '''Check if an object is selected and options need to be added to the toolbar'''
-
     def presentOptions(self, app):
         if not self.app:
             self.app = app

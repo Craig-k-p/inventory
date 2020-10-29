@@ -14,7 +14,7 @@ from graphics.py.account.screens import AccountOverviewScreen, ContainerOverview
 
 class KivyExtensions():
     '''Used to separate the Kivy graphics methods needed in MyInventoryApp
-       from the MongoEngine database methods needed for the back end.'''
+       from the IO methods'''
 
     def buttonPress(self,
                     call=None,

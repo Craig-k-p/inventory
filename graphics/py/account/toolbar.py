@@ -62,7 +62,7 @@ class Toolbar(BoxLayout, LogMethods):
                     self.toolbar_right.add_widget(widget)
                 self.options_drawn = True
             except WidgetException:
-                pass
+                self.logDebug('WidgetException')
 
         else:
             try:
@@ -70,4 +70,4 @@ class Toolbar(BoxLayout, LogMethods):
                     self.toolbar_right.remove_widget(widget)
                 self.options_drawn = False
             except WidgetException:
-                pass
+                self.logDebug('WidgetException')

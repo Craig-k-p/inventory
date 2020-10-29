@@ -36,6 +36,7 @@ class DataGrid(GridLayout, LogMethods):
         self.row_2_color = None
 
         self.category = None
+        self.clicked = None
 
     def __repr__(self):
         s = f'<<{self.category} DataGrid>>'
@@ -50,22 +51,24 @@ class DataGrid(GridLayout, LogMethods):
         InventoryObject.setBounds(self, touch)
 
         # Check which widget was clicked
+        # For each widget in self.children
         for w in self.children:
+            # Check if it is a DataRow instance rather than a heading row
             if isinstance(w, (ContainerDataRow, ThingDataRow)):
-                clicked = w.wasClicked(touch)
-                self.logDebug(f'{w.object.description} clicked: {clicked}')
-                if clicked == True:
+                was_clicked = w.wasClicked(touch)
+                self.logDebug(f'{w.object.description} clicked: {was_clicked}')
+                if was_clicked == True:
                     self.clicked = w
                     self.app.sm.current_screen.toolbar.presentOptions(self.app)
 
-        if touch.is_double_tap:
-            self.logDebug(f'Is double tap: {touch.is_double_tap}')
-            self.logDebug(f'double tap time: {touch.double_tap_time}')
-            self.logDebug(f'double tap distance: {touch.double_tap_distance}')
-            self.logDebug(f'CDR instance: {isinstance(self.clicked, ContainerDataRow)}')
-            if isinstance(self.clicked, ContainerDataRow):
-                self.app.select(self.clicked.object)
-                self.app.buttonPress('changeScreen', 'container', 'left')
+                    if touch.is_double_tap:
+                        self.logDebug(f'Is double tap: {touch.is_double_tap}')
+                        self.logDebug(f'double tap time: {touch.double_tap_time}')
+                        self.logDebug(f'double tap distance: {touch.double_tap_distance}')
+                        self.logDebug(f'CDR instance: {isinstance(self.clicked, ContainerDataRow)}')
+                        if isinstance(self.clicked, ContainerDataRow):
+                            self.app.select(self.clicked.object)
+                            self.app.buttonPress('changeScreen', 'container', 'left')
 
 
 

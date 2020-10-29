@@ -102,10 +102,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         # Allow children of the WindowManager instance to access self.settings in the App instance
         self.sm.app = self
 
-        # Create a separate function to handle logging out and in, so no data is accidently preserved on a screen.
         screens = [
             # These are added to the screen manager sm so that the screen manager sm
-            # knows which screens we are refering to  (<-- better wording needed)
             # name='name' allows the screen manager to change screens using self.current='screen'
             CreateAccountScreen(name='create account'),
             LoginScreen(name='login'),

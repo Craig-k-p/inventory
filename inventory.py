@@ -40,6 +40,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
         self.logInfo('Creating MyInventoryApp instance')
 
+        file = 'save_data/ignore.save_data'
+
         # Allow access to the Selection class through the app instance
         self.Selection = Selection
 
@@ -52,7 +54,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'start screen': 'login', # account, container, thing
             'startup transition': NoTransition(),
             'app transition type': NoTransition(),
-            'save file': 'save_data/save_data',
+            'save file': file,
             'backup save file': 'save_data/backup_save_data',
             'log filtering': 'InventoryHandler.py' }
 

@@ -1,5 +1,3 @@
-import random
-
 from kivy.uix.gridlayout import GridLayout
 from kivy.graphics import Color
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty
@@ -8,6 +6,10 @@ from resources.utilities import LogMethods
 
 
 class DataRow():
+    def deselect(self):
+        self.selected = False
+    def select(self):
+        self.selected = True
     def getBounds(self):
         return self.bounds
     def setBounds(self):
@@ -28,11 +30,9 @@ class DataRow():
         x, y = touch.pos[0], touch.pos[1]
         if self.x0 <= x <= self.x1 and self.y0 <= y <= self.y1:
             self.logDebug(f'{self.object.description} was clicked')
-            self.selected = True
             return True
         else:
             self.logDebug(f'{self.object.description} was not clicked')
-            self.selected = False
             return False
 
 

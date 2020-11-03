@@ -9,6 +9,7 @@
 
 
 <Toolbar>:
+    app: app
     toolbar_right: toolbar_right
     id: toolbar
     create_item_button: create_item_button
@@ -48,4 +49,4 @@
             on_release:
                 # Check that the proper screen is open before opening the popup
                 # Pass the instance of app to toolbar so it can reference needed attributes
-                toolbar.checkForScreen('container', app)
+                toolbar.checkForScreen('container')

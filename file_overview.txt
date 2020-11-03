@@ -1,0 +1,68 @@
+INVENTORY/
+    Inventory.py
+        -Application class
+        -Sets app settings
+        -Sets kv settings
+        -Instantiate screens and screen manager
+    GRAPHICS/
+        KV/
+            ACCOUNT/
+                toolbar.kv
+                    -Toolbars
+                    -changeScreen
+                thing_view.kv
+                    -Thing screen buttons, grids, inputs
+                screens.kv
+                    -import several kv files
+                    -Account, Thing, and Container overview screens
+                rows_thing.kv
+                    -row data for thing objects
+                    -calls deleteObject method of DataGrid class
+                rows_container.kv
+                    -row data for containers
+                    -calls deleteObject method of DataGrid class
+                datagrid.kv
+                    -creates a grid within a scrollview widget to allow for scrolling over several objects
+            PREAUTH/
+                screens.kv
+                    -login and create account screens
+                popups.kv
+                    -PopupCreateThingContent and PopupCreateContainerContent custom widgets
+        PY/
+            ACCOUNT/
+                toolbar.py
+                    -check screen
+                    -present options widgets on toolbar
+                thing_view.py
+                    -placeholder for thing_view.kv widgets
+                screens.py
+                    -fill data into AccountOverviewScreen and ContainerOverviewScreen
+                row.py
+                    -get boundaries of each DataRow for determining if one was clicked
+                    -create ContainerHeadingRow, ThingHeadingRow, and DataRows
+                    -assign values to DataRows
+                datagrid.py
+                    -check rows for clicks
+                    -present options for selected rows
+                    -add data rows and load user's data on startup
+                    -delete inventory objects and widgets
+            PREAUTH
+                screens.py
+                    -creates login, and createaccount screen and checks user input
+                    -creates inventory screen manager
+                popups.py
+                    -create popup widgets and check input
+    RESOURCES/
+        utilities.py
+            -extends the Kivy Screen widgets found in kv_screens.py and main_widgets.kv
+            -logging
+        kv_extensions.py
+            -has a variety of methods used with the kv files
+            -calls for selection update during screen changes
+        inventoryobjects.py
+            -all things inventory
+        inventoryhandler.py
+            -save/load data, create inventory objects and link it to the kv
+            -search for objects
+        selection.py
+            -select/deselect objects

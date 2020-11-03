@@ -53,40 +53,34 @@ class DataGrid(GridLayout, LogMethods):
         row_clicked = False
         # Check which widget was clicked
         # For each widget in self.children
-        for w in self.children:
+        for widget in self.children:
 
             # Check if it is a DataRow instance rather than a heading row
-            if isinstance(w, (ContainerDataRow, ThingDataRow)):
-                was_clicked = w.wasClicked(touch)
-                self.logDebug(f'{w.object.description} clicked: {was_clicked}')
+            if isinstance(widget, (ContainerDataRow, ThingDataRow)):
+                was_clicked = widget.wasClicked(touch)
 
                 if was_clicked == True:
                     row_clicked = True
-                    self.clicked = w
-                    self.app.select(self.clicked.object.ID)
+                    self.app.Selection(widget.object)
 
                     # Check for a double-click
                     if touch.is_double_tap:
                         self.logDebug(f'Double-click detected')
 
-                        if isinstance(self.clicked, ContainerDataRow):
-                            # self.app.select(self.clicked.object)
+                        # If container is double-clicked, change screen
+                        if isinstance(widget, ContainerDataRow):
                             self.app.buttonPress('changeScreen', 'container', 'left')
+                            self.app.Selection(None)
+                        # If a thing is selected, pass
                         elif isinstance(self.clicked, ThingDataRow):
                             pass
-                        # else:
-                        #     self.app.select(None)
+                        else:   # Empty space clicked.  Deselect
+                            self.app.Selection(None)
 
         if row_clicked == False:
-            self.app.select(None)
+            self.app.Selection(None)
 
-
-        self.app.sm.current_screen.toolbar.presentOptions(self.app)
-
-
-
-
-
+        self.app.sm.current_screen.toolbar.presentOptions()
 
     def addDataRow(self, inventory_object):
         '''Add a row of fields to the GridLayout with the given data
@@ -110,7 +104,6 @@ class DataGrid(GridLayout, LogMethods):
         self.logDebug(f'Adding a row for the {new_row.object.description} to the grid')
         self.add_widget(new_row)
 
-
     def fillUserData(self, app):
         '''Populate the data rows with user data during application startup'''
         self.logDebug(f'Filling the{self.category} DataGrid with objects')
@@ -122,7 +115,6 @@ class DataGrid(GridLayout, LogMethods):
         # Get the containers or things to fill the data grid
         self.app.loadData()
         InventoryObject.updateWidgets(self)
-
 
     def getInventoryRowClass(self):
         ''' Return a reference to ContainerDataRow or ThingDataRow class'''

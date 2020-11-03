@@ -21,7 +21,7 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
-from kivy.properties import NumericProperty
+# from kivy.properties import NumericProperty
 
 from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen
 from graphics.py.pre_auth.screens import InventoryScreenManager
@@ -29,6 +29,7 @@ from graphics.py.account.datagrid import DataGrid, ContainerHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.inventoryhandler import InventoryHandler
 from resources.utilities import LogMethods
+from resources.selection import Selection
 
 
 class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
@@ -39,19 +40,22 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
         self.logInfo('Creating MyInventoryApp instance')
 
-        # Set window color:  black: (0, 0, 0, 1), white: (1, 1, 1, 1)
-        Window.clearcolor = (0, 0, 0, 1)
+        # Allow access to the Selection class through the app instance
+        self.Selection = Selection
 
+        # Error messages here will display to the user
         self.popup_errors = []
+
         self.settings = {
             'password min length': 0,
             'username min length': 0,
             'start screen': 'login', # account, container, thing
             'startup transition': NoTransition(),
-            'app transition type': SlideTransition(),
+            'app transition type': NoTransition(),
             'save file': 'save_data/save_data',
             'backup save file': 'save_data/backup_save_data',
             'log filtering': 'InventoryHandler.py' }
+
         self.kv_settings = {
             'startup kv files': [
                 'graphics/kv/pre_auth/screens.kv',
@@ -71,6 +75,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'standard font': 'arial',
             'text color': (1, 1, 1, 1),
             'title font name': 'segoesc',}
+
         self.validations = {
             'allowed button calls': (
                 'changeScreen',
@@ -87,20 +92,23 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         log = f'Started session with validations:\n{pformat(self.validations, indent=4)}'
         self.logInfo(log)
 
+        # Set window color:  black: (0, 0, 0, 1), white: (1, 1, 1, 1)
+        Window.clearcolor = (0, 0, 0, 1)
+
         # Load the .kv files to start building the GUI
         for file in self.kv_settings['startup kv files']:
             Builder.load_file(file)
 
         self.logDebug(f'Used kivy.lang.Builder to load files {self.kv_settings["startup kv files"]}')
 
+        # Allow children of the WindowManager instance to access self.settings in the App instance
+        InventoryScreenManager.app = self
+
         # Create a ScreenManager instance with no transition movement
         self.sm = InventoryScreenManager(transition=self.settings['startup transition'])
         log = 'Created self.sm, instance of InventoryScreenManager with startup transition as '
         log += f'{self.settings["startup transition"]} --- {self.sm}'
         self.logDebug(log)
-
-        # Allow children of the WindowManager instance to access self.settings in the App instance
-        self.sm.app = self
 
         screens = [
             # These are added to the screen manager sm so that the screen manager sm

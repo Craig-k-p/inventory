@@ -88,6 +88,8 @@ class KivyExtensions():
                 self.sm.current = 'login'
             elif self.sm.current_screen.name == 'container':
                 self.sm.current = 'account'
+                #  Update the selected object to match the current screen
+                self.Selection(self.Selection.getLastContainer().getObj())
 
         else:
             try:
@@ -96,7 +98,6 @@ class KivyExtensions():
                 pass
             self.sm.transition.direction = direction
             self.sm.current = screen
-            # self.logInfo(f'Changed to {screen} going in direction {direction}')
 
             try:
                 # Update visible inventory widgets
@@ -154,16 +155,10 @@ class KivyExtensions():
 
     def createContainerPopup(self, screen=None, direction=None):
         # Load the popup content from file and create an instance of PopupContent
-        # self.logDebug(
-        #     f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}'
-        # )
         Builder.load_file(self.kv_settings['kv popup file'])
 
         # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
         popup_content = PopupCreateContainerContent()
-        # self.logDebug(
-        #     f'Created a PopupCreateContainerContent instance for screen "{self.sm.current}"'
-        # )
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
@@ -185,20 +180,13 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-        # self.logDebug(
-        #     f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
-        # )
 
     def createThingPopup(self, screen=None, direction=None):
         # Load the popup content from file and create an instance of PopupContent
-        # self.logDebug(f'kivy.lang.Builder is loading {self.kv_settings["kv popup file"]}')
         Builder.load_file(self.kv_settings['kv popup file'])
 
         # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
         popup_content = PopupCreateThingContent()
-        # self.logDebug(
-        #     f'Created a PopupCreateThingContent instance for screen "{self.sm.current}"'
-        # )
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
@@ -220,9 +208,6 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-        # self.logDebug(
-        #     f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
-        # )
 
     def createUserScreens(self):
         '''Create user screens after the user has been logged in to be sure the widgets are

@@ -2,12 +2,12 @@ from resources.utilities import LogMethods
 from kivy.logger import Logger
 from json import dumps
 
+
 class InventoryObject():
     '''Parent class for inventory objects with base methods and class methods
        that make managing the inventory easier'''
     ID_counter = 0         # Unique ID counter for each of the user's objects
     objs = {}               # All InventoryObject and inherited instances
-    selected = None         # The selected InventoryObject instance (or inherited)
     changes_made = False    # Flag to determine whether a save is needed
     clicked = None
     def __init__(
@@ -35,7 +35,6 @@ class InventoryObject():
         self.weight = weight
         self.tags = set()
         self.widget = None
-        # self.clicked = self.widget.selected
         self.grid = None
         self.addTags(tags)
         InventoryObject.objs[self.ID] = self
@@ -84,15 +83,6 @@ class InventoryObject():
         if self.widget != None:
             return True
         else:
-            return False
-
-    def isSelected(self):
-        '''Check if the current object is selected'''
-        if InventoryObject.selected == self or InventoryObject.selected == self.ID:
-            self.logDebug(f'{self.description} is selected')
-            return True
-        else:
-            self.logDebug(f'{self.description} is not selected')
             return False
 
     def removeTags(self, tags):
@@ -222,26 +212,23 @@ class InventoryObject():
     @classmethod
     def updateWidgets(cls, grid):
         '''Draw and undraw widgets based on the currently viewed screen'''
-        Logger.debug(f': Updating widgets for {cls.selected}')
+        Logger.debug(f'InvObjs.py: Updating widgets for {cls.app.Selection.get()}')
         for ID in cls.objs:
             if ID not in cls.objs:
                 raise KeyError(f'Key {ID} not found in cls.objs')
             try:
-                log = f': Updating: {cls.objs[ID]} with container: {cls.objs[ID].container}'
+                log = f'InvObjs.py: {cls.objs[ID]} with container: {cls.objs[ID].container}'
                 Logger.debug(log)
             except AttributeError:
-                Logger.debug(f': Updating: {cls.objs[ID]}')
+                Logger.debug(f'InvObjs.py: Updating: {cls.objs[ID]}')
             cls.objs[ID].updateWidget(grid)
 
 
-        Logger.debug(f'DEBUGGER: {InventoryObject.objs}')
+        Logger.debug(f'InvObjs.py: {InventoryObject.objs}')
 
     @classmethod
     def wasChanged(cls):
         return InventoryObject.changes_made
-
-
-
 
 
 class Thing(InventoryObject, LogMethods):
@@ -259,7 +246,7 @@ class Thing(InventoryObject, LogMethods):
             self.container = kwargs['container']
         # ..or as a newly created instance without one
         except KeyError:
-            self.container = str(self.selected.ID)
+            self.container = str(self.app.Selection.getLastContainer().getObj().ID)
 
         Thing.objs[self.ID] = self
         self.category = 'thing'
@@ -325,15 +312,17 @@ class Thing(InventoryObject, LogMethods):
             self.grid = grid
 
         # If the Thing instance is in the selected Container instance, draw the widget
-        if self.selected != None and self.selected.contains(self) == True:
+        if self.app.Selection.get() != None and \
+        self.app.Selection.getLastContainer().getObj().contains(self) == True:
             self.logDebug(f'Drawing widget for {self}')
             self.drawWidget()
         # If the Thing is not in the selected Container, undraw the widget
-        elif self.selected != None and self.selected.contains(self) == False:
+        elif self.app.Selection.get() != None and \
+        self.app.Selection.getLastContainer().getObj().contains(self) == False:
             self.logDebug(f'Undrawing widget for {self}')
             self.undrawWidget()
 
-        elif self.selected == None:
+        elif self.app.Selection.get() == None:
             pass
 
         else:

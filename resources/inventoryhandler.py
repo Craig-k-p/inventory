@@ -6,9 +6,9 @@ from graphics.py.account.row import ContainerDataRow, ThingDataRow
 
 class InventoryHandler():
     def __init__(self):
-        self.selected = None
         self.search_term = None
         self.data_was_loaded = False
+        InventoryObject.app = self
 
     def createInventoryObject(self, object_class_str, kv_obj_reference):
         '''Create a new object using the popup user input'''
@@ -43,8 +43,11 @@ class InventoryHandler():
         '''Create a new thing and assign its container'''
         self.logDebug(f'Creating a thing with ID {data["ID"]}:')
         new_thing = Thing(data)
+
         if self.data_was_loaded == True:
-            self.selected.addThing(new_thing.ID)
+            # Add the thing to the last selected container
+            self.Selection.getLastContainer().getObj().addThing(new_thing.ID)
+            # Set the changes_made flag to True for saving purposes
             InventoryObject.changeMade()
         return new_thing
 
@@ -52,7 +55,9 @@ class InventoryHandler():
         '''Create a new container'''
         self.logDebug(f'Creating a container with ID {data["ID"]}:')
         new_container = Container(data)
+
         if self.data_was_loaded == True:
+            # Set the changes_made flag to True for saving purposes
             InventoryObject.changeMade()
         return new_container
 
@@ -114,18 +119,24 @@ class InventoryHandler():
             self.logInfo('No changes made. Skipping save')
 
     def select(self, selection):
-        '''Set the selected object directly or by using the ID'''
+        '''Set the selected object directly or by using the ID.
+           Select nothing by passing None as the argument.'''
 
         if selection == None:
             self.selected = None
-            InventoryObject.selected = None
-        elif isinstance(selection, Container):
+            InventoryObject.selected.deselect()
+        elif isinstance(selection, (Container, Thing)):
             self.selected = selection
             InventoryObject.selected = selection
         else:
             self.selected = InventoryObject.getByID(selection)
             InventoryObject.selected = self.selected
             self.logInfo(f'Selected {self.selected}')
+
+        if isinstance(self.selected, Container):
+            self.context_container_selection = self.selected
+
+        self.logDebug(f'SELECTED: {self.selected}')
 
     def getObjects(self):
         for ID in InventoryObject.objs:

@@ -3,8 +3,6 @@ from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
-# from kivy.graphics.context_instructions import Color
-# from kivy.graphics.vertex_instructions import Rectangle
 
 from resources.inventoryobjects import InventoryObject
 from graphics.py.account.row import ContainerDataRow, ThingDataRow
@@ -79,7 +77,6 @@ class KivyExtensions():
     def changeScreen(self, screen, direction=None):
         '''Change to a screen using direction.  Make sure the screen does not need
         authentication.
-        Implement method to check whether the user is logged in.
         '''
         if screen == 'back':
             self.sm.transition.direction = 'right'
@@ -124,8 +121,6 @@ class KivyExtensions():
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
-        # self.logDebug(f'kivy.lang.Builder loaded the file\
-        #  {self.kv_settings["kv popup file"]}')
 
         # Create an instance of popup content found in popup.py and popups.kv
         popup_content = PopupErrorContent(self._createPopupErrorLabels(), current_screen)
@@ -140,7 +135,6 @@ class KivyExtensions():
                          )
 
         # Assign the popup
-        # self.logDebug('Assigning parent method to popup_content')
         popup_content.assignParentMethod(self.pop.dismiss)
 
         # Open the popup
@@ -149,9 +143,6 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-        # self.logDebug(
-        #     f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
-        # )
 
     def createContainerPopup(self, screen=None, direction=None):
         # Load the popup content from file and create an instance of PopupContent
@@ -169,10 +160,6 @@ class KivyExtensions():
                          size_hint=(.9, .9),
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
-
-        # # Assign the popup
-        # self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
-        # popup_content.assignParentMethod(self.pop.dismiss)
 
         # Open the popup
         self.logDebug('Opening the popup..')
@@ -197,10 +184,6 @@ class KivyExtensions():
                          size_hint=(.9, .9),
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
-
-        # # Assign the popup
-        # self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
-        # popup_content.assignParentMethod(self.pop.dismiss)
 
         # Open the popup
         self.logDebug('Opening the popup..')
@@ -237,9 +220,6 @@ class KivyExtensions():
         '''Create the widgets to give to PopupContent().  This allows PopupContent to add
            child widgets to itself.'''
 
-        # log = 'Creating popup error label widgets for a popup with errors:'
-        # self.logDebug(log)
-
         # List to keep the widgets
         error_labels = []
 
@@ -258,15 +238,9 @@ class KivyExtensions():
                 )
 
             self._clearPopupErrors()
-            # self.logDebug('self.popup_errors reset to [] and error_labels returned')
             return error_labels
 
         else:
-            # self.popup_errors is either too short or not a list
-            # log = 'ERROR: self.popup_errors is either too short or not a list:'
-            # log += f'\n\t\t\tlength: {len(self.popup_errors)}'
-            # log += f'\n\t\t\ttype: {type(self.popup_errors)}'
-            # self.logWarning(log)
             self.logWarning(self.popup_errors)
             self._clearPopupErrors()
             return None

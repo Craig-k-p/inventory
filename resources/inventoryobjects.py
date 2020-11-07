@@ -212,7 +212,7 @@ class InventoryObject():
     @classmethod
     def updateWidgets(cls, grid):
         '''Draw and undraw widgets based on the currently viewed screen'''
-        Logger.debug(f'InvObjs.py: Updating widgets for {cls.app.Selection.get()}')
+        Logger.debug(f'InvObjs.py: Updating widgets for {grid}')
         for ID in cls.objs:
             if ID not in cls.objs:
                 raise KeyError(f'Key {ID} not found in cls.objs')

@@ -92,8 +92,8 @@ class DataGrid(GridLayout, LogMethods):
             self.app = self.parent.parent.parent.parent.app
 
         # Add the datagrid to the widget
-        if inventory_object.grid == None and self.category == inventory_object.category:
-            inventory_object.grid = self
+        if inventory_object.data_grid == None and self.category == inventory_object.category:
+            inventory_object.data_grid = self
 
         # Instantiate a data row with ID and data
         RowClass = self.getInventoryRowClass()

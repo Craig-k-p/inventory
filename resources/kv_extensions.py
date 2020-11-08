@@ -195,8 +195,8 @@ class KivyExtensions():
     def createUserScreens(self):
         '''Create user screens after the user has been logged in to be sure the widgets are
         able to get the information they need!'''
-        self.sm.add_widget(AccountOverviewScreen())
-        self.sm.add_widget(ContainerOverviewScreen())
+        self.sm.add_widget(AccountOverviewScreen(self))
+        self.sm.add_widget(ContainerOverviewScreen(self))
         self.sm.add_widget(ThingOverviewScreen())
 
     def login(self, new_screen, direction):

@@ -13,12 +13,13 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
 
     parent_layout = ObjectProperty(None)
     data_grid = ObjectProperty(None)
-    miapp = ObjectProperty(None)
+    app = ObjectProperty(None)
     toolbar = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self, app, **kwargs):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
         super(AccountOverviewScreen, self).__init__(**kwargs)
+        self.app = app
 
         # # Allow me to check if the enter key is pressed
         # Window.bind(on_key_down=self._on_keyboard_down)
@@ -40,7 +41,9 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
         self.data_grid.setDataGridObjectType('container')
 
         # Fill the user data into rows
-        self.data_grid.fillUserData(self.miapp)
+        self.data_grid.fillUserData(self.app)
+
+        self.toolbar.search.bind(text=app.inventoryobject.applySearch)
 
     def initDefaultPopupText(self):
         '''Set the default text to be displayed in certain situations'''
@@ -54,11 +57,12 @@ class ContainerOverviewScreen(Screen, LogMethods):
 
     parent_layout = ObjectProperty(None)
     data_grid = ObjectProperty(None)
-    miapp = ObjectProperty(None)
+    app = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self, app, **kwargs):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
         super(ContainerOverviewScreen, self).__init__(**kwargs)
+        self.app = app
 
         # # Allow me to check if the enter key is pressed
         # Window.bind(on_key_down=self._on_keyboard_down)
@@ -80,7 +84,9 @@ class ContainerOverviewScreen(Screen, LogMethods):
         self.data_grid.setDataGridObjectType('thing')
 
         # Fill the user data into rows
-        self.data_grid.fillUserData(self.miapp)
+        self.data_grid.fillUserData(self.app)
+
+        self.toolbar.search.bind(text=app.inventoryobject.applySearch)
 
     def initDefaultPopupText(self):
         '''Set the default text to be displayed in certain situations'''

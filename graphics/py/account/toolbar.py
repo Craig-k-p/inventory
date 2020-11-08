@@ -4,7 +4,7 @@ from kivy.properties import ObjectProperty
 from kivy.uix.widget import WidgetException
 
 from resources.utilities import LogMethods
-from resources.inventoryobjects import InventoryObject
+# from resources.inventoryobjects import InventoryObject
 
 
 class Toolbar(BoxLayout, LogMethods):
@@ -79,7 +79,7 @@ class Toolbar(BoxLayout, LogMethods):
             ]
 
         # If an object is selected, add the widgets to the toolbar
-        if self.app.Selection.get().getObj() != None:
+        if self.app.Selection.get(suppress=True).getObj() != None:
             # For each widget in self.options list
             for widget in self.options:
                 # If it is not in the toolbar

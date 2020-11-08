@@ -55,8 +55,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'startup transition': NoTransition(),
             'app transition type': NoTransition(),
             'save file': file,
-            'backup save file': 'save_data/backup_save_data',
-            'log filtering': 'InventoryHandler.py' }
+            'backup save file': 'save_data/backup_save_data'
+            }
 
         self.kv_settings = {
             'startup kv files': [

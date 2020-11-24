@@ -92,22 +92,39 @@ class PopupErrorContent(GridLayout, LogMethods):
             self.logWarning('Kv Ops', log)
 
 
-class PopupCreateThingContent(ScrollView, LogMethods):
+class PopupThingContent(ScrollView, LogMethods):
     '''A class linked to popups.kv class definition'''
     description = ObjectProperty(None)
-    value = ObjectProperty(None)
+    usd_value = ObjectProperty(None)
     weight = ObjectProperty(None)
     tags = ObjectProperty(None)
     inputs = ListProperty(None)
+    submit_button = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
-        super(PopupCreateThingContent, self).__init__(**kwargs)
+    def __init__(self, thing, **kwargs):
+        super(PopupThingContent, self).__init__(**kwargs)
 
         # Initialize the log for this class instance
         self.__initLog__(
             file_str='popups',
-            class_str='PopupCreateThingContent'
+            class_str='PopupThingContent'
         )
+        self.inventory_object = thing
+
+        # If a thing was passed as an argument
+        if self.inventory_object != None:
+            self.submit_button.text = 'Confirm'
+        # If no thing was passed as an argument
+        else:
+            self.submit_button.text = 'Add to container'
+
+    def setThingValues(self):
+        '''Fill the textinput boxes with the object's data'''
+        self.description.text = self.inventory_object.description
+        self.usd_value.text = self.inventory_object.usd_value
+        self.weight.text = self.inventory_object.weight
+        # Tags need to be changed back to string only format for this to work properly
+        # self.tags.text = self.container.tags
 
     def updateTextInputErrors(self, keys):
         '''Change the text inputs with an error to a red tone. Accepts a list of keys
@@ -118,19 +135,36 @@ class PopupCreateThingContent(ScrollView, LogMethods):
             self.ids[key].error = True
 
 
-class PopupCreateContainerContent(ScrollView, LogMethods):
+class PopupContainerContent(ScrollView, LogMethods):
     '''A class linked to popups.kv class definition'''
     description = ObjectProperty(None)
-    value = ObjectProperty(None)
+    usd_value = ObjectProperty(None)
     weight = ObjectProperty(None)
     tags = ObjectProperty(None)
+    submit_button = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
-        super(PopupCreateContainerContent, self).__init__(**kwargs)
+    def __init__(self, container, **kwargs):
+        super(PopupContainerContent, self).__init__(**kwargs)
         self.__initLog__(
             file_str='popups',
-            class_str='PopupCreateContainerContent'
+            class_str='PopupContainerContent'
         )
+        self.inventory_object = container
+
+        # If a container object was passed as an argument..
+        if self.inventory_object != None:
+            self.submit_button.text = 'Confirm'
+        # If a container wasn't passed as an argument..
+        else:
+            self.submit_button.text = 'Add to inventory'
+
+    def setContainerValues(self):
+        '''Fill the textinput boxes with the object's data'''
+        self.description.text = self.inventory_object.description
+        self.usd_value.text = self.inventory_object.usd_value
+        self.weight.text = self.inventory_object.weight
+        # Tags need to be changed back to string only format for this to work properly
+        # self.tags.text = self.container.tags
 
     def updateTextInputErrors(self, keys):
         '''Change the text inputs with an error to a red tone. Accepts a list of keys
@@ -139,22 +173,9 @@ class PopupCreateContainerContent(ScrollView, LogMethods):
 
         for key in keys:
             self.ids[key].error = True
-
-    # def _setBackgroundColor(self):
-    #     '''Determine what color to set the background'''
-    #     if self.focus == True:
-    #         self.
 
 
 class PopInput(TextInput):
     '''An input with special functions'''
     def __init__(self, **kwargs):
         super(PopInput, self).__init__(**kwargs)
-
-    # def _setBackgroundColor(self):
-    #     if self.focus == True:
-    #         return (.8,.8,1,1)
-    #     elif self.error == True:
-    #         return (1,.7,.7,1)
-    #     else:
-    #         return (1,1,1,1)

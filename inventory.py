@@ -78,21 +78,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'text color': (1, 1, 1, 1),
             'title font name': 'segoesc',}
 
-        self.validations = {
-            'allowed button calls': (
-                'changeScreen',
-                'createAccount',
-                'login',
-                'createThingPopup',
-                'createContainerPopup',
-                'createInventoryObject'
-            )
-        }
-
         self.logInfo(f'Started session with settings:\n{pformat(self.settings, indent=4)}')
         self.logInfo(f'Started session with settings:\n{pformat(self.kv_settings, indent=4)}')
-        log = f'Started session with validations:\n{pformat(self.validations, indent=4)}'
-        self.logInfo(log)
 
         # Set window color:  black: (0, 0, 0, 1), white: (1, 1, 1, 1)
         Window.clearcolor = (0, 0, 0, 1)

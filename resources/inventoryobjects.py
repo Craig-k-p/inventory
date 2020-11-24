@@ -33,14 +33,53 @@ class InventoryObject():
            things - None; dummy kwarg to prevent errors from kwarg unpacking from file load
            container -  None; dummy kwarg to prevent errors kwarg unpacking from file load'''
         self.ID = ID
-        self.description = description
-        self.usd_value = usd_value
-        self.weight = weight
+        self._description = description
+        self._usd_value = usd_value
+        self._weight = weight
         self.tags = set()
         self.widget = None
         self.data_grid = None
         self.addTags(tags)
         InventoryObject.objs[self.ID] = self
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, description):
+        if isinstance(description, str):
+            if self._description != description:
+                self._description = description
+                self.changeMade()
+        else:
+            raise TypeError(f'Was expecting type str for desc. Got {type(description)}')
+
+    @property
+    def usd_value(self):
+        return self._usd_value
+
+    @usd_value.setter
+    def usd_value(self, usd_value):
+        if isinstance(usd_value, (str, int, float)):
+            if self._usd_value != usd_value:
+                self._usd_value = usd_value
+                self.changeMade()
+        else:
+            raise TypeError(f'Was expecting type str, int, or float for usd_val. Got {type(usd_value)}')
+
+    @property
+    def weight(self):
+        return self._weight
+
+    @weight.setter
+    def weight(self, weight):
+        if isinstance(weight, (str, int, float)):
+            if self._weight != weight:
+                self._weight = weight
+                self.changeMade()
+        else:
+            raise TypeError(f'Was expecting type str, int, or float for weight. Got {type(weight)}')
 
     def addTags(self, tags):
         '''Take a string or list of tags and adds them to self.tags as a list'''

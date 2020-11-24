@@ -27,16 +27,16 @@ class Toolbar(BoxLayout, LogMethods):
         self.logDebug('Checking app.sm.current for a match')
         self.logDebug(f'self.app.sm.current = {self.app.sm.current}')
         if self.app.sm.current == 'container':
-            self.app.buttonPress('createThingPopup', None, None)
+            self.app.buttonPress('thingPopup', None, None)
         elif self.app.sm.current == 'account':
-            self.app.buttonPress('createContainerPopup', None, None)
+            self.app.buttonPress('containerPopup', None, None)
 
     def editObject(self):
         '''Open a popup to edit the selected object'''
         if self.app.sm.current == 'container':
-            self.app.buttonPress('createThingPopup', None, None)
+            self.app.thingPopup(thing=self.app.Selection.get(suppress=True).getObj())
         elif self.app.sm.current == 'account':
-            self.app.buttonPress('createContainerPopup', None, None)
+            self.app.containerPopup(container=self.app.Selection.get(suppress=True).getObj())
 
     def presentOptions(self):
         '''Display toolbar options for selected objects in user's inventory'''
@@ -48,7 +48,7 @@ class Toolbar(BoxLayout, LogMethods):
 
             # Allows us to assign call_edit to the on_press variable without calling
             # the function within the lambda declaration
-            call_edit = lambda call_return : print()
+            call_edit = lambda call_return : self.editObject()
 
             # Allows us to assign call_move to the on_press variable without calling
             # the function within the lambda declaration

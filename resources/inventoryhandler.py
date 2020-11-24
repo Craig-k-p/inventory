@@ -39,6 +39,13 @@ class InventoryHandler():
         else:
             pass
 
+    def updateObjectData(self, popup, object_class_str):
+        '''Update an inventory item's data from user input'''
+        popup.inventory_object.description = popup.description.text
+        popup.inventory_object.usd_value = popup.usd_value.text
+        popup.inventory_object.weight = popup.weight.text
+        # popup.inventory_object.tags += popup.tags.text
+
     def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''
         self.logDebug(f'Creating a thing with ID {data["ID"]}:')

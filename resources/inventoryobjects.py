@@ -330,10 +330,6 @@ class InventoryObject():
 
         Logger.debug(f'InvObjs.py: {InventoryObject.objs}')
 
-    # @classmethod
-    # def wasChanged(cls):
-    #     return InventoryObject.changes_made
-
 
 class Thing(InventoryObject, LogMethods):
     '''Child class that handles things not meant to be containers'''

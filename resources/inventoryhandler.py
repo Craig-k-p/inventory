@@ -41,6 +41,7 @@ class InventoryHandler():
 
     def updateObjectData(self, popup, object_class_str):
         '''Update an inventory item's data from user input'''
+        self.logDebug('Updating the object\'s data')
         popup.inventory_object.description = popup.description.text
         popup.inventory_object.usd_value = popup.usd_value.text
         popup.inventory_object.weight = popup.weight.text
@@ -115,7 +116,7 @@ class InventoryHandler():
     def saveData(self):
         '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
 
-        if InventoryObject.wasChanged() == True:
+        if self.inventoryobject.saveNeeded() == True:
             self.logDebug('Changes were made. Getting data to save')
             data = InventoryObject.getSaveData()
             self.logDebug('Saving the JSON data to the save file')

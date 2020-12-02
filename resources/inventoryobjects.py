@@ -10,6 +10,8 @@ class InventoryObject():
     ID_counter = 0         # Unique ID counter for each of the user's objects
     objs = {}               # All InventoryObject and inherited instances
     changes_made = False    # Flag to determine whether a save is needed
+                            #   It is very important that this is changed using
+                            #   InventoryObject.changeMade(), not self.changeMade()
     search_term = ''        # Search term assigned by applySearch method
     clicked = None
 
@@ -44,40 +46,61 @@ class InventoryObject():
 
     @property
     def description(self):
+        '''This is called when "self.description" is used in code'''
         return self._description
 
     @description.setter
     def description(self, description):
+        '''This is called when "self.description = 'an example str'" is used in code'''
+        # Check for a string type
         if isinstance(description, str):
+            # Make sure the string is new and assign it
             if self._description != description:
                 self._description = description
-                self.changeMade()
-        else:
+                # Flag a change made to the inventory
+                InventoryObject.changeMade()
+            else:
+                self.logDebug(f'"{description}" is already the description')
+        else:  # Raise an error if the wrong type is found
             raise TypeError(f'Was expecting type str for desc. Got {type(description)}')
 
     @property
     def usd_value(self):
+        '''This is called when "self.usd_value" is used in code'''
         return self._usd_value
 
     @usd_value.setter
     def usd_value(self, usd_value):
+        '''This is called when "self.usd_value = 123" is used in code'''
+        # Check for a string, int, or float type
         if isinstance(usd_value, (str, int, float)):
+            self.logDebug(f'{self} usd_value.setter called with value {usd_value}')
+            # Make sure the value is new and assign it
             if self._usd_value != usd_value:
                 self._usd_value = usd_value
-                self.changeMade()
-        else:
+                self.logDebug(f'{usd_value} is a new value. Calling changeMade method')
+                # Flag a change made to the inventory
+                InventoryObject.changeMade()
+            else:
+                self.logDebug(f'usd_value {usd_value} already saved')
+        else:  # Raise an error if str, int, or float was not provided
             raise TypeError(f'Was expecting type str, int, or float for usd_val. Got {type(usd_value)}')
 
     @property
     def weight(self):
+        '''This is called when "self.weight" is used in code'''
         return self._weight
 
     @weight.setter
     def weight(self, weight):
+        '''This is called when "self.weight = 123" is used in code'''
+        # Check for a string, int, or float type
         if isinstance(weight, (str, int, float)):
+            # assign the value if it is new
             if self._weight != weight:
                 self._weight = weight
-                self.changeMade()
+                # Flag a change made to the inventory
+                InventoryObject.changeMade()
         else:
             raise TypeError(f'Was expecting type str, int, or float for weight. Got {type(weight)}')
 
@@ -88,12 +111,12 @@ class InventoryObject():
             tags = set(tags)
         elif isinstance(tags, set):
             self.tags = tags | self.tags  # Combine the elements of each set into one set
-            self.changes_made = True
+            InventoryObject.changes_made = True
         # Turn the string into a list of tags and combine it with tags
         elif isinstance(tags, str) and tags != '':
             tags = self._fixTags(tags)
             self.tags = tags | self.tags  # Combine the elements of each set into one set
-            self.changes_made = True
+            InventoryObject.changes_made = True
 
         elif tags == '':
             pass
@@ -133,13 +156,6 @@ class InventoryObject():
             tags = self._fixTags(tags)
             self.tags = self.tags - tags
             self.changes_made = True
-
-    def saveNeeded(self):
-        '''Return True if a save is needed, False otherwise'''
-        if self.changes_made == True:
-            return True
-        else:
-            return False
 
     def undrawWidget(self):
         '''Undraw the widget if it is drawn'''
@@ -193,6 +209,7 @@ class InventoryObject():
     def changeMade(cls):
         '''Set the changes_made flag for saving data in the future'''
         cls.changes_made = True
+        Logger.debug(f': {cls}.changes_made = {cls.changes_made}')
 
     @classmethod
     def checkLoad(cls):
@@ -276,6 +293,15 @@ class InventoryObject():
                 return cls.ID_counter
 
     @classmethod
+    def saveNeeded(cls):
+        '''Return True if a save is needed, False otherwise'''
+        Logger.debug(f': {cls}.changes_made = {cls.changes_made}')
+        if cls.changes_made == True:
+            return True
+        else:
+            return False
+
+    @classmethod
     def setBounds(cls, data_grid, touch):
         '''Set the bounds for each child widget of the data_grid'''
         for ID in cls.objs:
@@ -304,9 +330,9 @@ class InventoryObject():
 
         Logger.debug(f'InvObjs.py: {InventoryObject.objs}')
 
-    @classmethod
-    def wasChanged(cls):
-        return InventoryObject.changes_made
+    # @classmethod
+    # def wasChanged(cls):
+    #     return InventoryObject.changes_made
 
 
 class Thing(InventoryObject, LogMethods):

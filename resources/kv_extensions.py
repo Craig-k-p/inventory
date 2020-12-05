@@ -118,6 +118,7 @@ class KivyExtensions():
         current_screen = self.sm.current_screen
 
         # Create the text messages necessary for the popup found in kv_screens.py
+        # Used by login screen
         current_screen.initDefaultPopupText()
 
         # Load the popup content from file and create an instance of PopupContent

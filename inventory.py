@@ -21,7 +21,6 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
-# from kivy.properties import NumericProperty
 
 from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen
 from graphics.py.pre_auth.screens import InventoryScreenManager

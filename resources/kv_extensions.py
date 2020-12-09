@@ -136,6 +136,8 @@ class KivyExtensions():
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
 
+        self.logDebug(f'Popup.tags: {type(self.popup.tags)}')
+
         # Assign the popup
         popup_content.assignParentMethod(self.pop.dismiss)
 
@@ -168,9 +170,10 @@ class KivyExtensions():
                          size_hint=(.9, .9),
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
-
-        # Set the field values to match the existing container values
-        popup_content.setContainerValues()
+        # If a container was provided to edit..
+        if container != None:
+            # Set the text input fields to match the saved values
+            popup_content.setContainerValues()
 
         # Open the popup
         self.logDebug('Opening the popup..')
@@ -186,6 +189,7 @@ class KivyExtensions():
         # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
         popup_content = PopupThingContent(thing)
 
+        # If a thing was provided, this is an edit
         if thing != None:
             pop_title = 'Edit item'
         else:
@@ -201,8 +205,10 @@ class KivyExtensions():
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
 
-        # Set the field values to match the existing item values
-        popup_content.setThingValues()
+        # If a thing was provided to edit..
+        if thing != None:
+            # Set the text input fields to match the saved values
+            popup_content.setThingValues()
 
         # Open the popup
         self.logDebug('Opening the popup..')

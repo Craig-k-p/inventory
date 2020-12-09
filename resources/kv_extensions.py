@@ -25,7 +25,6 @@ class KivyExtensions():
         ''' Do various things like log the user in and change the current screen.
             screen -> string
             command -> function name as string
-            direction -> 'left', 'right', 'up', or 'down'
             kv_object_reference -> kv popup content instance (defined in popups.kv)
             object_class_str -> 'Thing' or 'Container'
 
@@ -42,7 +41,6 @@ class KivyExtensions():
         log = 'Button pressed. Received input:'
         log += f'\n\tscreen: {screen}'
         log += f'\n\tcall: {call}'
-        log += f'\n\tdirection: {direction}'
         self.logDebug(log)
 
         if screen == 'back':
@@ -80,21 +78,21 @@ class KivyExtensions():
         authentication.
         '''
         if screen == 'back':
-            self.sm.transition.direction = 'right'
-
+            InventoryObject.search_term = ''
             if self.sm.current_screen.name == 'account':
                 self.sm.current = 'login'
             elif self.sm.current_screen.name == 'container':
                 self.sm.current = 'account'
                 #  Update the selected object to match the current screen
                 self.Selection(self.Selection.getLastContainer().getObj())
+                # Update visible inventory
+                InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
 
         else:
             try:
                 self.sm.current_screen.resetTextInputs()
             except AttributeError:
                 pass
-            self.sm.transition.direction = direction
             self.sm.current = screen
 
             try:

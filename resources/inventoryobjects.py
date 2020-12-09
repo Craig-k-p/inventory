@@ -39,9 +39,10 @@ class InventoryObject():
         self._usd_value = usd_value
         self._weight = weight
         self.tags = set()
+        self.addTags(tags)
+        self._setTagSearchString()
         self.widget = None
         self.data_grid = None
-        self.addTags(tags)
         InventoryObject.objs[self.ID] = self
 
     @property
@@ -109,13 +110,18 @@ class InventoryObject():
         # Combine the list of tags
         if isinstance(tags, list):
             tags = set(tags)
+            self.tags = tags | self.tags  # Combine the elements of each set into one set
+            self._setTagSearchString()
+            InventoryObject.changes_made = True
         elif isinstance(tags, set):
             self.tags = tags | self.tags  # Combine the elements of each set into one set
+            self._setTagSearchString()
             InventoryObject.changes_made = True
         # Turn the string into a list of tags and combine it with tags
         elif isinstance(tags, str) and tags != '':
             tags = self._fixTags(tags)
             self.tags = tags | self.tags  # Combine the elements of each set into one set
+            self._setTagSearchString()
             InventoryObject.changes_made = True
 
         elif tags == '':
@@ -169,39 +175,54 @@ class InventoryObject():
         # If there is no search term, return True
         if self.search_term == '':
             return True
-            self.logDebug(f'No search term. Returning True')
-
         else:
             # If the search term is in the description str return True
             if self.search_term in self.description.lower():
                 self.logDebug(f'{self.search_term} found in {self.description}. Return True')
                 return True
             # If the search term is in the set of tags return True
-            elif self.search_term in self.tags:
-                self.logDebug(f'{self.search_term} found in {self.tags}. Return True')
+            elif self.search_term in self.tag_search_str:
                 return True
             # If there is no match, return False
             else:
                 self.logDebug(f'{self.search_term} not found. Return False')
                 return False
 
+    def _checkSearchTags(self):
+        '''Searches all tags for a match to the search term'''
+
+        # Join all tags into one string, using a newline between each tag
+        tag_str = '\n'.join(self.tags)
+        # Make all search_term characters lower case and search the string
+        if self.search_term.lower() in tag_str:
+            return True
+        else:
+            return False
+
     def _fixTags(self, tags):
         '''Turn the string of tags into a set of tags'''
+
         # Remove surrounding blank characters and split the tags up by spaces
         tags = tags.strip()
+        tags = tags.lower()
         tags = set(tags.split(' '))
-        # Replace underscores with spaces
-        for n in tags:
-            n = n.replace('_', ' ')
-
         return tags
+
+    def _setTagSearchString(self):
+        '''Turn the set of tags into a searchable string'''
+        if len(self.tags) == 0:
+            self.tag_search_str = ''
+        else:
+            self.tag_search_str = '\n'.join(self.tags)
+            self.tag_search_str = self.tag_search_str.replace('_', ' ')
 
     @classmethod
     def applySearch(cls, search_widget, search_term):
         '''Assign cls.search_term to find matching objects when cls.updateWidgets
            is called'''
         Logger.debug(f'applySearch: Search term "{search_term}" applied')
-        cls.search_term = search_term
+        search_term = search_term.strip()
+        cls.search_term = search_term.lower()
 
         cls.updateWidgets(cls.app.sm.current_screen.data_grid)
 

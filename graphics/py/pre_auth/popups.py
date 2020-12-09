@@ -124,7 +124,10 @@ class PopupThingContent(ScrollView, LogMethods):
         self.usd_value.text = self.inventory_object.usd_value
         self.weight.text = self.inventory_object.weight
         # Tags need to be changed back to string only format for this to work properly
-        # self.tags.text = self.container.tags
+        # The tags need to be in the same format the user entered them as
+        tags_str = self.inventory_object.tag_search_str.replace(' ', '_')
+        tags_str = tags_str.replace('\n', ' ')
+        self.tags.text = tags_str
 
     def updateTextInputErrors(self, keys):
         '''Change the text inputs with an error to a red tone. Accepts a list of keys
@@ -158,13 +161,18 @@ class PopupContainerContent(ScrollView, LogMethods):
         else:
             self.submit_button.text = 'Add to inventory'
 
+        self.logDebug(f'Popup.tags: {type(self.tags)}')
+
     def setContainerValues(self):
         '''Fill the textinput boxes with the object's data'''
         self.description.text = self.inventory_object.description
         self.usd_value.text = self.inventory_object.usd_value
         self.weight.text = self.inventory_object.weight
         # Tags need to be changed back to string only format for this to work properly
-        # self.tags.text = self.container.tags
+        # The tags need to be in the same format the user entered them as
+        tags_str = self.inventory_object.tag_search_str.replace(' ', '_')
+        tags_str = tags_str.replace('\n', ' ')
+        self.tags.text = tags_str
 
     def updateTextInputErrors(self, keys):
         '''Change the text inputs with an error to a red tone. Accepts a list of keys

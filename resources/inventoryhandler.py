@@ -44,6 +44,11 @@ class InventoryHandler():
         popup.inventory_object.usd_value = popup.usd_value.text
         popup.inventory_object.weight = popup.weight.text
         popup.inventory_object.addTags(popup.tags.text)
+        popup.inventory_object.widget.assignValues()
+
+        if object_class_str == 'thing':
+            popup.inventory_object.getContainer().widget.assignValues()
+
 
     def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''

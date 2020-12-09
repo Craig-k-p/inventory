@@ -116,16 +116,14 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
         s += f'widget: {self.parent}>>'
         return s
 
-    def assignValues(self, update=False):
+    def assignValues(self):
         self.logDebug(f'Assigning data from {self.object}')
+        self.obj_label.text = str(self.object.description)
         self.val_label.text = str(self.object.getValue())
         self.weight_label.text = str(self.object.getWeight())
+        self.loc_label.text = 'Home'
 
         self.logDebug(f'assignValues: lbs {self.object.getWeight()}, ${self.object.getValue()}')
-
-        if update == False:
-            self.obj_label.text = str(self.object.description)
-            self.loc_label.text = 'Home'
 
 
 class ThingHeadingRow(GridLayout, LogMethods):

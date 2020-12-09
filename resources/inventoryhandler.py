@@ -31,8 +31,6 @@ class InventoryHandler():
             # Add a new row with the new data to the user's screen
             self.sm.current_screen.data_grid.addDataRow(new_object)
 
-            InventoryObject.debugDump()
-
             # Return the object's data
             return data
 
@@ -45,7 +43,7 @@ class InventoryHandler():
         popup.inventory_object.description = popup.description.text
         popup.inventory_object.usd_value = popup.usd_value.text
         popup.inventory_object.weight = popup.weight.text
-        # popup.inventory_object.tags += popup.tags.text
+        popup.inventory_object.addTags(popup.tags.text)
 
     def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''

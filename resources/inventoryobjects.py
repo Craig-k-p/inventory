@@ -23,7 +23,8 @@ class InventoryObject():
             weight=0,
             tags='',
             things=None,
-            container=None     ):
+            container=None,
+            location=None     ):
         '''Create an instance of Inventory object and assign its ID, description,
            USD value, weight, and tags. Add it to the InventoryObject.objs dictionary
            Takes input:
@@ -38,6 +39,7 @@ class InventoryObject():
         self._description = description
         self._usd_value = usd_value
         self._weight = weight
+        self._location = location
         self.tags = set()
         self.addTags(tags)
         self._setTagSearchString()
@@ -64,6 +66,26 @@ class InventoryObject():
                 self.logDebug(f'"{description}" is already the description')
         else:  # Raise an error if the wrong type is found
             raise TypeError(f'Was expecting type str for desc. Got {type(description)}')
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, location):
+        '''This is called when "self.location = 'an example str'" is used in code'''
+        # Check for a string type
+        if isinstance(location, str):
+            # Make sure the string is new and assign it
+            if self._location != location:
+                self._location = location
+                # Flag a change made to the inventory
+                InventoryObject.changeMade()
+            else:
+                self.logDebug(f'"{location}" is already the location')
+        else:  # Raise an error if the wrong type is found
+            raise TypeError(f'Was expecting type str for location. Got {type(location)}')
+
 
     @property
     def usd_value(self):
@@ -290,6 +312,7 @@ class InventoryObject():
                 d = data['container']
                 d[ID] = {}
                 d[ID]['things'] = list(obj.things)
+                d[ID]['location'] = obj.location
 
             else:
                 Logger.critical(
@@ -406,10 +429,6 @@ class Thing(InventoryObject, LogMethods):
         else:
             return False
 
-    def isInside(self):
-        '''Return the Container for this Thing'''
-        return self.getByID(self.container)
-
     def moveTo(self, destination):
         '''Move the the Thing instance. Accepts a container ID or None as destination'''
         if destination == None:
@@ -493,15 +512,24 @@ class Container(InventoryObject, LogMethods):
     def addThing(self, ID, new_instance=True):
         '''Add a thing to the container. Turn self.things into a dict if it hasn't been,
            add the Thing to self.things and flag a change'''
-
-        self.logDebug(f'Adding {self.app.Selection.get(suppress=True).getObj().description} to {self.description}')
+        log = f'Adding {self.app.Selection.get(suppress=True).getObj().description}'
+        log += f' to {self.description}'
+        self.logDebug(log)
         self.things.append(str(ID))
 
         if new_instance == False:
-            self.logDebug(f'Removed {InventoryObject.getByID(ID)} from {self.app.Selection.getLastContainer().getObj().description}')
+            log = f'Removing {InventoryObject.getByID(ID)} from '
+            log += f'{self.app.Selection.getLastContainer().getObj().description}'
+            self.logDebug(log)
             self.app.Selection.getLastContainer().getObj().removeThing(ID)
+
+            thing = InventoryObject.getByID(ID)
+            self.logDebug(f'Thing being added to this container: {thing}')
+            thing.container = self.ID
+
             self.app.pop.dismiss()
             InventoryObject.updateWidgets(self.data_grid)
+
         self.contentChanged()
         self.changeMade()
 

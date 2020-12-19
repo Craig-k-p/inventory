@@ -259,7 +259,7 @@ class InventoryObject():
 
     @classmethod
     def getByID(cls, ID):
-        '''Return an object with the give ID (str)'''
+        '''Return an object with the given ID (str)'''
         if int(ID) in cls.objs.keys():
             return cls.objs[int(ID)]
         elif str(ID) in cls.objs.keys():
@@ -490,11 +490,18 @@ class Container(InventoryObject, LogMethods):
         s += f'and {len(self.things)} Thing(s)'
         return s + '>'
 
-    def addThing(self, ID):
+    def addThing(self, ID, new_instance=True):
         '''Add a thing to the container. Turn self.things into a dict if it hasn't been,
            add the Thing to self.things and flag a change'''
-        self.logDebug(f'Adding Thing {ID} to Container {self.ID}')
+
+        self.logDebug(f'Adding {self.app.Selection.get(suppress=True).getObj().description} to {self.description}')
         self.things.append(str(ID))
+
+        if new_instance == False:
+            self.logDebug(f'Removed {InventoryObject.getByID(ID)} from {self.app.Selection.getLastContainer().getObj().description}')
+            self.app.Selection.getLastContainer().getObj().removeThing(ID)
+            self.app.pop.dismiss()
+            InventoryObject.updateWidgets(self.data_grid)
         self.contentChanged()
         self.changeMade()
 
@@ -549,10 +556,8 @@ class Container(InventoryObject, LogMethods):
     def getWeight(self):
         '''Return the total weight of the container and its contents'''
         weight = float(self.weight)
-        self.logDebug(f'things {self.things}')
         for ID in self.things:
             weight += float(InventoryObject.getByID(ID).weight)
-            self.logDebug(f'ID: {ID}')
         return int(weight)
 
     def hasContents(self):
@@ -565,19 +570,19 @@ class Container(InventoryObject, LogMethods):
     def removeThing(self, thing):
         '''Remove the provided Thing object if it is inside the Container'''
         log = f'Container.removeThing: ID-{self.ID} things-{self.things}'
-        log += f'\n\tthing-{thing}'
+        log += f'\n\tremoving thing-{thing}'
         self.logDebug(log)
         if isinstance(thing, (int, str)):
             if int(thing) in self.things:
                 self.changeMade()
                 InventoryObject.getByID(thing).container = None
                 self.things.remove(int(thing))
-                self.widget.assignValues(update=True)
+                self.widget.assignValues()
             elif str(thing) in self.things:
                 self.changeMade()
                 InventoryObject.getByID(thing).container = None
                 self.things.remove(str(thing))
-                self.widget.assignValues(update=True)
+                self.widget.assignValues()
 
             else:
                 raise Exception(f'{thing} {type(thing)} was not deleted')
@@ -586,11 +591,11 @@ class Container(InventoryObject, LogMethods):
             raise TypeError(msg)
 
     def updateWidget(self, data_grid=None):
-        '''Make sure the widget has a Datadata_grid assigned and the widget category matches the
+        '''Make sure the widget has a data_grid assigned and the widget category matches the
            data_grid's. Add the data_grid if necessary.  Check if the widget needs to be drawn and
            draw if necessary.'''
         if self.content_changed == True:
-            self.widget.assignValues(update=True)
+            self.widget.assignValues()
             self.content_changed = False
 
         self.logDebug(f'{self.description} is checking for a data_grid')

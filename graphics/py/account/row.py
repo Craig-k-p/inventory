@@ -123,7 +123,7 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
         self.weight_label.text = str(self.object.getWeight())
         self.loc_label.text = 'Home'
 
-        self.logDebug(f'assignValues: lbs {self.object.getWeight()}, ${self.object.getValue()}')
+        self.logDebug(f'got values: {self.object.getWeight()} lbs, ${self.object.getValue()}')
 
 
 class ThingHeadingRow(GridLayout, LogMethods):
@@ -200,6 +200,7 @@ class ThingDataRow(GridLayout, DataRow, LogMethods):
         return s
 
     def assignValues(self):
+        '''Update/assign the widgets' text values'''
         self.logDebug(f'Assigning data from {self.object}')
 
         self.obj_label.text = str(self.object.description)

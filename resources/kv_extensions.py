@@ -8,7 +8,9 @@ from resources.inventoryobjects import InventoryObject
 from graphics.py.account.row import ContainerDataRow, ThingDataRow
 from graphics.py.pre_auth.popups import PopupThingContent, PopupContainerContent
 from graphics.py.pre_auth.popups import PopupErrorContent, PopupMoveContent
-from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
+from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen
+from graphics.py.account.screens import ThingOverviewScreen
+from resources.inventoryobjects import Thing, Container
 
 
 class KivyExtensions():
@@ -114,10 +116,17 @@ class KivyExtensions():
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
+        selected = self.Selection.get(suppress=True).getObj()
 
         if move == True:
-            pop_title = f'Move {self.Selection.get(suppress=True).getObj().description}'
-            pop_title += f' from {self.Selection.getLastContainer().getObj().description} to...'
+            pop_title = f'Move {selected.description}'
+            if isinstance(selected, Thing):
+                pop_title += f' from {self.Selection.getLastContainer().getObj().description} to...'
+            elif isinstance(selected, Container):
+                pop_title += f' from {selected.location} to...'
+            else:
+                self.logWarning(f'Selection is wrong type ({type(selected)}) to move')
+                return
             popup_content = PopupMoveContent(self)
 
         # Create the popup, assign the title, content, etc

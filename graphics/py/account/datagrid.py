@@ -3,8 +3,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle
 from kivy.graphics.instructions import InstructionGroup
-from kivy.properties import ObjectProperty, StringProperty, NumericProperty
-from kivy.clock import Clock
+from kivy.properties import ObjectProperty
 
 from resources.utilities import LogMethods
 from resources.inventoryobjects import Thing, Container, InventoryObject

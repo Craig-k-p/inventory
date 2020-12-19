@@ -41,7 +41,7 @@ class UtilityMethods():
 
 
 class LogMethods():
-    filter = ['inventory.py', 'inventoryhandler.py', 'inventoryobjects.py', 'popups.py']
+    filter = []
     def __initLog__(self, file_str='', class_str=''):
         ''' It looksl like Kivy has it's own implementation of logging.  Instead of creating a custom
             logger, scroll to the bottom of this doc string.

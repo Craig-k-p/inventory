@@ -38,6 +38,10 @@ class Toolbar(BoxLayout, LogMethods):
         elif self.app.sm.current == 'account':
             self.app.containerPopup(container=self.app.Selection.get(suppress=True).getObj())
 
+    def moveObject(self):
+        '''Open a popup to give the user options for moving the inventory to a new container'''
+        self.app.createPopup(move=True)
+
     def presentOptions(self):
         '''Display toolbar options for selected objects in user's inventory'''
 
@@ -52,7 +56,8 @@ class Toolbar(BoxLayout, LogMethods):
 
             # Allows us to assign call_move to the on_press variable without calling
             # the function within the lambda declaration
-            call_move = lambda call_return : print()
+            call_move = lambda call_return : self.moveObject()
+            # call_move = lambda call_return : self.app.createPopup(move=True)
 
             self.options = [
                     Button(

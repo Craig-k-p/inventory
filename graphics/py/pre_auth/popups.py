@@ -21,12 +21,9 @@ class PopupErrorContent(GridLayout, LogMethods):
     box = ObjectProperty(None)
 
     def __init__(self, widgets, current_screen, is_yes_no=False, **kwargs):
-        '''Grab a list of child widgets to be added to the popup after self.parent (reference to the parent
-           popup) is assigned.
+        '''Grab a list of child widgets to be added to the popup after self.parent
+           (reference to the parent popup) is assigned.
            widgets -> list of Kivy widgets'''
-
-        # Allows us to call our own PopupContent.__init__() without overriding Kivy's FloatLayout.__init__()
-        super(PopupErrorContent, self).__init__(**kwargs)
         self.cols = 1
         self.pos_hint = {'x': 0, 'y': 0}
 

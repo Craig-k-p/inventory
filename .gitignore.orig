@@ -2,5 +2,10 @@ ignore.*
 data
 *pycache*
 *.bat
+<<<<<<< HEAD
+*.lnk
+=======
+>>>>>>> toolbar_button_functionality
 ingore.runApp.bat - Shortcut
 ingore.runApp.bat
+Ignores

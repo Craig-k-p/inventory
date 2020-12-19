@@ -80,6 +80,7 @@ class InventoryObject():
             if self._location != location:
                 self._location = location
                 # Flag a change made to the inventory
+                self.logDebug(f'Location of {self.description} changed to {location}')
                 InventoryObject.changeMade()
             else:
                 self.logDebug(f'"{location}" is already the location')

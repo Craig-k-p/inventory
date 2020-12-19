@@ -121,9 +121,9 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
         self.obj_label.text = str(self.object.description)
         self.val_label.text = str(self.object.getValue())
         self.weight_label.text = str(self.object.getWeight())
-        self.loc_label.text = 'Home'
+        self.loc_label.text = self.object.location
 
-        self.logDebug(f'got values: {self.object.getWeight()} lbs, ${self.object.getValue()}')
+        self.logDebug(f'got values: {self.weight_label.text} lbs, ${self.val_label.text}')
 
 
 class ThingHeadingRow(GridLayout, LogMethods):

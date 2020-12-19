@@ -6,7 +6,8 @@ from kivy.uix.textinput import TextInput
 
 from resources.inventoryobjects import InventoryObject
 from graphics.py.account.row import ContainerDataRow, ThingDataRow
-from graphics.py.pre_auth.popups import PopupErrorContent, PopupThingContent, PopupContainerContent
+from graphics.py.pre_auth.popups import PopupThingContent, PopupContainerContent
+from graphics.py.pre_auth.popups import PopupErrorContent, PopupMoveContent
 from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
 
 
@@ -104,44 +105,40 @@ class KivyExtensions():
     def createAccount(self, new_screen, direction):
         pass
 
-    def createPopup(self):
+    def createPopup(self, move=False):
         '''Method that does the following:
             -Load the kv file that defines what goes into the popup
             -Create an instance of Popup
-            -Set the text for the label and button
             -Draw the popup to the screen
             -Unload the file to avoid errors.'''
-
-        # Get the current screen
-        current_screen = self.sm.current_screen
-
-        # Create the text messages necessary for the popup found in kv_screens.py
-        # Used by login screen
-        current_screen.initDefaultPopupText()
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
 
-        # Create an instance of popup content found in popup.py and popups.kv
-        popup_content = PopupErrorContent(self._createPopupErrorLabels(), current_screen)
+        if move == True:
+            pop_title = f'Move {self.Selection.get(suppress=True).getObj().description}'
+            pop_title += f' from {self.Selection.getLastContainer().getObj().description} to...'
+            popup_content = PopupMoveContent(self)
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
-        self.pop = Popup(title='',
-                         separator_height=0,
+        self.pop = Popup(title=pop_title,
+                         title_size=24,
+                         separator_height=2,
                          content=popup_content,
                          size_hint=self.kv_settings['popup size_hint'],
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
+        self.pop.open()
 
-        self.logDebug(f'Popup.tags: {type(self.popup.tags)}')
-
-        # Assign the popup
-        popup_content.assignParentMethod(self.pop.dismiss)
+        if move != True:
+            # Assign the popup
+            popup_content.assignParentMethod(self.pop.dismiss)
+        else:
+            popup_content.fill()
 
         # Open the popup
         self.logDebug('Opening the popup..')
-        self.pop.open()
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
@@ -150,11 +147,11 @@ class KivyExtensions():
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
 
-        # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
+        # Create an instance of PopupContainerContent found in popup.py and popups.kv
         popup_content = PopupContainerContent(container)
         # If a container instance was provided, this is an edit
         if container != None:
-            pop_title = 'Edit container'
+            pop_title = f'Edit {self.Selection.get(suppress=True).getObj().description}'
         # If not, this is a new container
         else:
             pop_title = 'Add container to inventory'
@@ -184,12 +181,12 @@ class KivyExtensions():
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
 
-        # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
+        # Create an instance of PopupThingContent found in popup.py and popups.kv
         popup_content = PopupThingContent(thing)
 
         # If a thing was provided, this is an edit
         if thing != None:
-            pop_title = 'Edit item'
+            pop_title = f'Edit {self.Selection.get(suppress=True).getObj().description}'
         else:
             pop_title = 'Add item to container'
 
@@ -197,7 +194,6 @@ class KivyExtensions():
         # auto_dismiss prevents clicking outside of the popup to close the popup
         self.pop = Popup(title=pop_title,
                          title_size=24,
-                         separator_height=2,
                          content=popup_content,
                          size_hint=(.9, .9),
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
@@ -287,7 +283,6 @@ class KivyExtensions():
 
         # Return True if no empty fields were found
         return True
-
 
     def _getObjectCreationUserInput(self, popup_content):
         '''Get user input text from popup fields for container and object creation

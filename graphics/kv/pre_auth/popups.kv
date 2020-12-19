@@ -17,6 +17,7 @@
 
 
 <MoveButton>:
+    color: app.kv_settings['text color']
     font_size: 18
 
 
@@ -233,3 +234,22 @@
         row_force_default: True
         padding: 20
         spacing: 20
+
+# Makes the submit and cancel buttons for moving a container
+<PopupMoveContainerContent>:
+    submit_button: submit_button
+    size_hint: (1, 1)
+    cols: 2
+    MoveButton:
+        size_hint: (.3, .3)
+        size: (120,70)
+        text: 'Cancel'
+        on_release: app.pop.dismiss()
+    MoveButton:
+        id: submit_button
+        size_hint: (.3, .3)
+        size: (120,70)
+        text: 'Submit'
+        on_release:
+            self.move(is_container=True)
+            app.pop.dismiss()

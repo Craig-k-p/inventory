@@ -5,9 +5,7 @@
     obj_label: obj_label
     weight_label: weight_label
     val_label: val_label
-    # Location field should be a dropdown of all locations typed by user with the option to add one
     loc_label: loc_label
-    # Tag field should be a dropdown of all locations typed by user with the option to add one
     tag_button: tag_label
 
     # Object heading
@@ -141,14 +139,11 @@
 <ContainerDataRow>:
     id: data_row
     rows: 1
-    # TextEntry on click
     obj_label: obj_label
     weight_label: weight_label
     val_lo: val_lo
     val_label: val_label
-    # Location field should be a dropdown of all locations typed by user with the option to add one
     loc_label: loc_label
-    # Tag field should be a dropdown of all locations typed by user with the option to add one
     tag_button: tag_button
 
     # Object field
@@ -157,7 +152,6 @@
         # Fit the text into its box:
         #     https://kivy.org/doc/stable/api-kivy.core.text.html
         # AnchorLayout allows me to allign text to one side or the other of it's field
-        # width: 40
         anchor_x: 'left'
         anchor_y: 'center'  # Has no effect if size_hint_y is 1
         size_hint: (1, 1)
@@ -169,7 +163,6 @@
                 size: self.size
         Label:
             id: obj_label
-            text: 'Hard Drives, random capacities'
             color: app.kv_settings['text color']
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
@@ -242,7 +235,6 @@
 
     # Tag button
     FloatLayout:
-        # button: button
         width: 40
         # Setting size_hint: (x=None, y) allows me to manually size the width of the Layout to 40
         size_hint: (None, 1)
@@ -257,4 +249,4 @@
             text: f'{random.randint(1,11)}'
             pos_hint: {'x': 0, 'y': 0}
             on_press:
-                data_row.parent.deleteObject(data_row.ID)
+                pass

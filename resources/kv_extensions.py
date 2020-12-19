@@ -3,13 +3,14 @@ from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
-# from kivy.graphics.context_instructions import Color
-# from kivy.graphics.vertex_instructions import Rectangle
 
 from resources.inventoryobjects import InventoryObject
 from graphics.py.account.row import ContainerDataRow, ThingDataRow
-from graphics.py.pre_auth.popups import PopupErrorContent, PopupCreateThingContent, PopupCreateContainerContent
-from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen, ThingOverviewScreen
+from graphics.py.pre_auth.popups import PopupThingContent, PopupContainerContent
+from graphics.py.pre_auth.popups import PopupErrorContent, PopupMoveContent
+from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen
+from graphics.py.account.screens import ThingOverviewScreen
+from resources.inventoryobjects import Thing, Container
 
 
 class KivyExtensions():
@@ -27,7 +28,6 @@ class KivyExtensions():
         ''' Do various things like log the user in and change the current screen.
             screen -> string
             command -> function name as string
-            direction -> 'left', 'right', 'up', or 'down'
             kv_object_reference -> kv popup content instance (defined in popups.kv)
             object_class_str -> 'Thing' or 'Container'
 
@@ -39,16 +39,11 @@ class KivyExtensions():
                 'createContainerPopup',
                 'createInventoryObject'
 
-            Resources:
-        https://stackoverflow.com/questions/3061/calling-a-function-of-a-module-by-using-its-name-a-string
-        https://stackoverflow.com/questions/1855558/call-method-from-string
-
                 '''
 
         log = 'Button pressed. Received input:'
         log += f'\n\tscreen: {screen}'
         log += f'\n\tcall: {call}'
-        log += f'\n\tdirection: {direction}'
         self.logDebug(log)
 
         if screen == 'back':
@@ -56,7 +51,7 @@ class KivyExtensions():
 
         # If call is among the allowed calls or, in other words, if the string matches a
         # method name
-        elif call in self.validations['allowed button calls']:
+        else:
 
             # Access the class method by string name using getattr
             # self is passed to getattr so it knows in what object to search for call
@@ -72,31 +67,35 @@ class KivyExtensions():
                 if verdict is True:
                     self.pop.dismiss()
 
+    def closePopup(self, popup_content, object_class_str):
+        if popup_content.inventory_object == None:
+            self.createInventoryObject(object_class_str, popup_content)
         else:
-            log = f"Call {call} is not in self.validations['allowed button calls']"
-            self.logCritical(log)
+            self.updateObjectData(popup_content, object_class_str)
+
+        self.pop.dismiss()
+
 
     def changeScreen(self, screen, direction=None):
         '''Change to a screen using direction.  Make sure the screen does not need
         authentication.
-        Implement method to check whether the user is logged in.
         '''
         if screen == 'back':
-            self.sm.transition.direction = 'right'
-
+            InventoryObject.search_term = ''
             if self.sm.current_screen.name == 'account':
                 self.sm.current = 'login'
             elif self.sm.current_screen.name == 'container':
                 self.sm.current = 'account'
                 #  Update the selected object to match the current screen
                 self.Selection(self.Selection.getLastContainer().getObj())
+                # Update visible inventory
+                InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
 
         else:
             try:
                 self.sm.current_screen.resetTextInputs()
             except AttributeError:
                 pass
-            self.sm.transition.direction = direction
             self.sm.current = screen
 
             try:
@@ -108,40 +107,77 @@ class KivyExtensions():
     def createAccount(self, new_screen, direction):
         pass
 
-    def createPopup(self):
+    def createPopup(self, move=False):
         '''Method that does the following:
             -Load the kv file that defines what goes into the popup
             -Create an instance of Popup
-            -Set the text for the label and button
             -Draw the popup to the screen
             -Unload the file to avoid errors.'''
 
-        # Get the current screen
-        current_screen = self.sm.current_screen
-
-        # Create the text messages necessary for the popup found in kv_screens.py
-        current_screen.initDefaultPopupText()
-
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
-        # self.logDebug(f'kivy.lang.Builder loaded the file\
-        #  {self.kv_settings["kv popup file"]}')
+        selected = self.Selection.get(suppress=True).getObj()
 
-        # Create an instance of popup content found in popup.py and popups.kv
-        popup_content = PopupErrorContent(self._createPopupErrorLabels(), current_screen)
+        if move == True:
+            pop_title = f'Move {selected.description}'
+            if isinstance(selected, Thing):
+                pop_title += f' from {self.Selection.getLastContainer().getObj().description} to...'
+            elif isinstance(selected, Container):
+                pop_title += f' from {selected.location} to...'
+            else:
+                self.logWarning(f'Selection is wrong type ({type(selected)}) to move')
+                return
+            popup_content = PopupMoveContent(self)
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
-        self.pop = Popup(title='',
-                         separator_height=0,
+        self.pop = Popup(title=pop_title,
+                         title_size=24,
+                         separator_height=2,
                          content=popup_content,
                          size_hint=self.kv_settings['popup size_hint'],
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
+        self.pop.open()
 
-        # Assign the popup
-        # self.logDebug('Assigning parent method to popup_content')
-        popup_content.assignParentMethod(self.pop.dismiss)
+        if move != True:
+            # Assign the popup
+            popup_content.assignParentMethod(self.pop.dismiss)
+        else:
+            popup_content.fill()
+
+        # Open the popup
+        self.logDebug('Opening the popup..')
+
+        # Make sure the file isn't loaded more than once
+        Builder.unload_file(self.kv_settings['kv popup file'])
+
+    def containerPopup(self, screen=None, direction=None, container=None):
+        # Load the popup content from file and create an instance of PopupContent
+        Builder.load_file(self.kv_settings['kv popup file'])
+
+        # Create an instance of PopupContainerContent found in popup.py and popups.kv
+        popup_content = PopupContainerContent(container)
+        # If a container instance was provided, this is an edit
+        if container != None:
+            pop_title = f'Edit {self.Selection.get(suppress=True).getObj().description}'
+        # If not, this is a new container
+        else:
+            pop_title = 'Add container to inventory'
+
+        # Create the popup, assign the title, content, etc
+        # auto_dismiss prevents clicking outside of the popup to close the popup
+        self.pop = Popup(title=pop_title,
+                         title_size=24,
+                         separator_height=2,
+                         content=popup_content,
+                         size_hint=(.9, .9),
+                         auto_dismiss=self.kv_settings['popup auto_dismiss'],
+                         )
+        # If a container was provided to edit..
+        if container != None:
+            # Set the text input fields to match the saved values
+            popup_content.setContainerValues()
 
         # Open the popup
         self.logDebug('Opening the popup..')
@@ -149,58 +185,33 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-        # self.logDebug(
-        #     f'Used kivy.lang.Builder.unload_file({self.kv_settings["kv popup file"]})'
-        # )
 
-    def createContainerPopup(self, screen=None, direction=None):
+    def thingPopup(self, screen=None, direction=None, thing=None):
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
 
-        # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
-        popup_content = PopupCreateContainerContent()
+        # Create an instance of PopupThingContent found in popup.py and popups.kv
+        popup_content = PopupThingContent(thing)
+
+        # If a thing was provided, this is an edit
+        if thing != None:
+            pop_title = f'Edit {self.Selection.get(suppress=True).getObj().description}'
+        else:
+            pop_title = 'Add item to container'
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
-        self.pop = Popup(title='Create a new container',
+        self.pop = Popup(title=pop_title,
                          title_size=24,
-                         separator_height=2,
                          content=popup_content,
                          size_hint=(.9, .9),
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
 
-        # # Assign the popup
-        # self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
-        # popup_content.assignParentMethod(self.pop.dismiss)
-
-        # Open the popup
-        self.logDebug('Opening the popup..')
-        self.pop.open()
-
-        # Make sure the file isn't loaded more than once
-        Builder.unload_file(self.kv_settings['kv popup file'])
-
-    def createThingPopup(self, screen=None, direction=None):
-        # Load the popup content from file and create an instance of PopupContent
-        Builder.load_file(self.kv_settings['kv popup file'])
-
-        # Create an instance of PopupCreateThingContent found in popup.py and popups.kv
-        popup_content = PopupCreateThingContent()
-
-        # Create the popup, assign the title, content, etc
-        # auto_dismiss prevents clicking outside of the popup to close the popup
-        self.pop = Popup(title='Create a new object',
-                         title_size=24,
-                         separator_height=2,
-                         content=popup_content,
-                         size_hint=(.9, .9),
-                         auto_dismiss=self.kv_settings['popup auto_dismiss'],
-                         )
-
-        # # Assign the popup
-        # self.logDebug('Kv Ops', 'Assigning parent method to popup_content')
-        # popup_content.assignParentMethod(self.pop.dismiss)
+        # If a thing was provided to edit..
+        if thing != None:
+            # Set the text input fields to match the saved values
+            popup_content.setThingValues()
 
         # Open the popup
         self.logDebug('Opening the popup..')
@@ -212,8 +223,8 @@ class KivyExtensions():
     def createUserScreens(self):
         '''Create user screens after the user has been logged in to be sure the widgets are
         able to get the information they need!'''
-        self.sm.add_widget(AccountOverviewScreen())
-        self.sm.add_widget(ContainerOverviewScreen())
+        self.sm.add_widget(AccountOverviewScreen(self))
+        self.sm.add_widget(ContainerOverviewScreen(self))
         self.sm.add_widget(ThingOverviewScreen())
 
     def login(self, new_screen, direction):
@@ -237,9 +248,6 @@ class KivyExtensions():
         '''Create the widgets to give to PopupContent().  This allows PopupContent to add
            child widgets to itself.'''
 
-        # log = 'Creating popup error label widgets for a popup with errors:'
-        # self.logDebug(log)
-
         # List to keep the widgets
         error_labels = []
 
@@ -258,15 +266,9 @@ class KivyExtensions():
                 )
 
             self._clearPopupErrors()
-            # self.logDebug('self.popup_errors reset to [] and error_labels returned')
             return error_labels
 
         else:
-            # self.popup_errors is either too short or not a list
-            # log = 'ERROR: self.popup_errors is either too short or not a list:'
-            # log += f'\n\t\t\tlength: {len(self.popup_errors)}'
-            # log += f'\n\t\t\ttype: {type(self.popup_errors)}'
-            # self.logWarning(log)
             self.logWarning(self.popup_errors)
             self._clearPopupErrors()
             return None
@@ -290,7 +292,6 @@ class KivyExtensions():
 
         # Return True if no empty fields were found
         return True
-
 
     def _getObjectCreationUserInput(self, popup_content):
         '''Get user input text from popup fields for container and object creation

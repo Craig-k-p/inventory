@@ -10,11 +10,12 @@
 
 <Toolbar>:
     app: app
+    search: search
     toolbar_right: toolbar_right
     id: toolbar
     create_item_button: create_item_button
     size_hint_y: None  # Prevents the Box layout from taking up 50% of the screen
-    height: '50px'     # Sets the height of the toolbar to a fixed number of pixels
+    height: '45px'     # Sets the height of the toolbar to a fixed number of pixels
     orientation: 'horizontal'
     # Background color for the toolbar
     canvas:
@@ -41,6 +42,16 @@
         # Pushes all widgets to the side!  Since the other widgets below have a fixed size,
         # this fills the rest of the space.
         Widget:
+        TextInput:
+            id: search
+            size_hint: (None, None)
+            size: (180, 30)
+            pos_hint: {'center_x': .25, 'center_y': .5}
+            font_size: 16
+            bold: True
+            write_tab: False
+            multiline: False
+            hint_text: 'search'
         ToolbarButton:
             id: create_item_button
             # Centers the widget on the y-axis
@@ -49,4 +60,4 @@
             on_release:
                 # Check that the proper screen is open before opening the popup
                 # Pass the instance of app to toolbar so it can reference needed attributes
-                toolbar.checkForScreen('container')
+                toolbar.checkForScreen()

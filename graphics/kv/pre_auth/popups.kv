@@ -9,16 +9,17 @@
         Label:
             size_hint: (.2, .2)
 
+
 <AllignLayout@AnchorLayout>:
     size_hint: (1, 1)
     anchor_x: 'left'
     anchor_y: 'bottom'
-    # canvas:
-    #     Color:
-    #         rgba: random.random(), random.random(), random.random(), 1
-    #     Rectangle:
-    #         pos: self.pos
-    #         size: self.size
+
+
+<MoveButton>:
+    color: app.kv_settings['text color']
+    font_size: 18
+
 
 
 <PopLabel@Label>:
@@ -33,6 +34,7 @@
     font_size: 22
     size: (self.texture_size[0]+10, self.texture_size[1])
 
+
 <PopInput>:
     hint_text: 'required'
     color: app.kv_settings['text color']
@@ -44,10 +46,12 @@
     font_size: 22
     error: False
 
+
 <PopButton@Button>:
     color: app.kv_settings['text color']
     size_hint: (1, 1)
     font_size: 22
+
 
 <PopPairGrid@GridLayout>:
     size_hint: (1, 1)
@@ -55,13 +59,12 @@
     spacing: 10
 
 
-
-
-<PopupCreateThingContent>:  # ScrollView inheritance - popup.py
+<PopupThingContent>:  # ScrollView inheritance - popup.py
     description: description
     usd_value: usd_value
     weight: weight
     tags: tags
+    submit_button: submit_button
 
     id: popup_content
     size_hint: (1, 1)
@@ -107,28 +110,12 @@
                 PopLabel:
                     text: 'Searchable keyword tag:'
             PopInput:
-                hint_text: 'Press enter to add tag'
+                hint_text: 'Use an _ to make a multi-word tag'
                 id: tags
 
         PopPairGrid:
             cols: 2
             size_hint: (1, None)
-            # canvas:
-            #     Color:
-            #         rgba: random.random(), random.random(), random.random(), 1
-            #     Rectangle:
-            #         pos: self.pos
-            #         size: self.size
-            AnchorLayout:
-                anchor_x: 'right'
-                anchor_y: 'center'
-                size_hint: (.5, 1)
-                PopButton:
-                    text: 'Add to container'
-                    size_hint: (None, None)
-                    size: (180, 90)
-                    on_release:
-                        app.buttonPress(call='createInventoryObject', kv_object_reference=popup_content, object_class_str='thing')
             AnchorLayout:
                 anchor_x: 'left'
                 anchor_y: 'center'
@@ -139,13 +126,25 @@
                     size: (180, 90)
                     on_release:
                         app.pop.dismiss()
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'center'
+                size_hint: (.5, 1)
+                PopButton:
+                    id: submit_button
+                    text: 'Add to container'
+                    size_hint: (None, None)
+                    size: (180, 90)
+                    on_release:
+                        app.closePopup(popup_content=popup_content, object_class_str='thing')
 
-<PopupCreateContainerContent>:
+
+<PopupContainerContent>:
     description: description
     usd_value: usd_value
     weight: weight
     tags: tags
-    tags: []
+    submit_button: submit_button
 
     id: popup_content
     size_hint: (1, 1)
@@ -192,27 +191,11 @@
                     text: 'Short descriptive keyword tags:'
             PopInput:
                 id: tags
-                hint_text: 'Press enter to add tag'
+                hint_text: 'Use an _ to make a multi-word tag'
 
         PopPairGrid:
             cols: 2
             size_hint: (1, None)
-            # canvas:
-            #     Color:
-            #         rgba: random.random(), random.random(), random.random(), 1
-            #     Rectangle:
-            #         pos: self.pos
-            #         size: self.size
-            AnchorLayout:
-                anchor_x: 'right'
-                anchor_y: 'center'
-                size_hint: (.5, 1)
-                PopButton:
-                    text: 'Add to inventory'
-                    size_hint: (None, None)
-                    size: (180, 90)
-                    on_release:
-                        app.buttonPress(call='createInventoryObject', kv_object_reference=popup_content, object_class_str='container')
             AnchorLayout:
                 anchor_x: 'left'
                 anchor_y: 'center'
@@ -223,7 +206,50 @@
                     size: (180, 90)
                     on_release:
                         app.pop.dismiss()
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'center'
+                size_hint: (.5, 1)
+                PopButton:
+                    id: submit_button
+                    size_hint: (None, None)
+                    size: (180, 90)
+                    on_release:
+                        app.closePopup(popup_content=popup_content, object_class_str='container')
 
+<PopupMoveContent>:  # ScrollView inheritance - popup.py
+    pop_grid: pop_grid
+    size_hint: (.75, .75)
 
+    GridLayout:
+        id: pop_grid
+        cols: 1
+        size_hint: (1, 1)
+        padding: 10
+        spacing: 10
+        # Allow ScrollView to scroll (next two lines)
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: 45
+        row_force_default: True
+        padding: 20
+        spacing: 20
 
-
+# Makes the submit and cancel buttons for moving a container
+<PopupMoveContainerContent>:
+    submit_button: submit_button
+    size_hint: (1, 1)
+    cols: 2
+    MoveButton:
+        size_hint: (.3, .3)
+        size: (120,70)
+        text: 'Cancel'
+        on_release: app.pop.dismiss()
+    MoveButton:
+        id: submit_button
+        size_hint: (.3, .3)
+        size: (120,70)
+        text: 'Submit'
+        on_release:
+            self.move(is_container=True)
+            app.pop.dismiss()

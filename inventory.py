@@ -21,7 +21,6 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
-# from kivy.properties import NumericProperty
 
 from graphics.py.pre_auth.screens import LoginScreen, CreateAccountScreen
 from graphics.py.pre_auth.screens import InventoryScreenManager
@@ -55,8 +54,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'startup transition': NoTransition(),
             'app transition type': NoTransition(),
             'save file': file,
-            'backup save file': 'save_data/backup_save_data',
-            'log filtering': 'InventoryHandler.py' }
+            'backup save file': 'save_data/backup_save_data'
+            }
 
         self.kv_settings = {
             'startup kv files': [
@@ -78,21 +77,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'text color': (1, 1, 1, 1),
             'title font name': 'segoesc',}
 
-        self.validations = {
-            'allowed button calls': (
-                'changeScreen',
-                'createAccount',
-                'login',
-                'createThingPopup',
-                'createContainerPopup',
-                'createInventoryObject'
-            )
-        }
-
         self.logInfo(f'Started session with settings:\n{pformat(self.settings, indent=4)}')
         self.logInfo(f'Started session with settings:\n{pformat(self.kv_settings, indent=4)}')
-        log = f'Started session with validations:\n{pformat(self.validations, indent=4)}'
-        self.logInfo(log)
 
         # Set window color:  black: (0, 0, 0, 1), white: (1, 1, 1, 1)
         Window.clearcolor = (0, 0, 0, 1)

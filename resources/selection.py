@@ -55,7 +55,7 @@ class Selection(LogMethods):
         if cls._history == []:
             pass
         else:
-            previous_selection = cls.get()
+            previous_selection = cls.get(suppress=True)
             # If user's previous selection isn't None
             if previous_selection._isInventory():
                 previous_selection.getObj().widget.deselect()
@@ -68,11 +68,12 @@ class Selection(LogMethods):
             current_selection.getObj().widget.select()
 
     @classmethod
-    def get(cls):
+    def get(cls, suppress=False):
         '''Return the most recent selection'''
         if cls._history != []:
             selected = cls._history[-1]  # Returns the last item in the list
-            Logger.debug(f'Selection.get()-> selected object: {selected}')
+            if suppress == False:
+                Logger.debug(f'Selection.get()-> selected object: {selected}')
             return selected
 
     @classmethod

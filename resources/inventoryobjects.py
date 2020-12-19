@@ -6,10 +6,15 @@ from json import dumps
 class InventoryObject():
     '''Parent class for inventory objects with base methods and class methods
        that make managing the inventory easier'''
+
     ID_counter = 0         # Unique ID counter for each of the user's objects
     objs = {}               # All InventoryObject and inherited instances
     changes_made = False    # Flag to determine whether a save is needed
+                            #   It is very important that this is changed using
+                            #   InventoryObject.changeMade(), not self.changeMade()
+    search_term = ''        # Search term assigned by applySearch method
     clicked = None
+
     def __init__(
             self,
             ID='0',
@@ -18,7 +23,8 @@ class InventoryObject():
             weight=0,
             tags='',
             things=None,
-            container=None     ):
+            container=None,
+            location=None     ):
         '''Create an instance of Inventory object and assign its ID, description,
            USD value, weight, and tags. Add it to the InventoryObject.objs dictionary
            Takes input:
@@ -30,28 +36,116 @@ class InventoryObject():
            things - None; dummy kwarg to prevent errors from kwarg unpacking from file load
            container -  None; dummy kwarg to prevent errors kwarg unpacking from file load'''
         self.ID = ID
-        self.description = description
-        self.usd_value = usd_value
-        self.weight = weight
+        self._description = description
+        self._usd_value = usd_value
+        self._weight = weight
+        self._location = location
         self.tags = set()
-        self.widget = None
-        self.grid = None
         self.addTags(tags)
+        self._setTagSearchString()
+        self.widget = None
+        self.data_grid = None
         InventoryObject.objs[self.ID] = self
+
+    @property
+    def description(self):
+        '''This is called when "self.description" is used in code'''
+        return self._description
+
+    @description.setter
+    def description(self, description):
+        '''This is called when "self.description = 'an example str'" is used in code'''
+        # Check for a string type
+        if isinstance(description, str):
+            # Make sure the string is new and assign it
+            if self._description != description:
+                self._description = description
+                # Flag a change made to the inventory
+                InventoryObject.changeMade()
+            else:
+                self.logDebug(f'"{description}" is already the description')
+        else:  # Raise an error if the wrong type is found
+            raise TypeError(f'Was expecting type str for desc. Got {type(description)}')
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, location):
+        '''This is called when "self.location = 'an example str'" is used in code'''
+        # Check for a string type
+        if isinstance(location, str):
+            # Make sure the string is new and assign it
+            if self._location != location:
+                self._location = location
+                # Flag a change made to the inventory
+                self.logDebug(f'Location of {self.description} changed to {location}')
+                InventoryObject.changeMade()
+            else:
+                self.logDebug(f'"{location}" is already the location')
+        else:  # Raise an error if the wrong type is found
+            raise TypeError(f'Was expecting type str for location. Got {type(location)}')
+
+
+    @property
+    def usd_value(self):
+        '''This is called when "self.usd_value" is used in code'''
+        return self._usd_value
+
+    @usd_value.setter
+    def usd_value(self, usd_value):
+        '''This is called when "self.usd_value = 123" is used in code'''
+        # Check for a string, int, or float type
+        if isinstance(usd_value, (str, int, float)):
+            self.logDebug(f'{self} usd_value.setter called with value {usd_value}')
+            # Make sure the value is new and assign it
+            if self._usd_value != usd_value:
+                self._usd_value = usd_value
+                self.logDebug(f'{usd_value} is a new value. Calling changeMade method')
+                # Flag a change made to the inventory
+                InventoryObject.changeMade()
+            else:
+                self.logDebug(f'usd_value {usd_value} already saved')
+        else:  # Raise an error if str, int, or float was not provided
+            raise TypeError(f'Was expecting type str, int, or float for usd_val. Got {type(usd_value)}')
+
+    @property
+    def weight(self):
+        '''This is called when "self.weight" is used in code'''
+        return self._weight
+
+    @weight.setter
+    def weight(self, weight):
+        '''This is called when "self.weight = 123" is used in code'''
+        # Check for a string, int, or float type
+        if isinstance(weight, (str, int, float)):
+            # assign the value if it is new
+            if self._weight != weight:
+                self._weight = weight
+                # Flag a change made to the inventory
+                InventoryObject.changeMade()
+        else:
+            raise TypeError(f'Was expecting type str, int, or float for weight. Got {type(weight)}')
 
     def addTags(self, tags):
         '''Take a string or list of tags and adds them to self.tags as a list'''
         # Combine the list of tags
         if isinstance(tags, list):
             tags = set(tags)
+            self.tags = tags | self.tags  # Combine the elements of each set into one set
+            self._setTagSearchString()
+            InventoryObject.changes_made = True
         elif isinstance(tags, set):
             self.tags = tags | self.tags  # Combine the elements of each set into one set
-            self.changes_made = True
+            self._setTagSearchString()
+            InventoryObject.changes_made = True
         # Turn the string into a list of tags and combine it with tags
         elif isinstance(tags, str) and tags != '':
             tags = self._fixTags(tags)
             self.tags = tags | self.tags  # Combine the elements of each set into one set
-            self.changes_made = True
+            self._setTagSearchString()
+            InventoryObject.changes_made = True
 
         elif tags == '':
             pass
@@ -62,14 +156,14 @@ class InventoryObject():
     def delete(self):
         '''Remove the widget and delete the instance from the InventoryObject.objs dict'''
         self.widget.object = None
-        self.grid.remove_widget(self.widget)
+        self.data_grid.remove_widget(self.widget)
         del InventoryObject.objs[self.ID]
 
     def drawWidget(self):
         '''Draw the widget if it isn't already'''
-        if self.widget not in self.grid.children:
+        if self.widget not in self.data_grid.children:
             self.logDebug(f'Drawing widget {self.widget}')
-            self.grid.add_widget(self.widget)
+            self.data_grid.add_widget(self.widget)
 
     def hasParent(self):
         '''Return True if the widget is drawn, False otherwise'''
@@ -92,34 +186,74 @@ class InventoryObject():
             self.tags = self.tags - tags
             self.changes_made = True
 
-    def saveNeeded(self):
-        '''Return True if a save is needed, False otherwise'''
-        if self.changes_made == True:
+    def undrawWidget(self):
+        '''Undraw the widget if it is drawn'''
+        if self.widget in self.data_grid.children:
+            self.logDebug(f'Undrawing widget {self.widget}')
+            self.data_grid.remove_widget(self.widget)
+
+    def _checkSearch(self):
+        '''Compare attributes to the search term and return True or False if a match is found'''
+
+        # If there is no search term, return True
+        if self.search_term == '':
+            return True
+        else:
+            # If the search term is in the description str return True
+            if self.search_term in self.description.lower():
+                self.logDebug(f'{self.search_term} found in {self.description}. Return True')
+                return True
+            # If the search term is in the set of tags return True
+            elif self.search_term in self.tag_search_str:
+                return True
+            # If there is no match, return False
+            else:
+                self.logDebug(f'{self.search_term} not found. Return False')
+                return False
+
+    def _checkSearchTags(self):
+        '''Searches all tags for a match to the search term'''
+
+        # Join all tags into one string, using a newline between each tag
+        tag_str = '\n'.join(self.tags)
+        # Make all search_term characters lower case and search the string
+        if self.search_term.lower() in tag_str:
             return True
         else:
             return False
 
     def _fixTags(self, tags):
         '''Turn the string of tags into a set of tags'''
+
         # Remove surrounding blank characters and split the tags up by spaces
         tags = tags.strip()
+        tags = tags.lower()
         tags = set(tags.split(' '))
-        # Replace underscores with spaces
-        for n in tags:
-            n = n.replace('_', ' ')
-
         return tags
 
-    def undrawWidget(self):
-        '''Undraw the widget if it is drawn'''
-        if self.widget in self.grid.children:
-            self.logDebug(f'Undrawing widget {self.widget}')
-            self.grid.remove_widget(self.widget)
+    def _setTagSearchString(self):
+        '''Turn the set of tags into a searchable string'''
+        if len(self.tags) == 0:
+            self.tag_search_str = ''
+        else:
+            self.tag_search_str = '\n'.join(self.tags)
+            self.tag_search_str = self.tag_search_str.replace('_', ' ')
+
+    @classmethod
+    def applySearch(cls, search_widget, search_term):
+        '''Assign cls.search_term to find matching objects when cls.updateWidgets
+           is called'''
+        Logger.debug(f'applySearch: Search term "{search_term}" applied')
+        search_term = search_term.strip()
+        cls.search_term = search_term.lower()
+
+        cls.updateWidgets(cls.app.sm.current_screen.data_grid)
 
     @classmethod
     def changeMade(cls):
         '''Set the changes_made flag for saving data in the future'''
         cls.changes_made = True
+        Logger.debug(f': {cls}.changes_made = {cls.changes_made}')
 
     @classmethod
     def checkLoad(cls):
@@ -148,7 +282,7 @@ class InventoryObject():
 
     @classmethod
     def getByID(cls, ID):
-        '''Return an object with the give ID (str)'''
+        '''Return an object with the given ID (str)'''
         if int(ID) in cls.objs.keys():
             return cls.objs[int(ID)]
         elif str(ID) in cls.objs.keys():
@@ -179,6 +313,7 @@ class InventoryObject():
                 d = data['container']
                 d[ID] = {}
                 d[ID]['things'] = list(obj.things)
+                d[ID]['location'] = obj.location
 
             else:
                 Logger.critical(
@@ -203,32 +338,42 @@ class InventoryObject():
                 return cls.ID_counter
 
     @classmethod
-    def setBounds(cls, grid, touch):
-        '''Set the bounds for each child widget of the grid'''
+    def saveNeeded(cls):
+        '''Return True if a save is needed, False otherwise'''
+        Logger.debug(f': {cls}.changes_made = {cls.changes_made}')
+        if cls.changes_made == True:
+            return True
+        else:
+            return False
+
+    @classmethod
+    def setBounds(cls, data_grid, touch):
+        '''Set the bounds for each child widget of the data_grid'''
         for ID in cls.objs:
-            if cls.objs[ID].widget in grid.children:
+            if cls.objs[ID].widget in data_grid.children:
                 cls.objs[ID].widget.setBounds()
 
     @classmethod
-    def updateWidgets(cls, grid):
+    def updateWidgets(cls, data_grid):
         '''Draw and undraw widgets based on the currently viewed screen'''
-        Logger.debug(f'InvObjs.py: Updating widgets for {cls.app.Selection.get()}')
+        Logger.debug(f'InvObjs.py: Updating widgets for {data_grid}')
+
+        # Loop through the keys in cls.objs
         for ID in cls.objs:
             if ID not in cls.objs:
                 raise KeyError(f'Key {ID} not found in cls.objs')
-            try:
-                log = f'InvObjs.py: {cls.objs[ID]} with container: {cls.objs[ID].container}'
+
+            try:  # Try to log as a Thing object, otherwise log as a container
+                log = f'InvObjs.py: Updating: {cls.objs[ID]} with container: '
+                log += f'{cls.objs[ID].container}'
                 Logger.debug(log)
             except AttributeError:
                 Logger.debug(f'InvObjs.py: Updating: {cls.objs[ID]}')
-            cls.objs[ID].updateWidget(grid)
 
+            # Update widget
+            cls.objs[ID].updateWidget(data_grid)
 
         Logger.debug(f'InvObjs.py: {InventoryObject.objs}')
-
-    @classmethod
-    def wasChanged(cls):
-        return InventoryObject.changes_made
 
 
 class Thing(InventoryObject, LogMethods):
@@ -285,10 +430,6 @@ class Thing(InventoryObject, LogMethods):
         else:
             return False
 
-    def isInside(self):
-        '''Return the Container for this Thing'''
-        return self.getByID(self.container)
-
     def moveTo(self, destination):
         '''Move the the Thing instance. Accepts a container ID or None as destination'''
         if destination == None:
@@ -299,34 +440,46 @@ class Thing(InventoryObject, LogMethods):
             raise TypeError(f'Recieved the wrong type! ({type(destination)})')
 
 
-    def updateWidget(self, grid=None):
-        '''Make sure the widget has a DataGrid assigned and the widget category matches the
-           grid's. Add the grid if necessary.  Check if the widget needs to be drawn and
+    def updateWidget(self, data_grid=None):
+        '''Make sure the widget has a Datadata_grid assigned and the widget category matches the
+           data_grid's. Add the data_grid if necessary.  Check if the widget needs to be drawn and
            draw if necessary.'''
 
-        # If the Thing has no DataGrid assigned and the category matches, assign it
-        self.logDebug(f'{self.description} is checking for a grid')
+        self.logDebug(f'{self.description} is checking for a data_grid')
 
-        if self.grid == None and grid != None and self.category == grid.category:
-            self.logDebug(f'Grid not found. Added grid to {self.description}')
-            self.grid = grid
+        # If the Thing has no Datadata_grid assigned and the category matches, assign it
+        if self.data_grid == None and data_grid != None and self.category == data_grid.category:
+            self.logDebug(f'data_grid not found. Added data_grid to {self.description}')
+            self.data_grid = data_grid
 
-        # If the Thing instance is in the selected Container instance, draw the widget
-        if self.app.Selection.get() != None and \
-        self.app.Selection.getLastContainer().getObj().contains(self) == True:
-            self.logDebug(f'Drawing widget for {self}')
-            self.drawWidget()
-        # If the Thing is not in the selected Container, undraw the widget
-        elif self.app.Selection.get() != None and \
-        self.app.Selection.getLastContainer().getObj().contains(self) == False:
-            self.logDebug(f'Undrawing widget for {self}')
+        # If the widget doesn't match the search, undraw it
+        if self._checkSearch() == False:
             self.undrawWidget()
 
-        elif self.app.Selection.get() == None:
-            pass
-
         else:
-            raise AttributeError('self.updateWidget was unable to resolve choice draw/undraw')
+            # Get the selection
+            selection = self.app.Selection.get(suppress=True)
+
+            # If something is selected and...
+            # ...if the last selected container contains this object
+            if selection != None and \
+            self.app.Selection.getLastContainer().getObj().contains(self) == True:
+                # Draw the widget
+                self.logDebug(f'Drawing widget for {self}')
+                self.drawWidget()
+
+            # If something is selected and...
+            # ...if the last selected container does not contain this object
+            elif selection != None and \
+            self.app.Selection.getLastContainer().getObj().contains(self) == False:
+                self.logDebug(f'Undrawing widget for {self}')
+                self.undrawWidget()
+
+            elif selection == None:
+                pass
+
+            else:
+                raise AttributeError('self.updateWidget was unable to resolve choice draw/undraw')
 
 
 class Container(InventoryObject, LogMethods):
@@ -357,11 +510,27 @@ class Container(InventoryObject, LogMethods):
         s += f'and {len(self.things)} Thing(s)'
         return s + '>'
 
-    def addThing(self, ID):
+    def addThing(self, ID, new_instance=True):
         '''Add a thing to the container. Turn self.things into a dict if it hasn't been,
            add the Thing to self.things and flag a change'''
-        self.logDebug(f'Adding Thing {ID} to Container {self.ID}')
+        log = f'Adding {self.app.Selection.get(suppress=True).getObj().description}'
+        log += f' to {self.description}'
+        self.logDebug(log)
         self.things.append(str(ID))
+
+        if new_instance == False:
+            log = f'Removing {InventoryObject.getByID(ID)} from '
+            log += f'{self.app.Selection.getLastContainer().getObj().description}'
+            self.logDebug(log)
+            self.app.Selection.getLastContainer().getObj().removeThing(ID)
+
+            thing = InventoryObject.getByID(ID)
+            self.logDebug(f'Thing being added to this container: {thing}')
+            thing.container = self.ID
+
+            self.app.pop.dismiss()
+            InventoryObject.updateWidgets(self.data_grid)
+
         self.contentChanged()
         self.changeMade()
 
@@ -416,10 +585,8 @@ class Container(InventoryObject, LogMethods):
     def getWeight(self):
         '''Return the total weight of the container and its contents'''
         weight = float(self.weight)
-        self.logDebug(f'things {self.things}')
         for ID in self.things:
             weight += float(InventoryObject.getByID(ID).weight)
-            self.logDebug(f'ID: {ID}')
         return int(weight)
 
     def hasContents(self):
@@ -432,19 +599,19 @@ class Container(InventoryObject, LogMethods):
     def removeThing(self, thing):
         '''Remove the provided Thing object if it is inside the Container'''
         log = f'Container.removeThing: ID-{self.ID} things-{self.things}'
-        log += f'\n\tthing-{thing}'
+        log += f'\n\tremoving thing-{thing}'
         self.logDebug(log)
         if isinstance(thing, (int, str)):
             if int(thing) in self.things:
                 self.changeMade()
                 InventoryObject.getByID(thing).container = None
                 self.things.remove(int(thing))
-                self.widget.assignValues(update=True)
+                self.widget.assignValues()
             elif str(thing) in self.things:
                 self.changeMade()
                 InventoryObject.getByID(thing).container = None
                 self.things.remove(str(thing))
-                self.widget.assignValues(update=True)
+                self.widget.assignValues()
 
             else:
                 raise Exception(f'{thing} {type(thing)} was not deleted')
@@ -452,26 +619,31 @@ class Container(InventoryObject, LogMethods):
             msg = f'Type {type(thing)} not valid. Must be str, int, Thing, or Container'
             raise TypeError(msg)
 
-    def updateWidget(self, grid=None):
-        '''Make sure the widget has a DataGrid assigned and the widget category matches the
-           grid's. Add the grid if necessary.  Check if the widget needs to be drawn and
+    def updateWidget(self, data_grid=None):
+        '''Make sure the widget has a data_grid assigned and the widget category matches the
+           data_grid's. Add the data_grid if necessary.  Check if the widget needs to be drawn and
            draw if necessary.'''
         if self.content_changed == True:
-            self.widget.assignValues(update=True)
+            self.widget.assignValues()
             self.content_changed = False
 
-        self.logDebug(f'{self.description} is checking for a grid')
-        if self.grid == None and grid != None and self.category == grid.category:
-            self.logDebug(f'No grid found. Added to Container {self.ID}')
-            self.logDebug(grid)
-            self.grid = grid
+        self.logDebug(f'{self.description} is checking for a data_grid')
+        if self.data_grid == None and data_grid != None and self.category == data_grid.category:
+            self.logDebug(f'No data_grid found. Added to Container {self.ID}')
+            self.logDebug(data_grid)
+            self.data_grid = data_grid
 
-        if self.category == grid.category:
-            self.drawWidget()
-        # Containers don't need to be filtered yet.  No need to undraw
-        elif self.category != grid.category:
-            pass
+        # If the widget doesn't match the search, undraw it
+        if self._checkSearch() == False:
+            self.undrawWidget()
+
         else:
-            raise AttributeError('self.updateWidget was unable to resolve draw/undraw choice')
+            if self.category == data_grid.category:
+                self.drawWidget()
+            # Containers don't need to be filtered yet.  No need to undraw
+            elif self.category != data_grid.category:
+                pass
+            else:
+                raise AttributeError('self.updateWidget was unable to resolve draw/undraw choice')
 
-        self.widget.setBounds()
+            self.widget.setBounds()

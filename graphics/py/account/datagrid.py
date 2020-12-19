@@ -3,8 +3,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle
 from kivy.graphics.instructions import InstructionGroup
-from kivy.properties import ObjectProperty, StringProperty, NumericProperty
-from kivy.clock import Clock
+from kivy.properties import ObjectProperty
 
 from resources.utilities import LogMethods
 from resources.inventoryobjects import Thing, Container, InventoryObject
@@ -92,8 +91,8 @@ class DataGrid(GridLayout, LogMethods):
             self.app = self.parent.parent.parent.parent.app
 
         # Add the datagrid to the widget
-        if inventory_object.grid == None and self.category == inventory_object.category:
-            inventory_object.grid = self
+        if inventory_object.data_grid == None and self.category == inventory_object.category:
+            inventory_object.data_grid = self
 
         # Instantiate a data row with ID and data
         RowClass = self.getInventoryRowClass()
@@ -103,6 +102,20 @@ class DataGrid(GridLayout, LogMethods):
 
         self.logDebug(f'Adding a row for the {new_row.object.description} to the grid')
         self.add_widget(new_row)
+
+    def deleteObject(self):
+        '''Delete an object and its row from the GridLayout in the DataGrid'''
+        # Delete the inventory object and its data
+        self.app.Selection.get().getObj().delete()
+        InventoryObject.changeMade()
+
+    def editObject(self):
+        '''Edit an object's data'''
+
+        # Open a popup and allow a user to edit the object's data
+
+
+        InventoryObject.changeMade()
 
     def fillUserData(self, app):
         '''Populate the data rows with user data during application startup'''
@@ -129,14 +142,6 @@ class DataGrid(GridLayout, LogMethods):
             return ThingHeadingRow
         elif self.category == 'container':
             return ContainerHeadingRow
-
-    def deleteObject(self, ID):
-        '''Delete an object and its row from the GridLayout in the DataGrid'''
-        obj = InventoryObject.getByID(ID)
-        self.logDebug(f'Removing row {obj}..')
-        # Delete the inventory object and its data
-        obj.delete()
-        InventoryObject.changeMade()
 
     def setDataGridObjectType(self, category):
         '''Set the category of object that this grid will be dealing with - ie "containers"

@@ -6,9 +6,9 @@ from graphics.py.account.row import ContainerDataRow, ThingDataRow
 
 class InventoryHandler():
     def __init__(self):
-        self.search_term = None
         self.data_was_loaded = False
         InventoryObject.app = self
+        self.inventoryobject = InventoryObject
 
     def createInventoryObject(self, object_class_str, kv_obj_reference):
         '''Create a new object using the popup user input'''
@@ -31,13 +31,24 @@ class InventoryHandler():
             # Add a new row with the new data to the user's screen
             self.sm.current_screen.data_grid.addDataRow(new_object)
 
-            InventoryObject.debugDump()
-
             # Return the object's data
             return data
 
         else:
             pass
+
+    def updateObjectData(self, popup, object_class_str):
+        '''Update an inventory item's data from user input'''
+        self.logDebug('Updating the object\'s data')
+        popup.inventory_object.description = popup.description.text
+        popup.inventory_object.usd_value = popup.usd_value.text
+        popup.inventory_object.weight = popup.weight.text
+        popup.inventory_object.addTags(popup.tags.text)
+        popup.inventory_object.widget.assignValues()
+
+        if object_class_str == 'thing':
+            popup.inventory_object.getContainer().widget.assignValues()
+
 
     def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''
@@ -108,7 +119,7 @@ class InventoryHandler():
     def saveData(self):
         '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
 
-        if InventoryObject.wasChanged() == True:
+        if self.inventoryobject.saveNeeded() == True:
             self.logDebug('Changes were made. Getting data to save')
             data = InventoryObject.getSaveData()
             self.logDebug('Saving the JSON data to the save file')

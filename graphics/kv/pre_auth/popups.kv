@@ -16,6 +16,11 @@
     anchor_y: 'bottom'
 
 
+<MoveButton>:
+    font_size: 18
+
+
+
 <PopLabel@Label>:
     bold: True
     color: app.kv_settings['text color']
@@ -210,3 +215,21 @@
                     size: (180, 90)
                     on_release:
                         app.closePopup(popup_content=popup_content, object_class_str='container')
+
+<PopupMoveContent>:  # ScrollView inheritance - popup.py
+    pop_grid: pop_grid
+    size_hint: (.75, .75)
+
+    GridLayout:
+        id: pop_grid
+        cols: 1
+        size_hint: (1, 1)
+        padding: 10
+        spacing: 10
+        # Allow ScrollView to scroll (next two lines)
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: 45
+        row_force_default: True
+        padding: 20
+        spacing: 20

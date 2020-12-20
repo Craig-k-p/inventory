@@ -59,7 +59,7 @@ class InventoryHandler():
             # Add the thing to the last selected container
             self.Selection.getLastContainer().getObj().addThing(new_thing.ID)
             # Set the changes_made flag to True for saving purposes
-            InventoryObject.changeMade()
+            InventoryObject.changes_made = True
         return new_thing
 
     def container(self, data):  # createObject
@@ -69,7 +69,7 @@ class InventoryHandler():
 
         if self.data_was_loaded == True:
             # Set the changes_made flag to True for saving purposes
-            InventoryObject.changeMade()
+            InventoryObject.changes_made = True
         return new_container
 
     def loadData(self):
@@ -113,13 +113,12 @@ class InventoryHandler():
 
         self.data_was_loaded = True
 
-        InventoryObject.checkLoad()
+        # InventoryObject.checkLoad()
 
 
     def saveData(self):
         '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
-
-        if self.inventoryobject.saveNeeded() == True:
+        if self.inventoryobject.changes_made == True:
             self.logDebug('Changes were made. Getting data to save')
             data = InventoryObject.getSaveData()
             self.logDebug('Saving the JSON data to the save file')

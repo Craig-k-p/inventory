@@ -41,7 +41,7 @@ class UtilityMethods():
 
 
 class LogMethods():
-    filter = []
+    filter = ['datagrid.py', 'inventoryhandler.py', 'inventoryobjects.py']
     def __initLog__(self, file_str='', class_str=''):
         ''' It looksl like Kivy has it's own implementation of logging.  Instead of creating a custom
             logger, scroll to the bottom of this doc string.
@@ -243,33 +243,3 @@ class LogMethods():
         end_folders = file_path.rfind('\\')
         file_name = file_path[end_folders + 1:]
         return file_name
-
-
-# class WindowKeyboard():
-#     def __init__(self):
-#         '''Essentially this allows the init method of both inherited classes by LoginWindow
-#            to execute.  If we didn't call this, Screen's init method would be the only init
-#            method to execute on top of LoginWindow's init method.  This ensures that all
-#            three execute.
-#            https://stackoverflow.com/questions/
-#            3277367/how-does-pythons-super-work-with-multiple-inheritance'''
-#         super(WindowKeyboard, self).__init__()
-
-#     def _on_keyboard_down(self, instance, keyboard, keycode, text, modifiers):
-#         ''' Check if a popup is open so we don't keep opening popups.
-#             -- Need to fix:
-#                 - enter only executes buttonPressLogin().  Need to make it handle
-#                   executing different functions.'''
-
-#         if keycode == 40:  # 40 - Enter key pressed
-#             self.logDebug('kvLogic', f'The enter key was pressed (keycode 40)..')
-#             # Check if a popup is open already.  If so, close it.
-
-#             if isinstance(App.get_running_app().sm.current_screen.children[0], Popup):
-#                 App.get_running_app().root_window.children[0].dismiss()
-#                 self.logDebug('kv_ops', '  ..and the popup was dismissed')
-
-#             # Otherwise, execute the following function
-#             else:
-#                 self.logDebug('kvLogic', '  ..and self.buttonPress was called')
-#                 self.buttonPress()

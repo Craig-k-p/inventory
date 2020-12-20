@@ -7,9 +7,9 @@ class InventoryObject():
     '''Parent class for inventory objects with base methods and class methods
        that make managing the inventory easier'''
 
-    ID_counter = 0         # Unique ID counter for each of the user's objects
+    ID_counter = 0          # Unique ID counter for each of the user's objects
     objs = {}               # All InventoryObject and inherited instances
-    changes_made = False    # Flag to determine whether a save is needed
+    _changes_made = False   # Flag to determine whether a save is needed
                             #   It is very important that this is changed using
                             #   InventoryObject.changeMade(), not self.changeMade()
     search_term = ''        # Search term assigned by applySearch method
@@ -48,6 +48,19 @@ class InventoryObject():
         InventoryObject.objs[self.ID] = self
 
     @property
+    def changes_made(cls):
+        return cls._changes_made
+
+    @changes_made.setter
+    def changes_made(cls, changes_made):
+        if changes_made != cls._changes_made:
+            cls._changes_made = changes_made
+            self.logInfo(f'InventoryObject.changes_made flag set to {cls.changes_made}')
+        else:
+            self.logDebug(f'InventoryObject.changes_made is already {cls.changes_made}')
+
+
+    @property
     def description(self):
         '''This is called when "self.description" is used in code'''
         return self._description
@@ -61,7 +74,7 @@ class InventoryObject():
             if self._description != description:
                 self._description = description
                 # Flag a change made to the inventory
-                InventoryObject.changeMade()
+                InventoryObject.changes_made = True
             else:
                 self.logDebug(f'"{description}" is already the description')
         else:  # Raise an error if the wrong type is found
@@ -81,7 +94,7 @@ class InventoryObject():
                 self._location = location
                 # Flag a change made to the inventory
                 self.logDebug(f'Location of {self.description} changed to {location}')
-                InventoryObject.changeMade()
+                InventoryObject.changes_made = True
             else:
                 self.logDebug(f'"{location}" is already the location')
         else:  # Raise an error if the wrong type is found
@@ -102,9 +115,9 @@ class InventoryObject():
             # Make sure the value is new and assign it
             if self._usd_value != usd_value:
                 self._usd_value = usd_value
-                self.logDebug(f'{usd_value} is a new value. Calling changeMade method')
+                self.logDebug(f'{usd_value} is a new value. Setting cls.changes_made')
                 # Flag a change made to the inventory
-                InventoryObject.changeMade()
+                InventoryObject.changes_made = True
             else:
                 self.logDebug(f'usd_value {usd_value} already saved')
         else:  # Raise an error if str, int, or float was not provided
@@ -124,7 +137,7 @@ class InventoryObject():
             if self._weight != weight:
                 self._weight = weight
                 # Flag a change made to the inventory
-                InventoryObject.changeMade()
+                InventoryObject.changes_made = True
         else:
             raise TypeError(f'Was expecting type str, int, or float for weight. Got {type(weight)}')
 
@@ -184,7 +197,7 @@ class InventoryObject():
         if tags != '':
             tags = self._fixTags(tags)
             self.tags = self.tags - tags
-            self.changes_made = True
+            InventoryObject.changes_made = True
 
     def undrawWidget(self):
         '''Undraw the widget if it is drawn'''
@@ -248,12 +261,6 @@ class InventoryObject():
         cls.search_term = search_term.lower()
 
         cls.updateWidgets(cls.app.sm.current_screen.data_grid)
-
-    @classmethod
-    def changeMade(cls):
-        '''Set the changes_made flag for saving data in the future'''
-        cls.changes_made = True
-        Logger.debug(f': {cls}.changes_made = {cls.changes_made}')
 
     @classmethod
     def checkLoad(cls):
@@ -338,15 +345,6 @@ class InventoryObject():
                 return cls.ID_counter
 
     @classmethod
-    def saveNeeded(cls):
-        '''Return True if a save is needed, False otherwise'''
-        Logger.debug(f': {cls}.changes_made = {cls.changes_made}')
-        if cls.changes_made == True:
-            return True
-        else:
-            return False
-
-    @classmethod
     def setBounds(cls, data_grid, touch):
         '''Set the bounds for each child widget of the data_grid'''
         for ID in cls.objs:
@@ -372,8 +370,6 @@ class InventoryObject():
 
             # Update widget
             cls.objs[ID].updateWidget(data_grid)
-
-        Logger.debug(f'InvObjs.py: {InventoryObject.objs}')
 
 
 class Thing(InventoryObject, LogMethods):
@@ -410,7 +406,7 @@ class Thing(InventoryObject, LogMethods):
 
     def delete(self):
         '''Delete references to the instance and call the parent's delete method'''
-        self.changeMade()
+        InventoryObject.changes_made = True
         self.logDebug(f'Thing.delete: ID-{self.ID} container-{self.container}')
         # When self.container is deleted, use this to update the container's widgets
         container = self.container
@@ -532,12 +528,12 @@ class Container(InventoryObject, LogMethods):
             InventoryObject.updateWidgets(self.data_grid)
 
         self.contentChanged()
-        self.changeMade()
+        InventoryObject.changes_made = True
 
     def delete(self):
         '''Flag a change, fix self.things if necessary, delete any contents and call the
            parent delete method'''
-        self.changeMade()
+        InventoryObject.changes_made = True
 
         # Check for and delete any contents
         if self.hasContents():
@@ -603,12 +599,12 @@ class Container(InventoryObject, LogMethods):
         self.logDebug(log)
         if isinstance(thing, (int, str)):
             if int(thing) in self.things:
-                self.changeMade()
+                InventoryObject.changes_made = True
                 InventoryObject.getByID(thing).container = None
                 self.things.remove(int(thing))
                 self.widget.assignValues()
             elif str(thing) in self.things:
-                self.changeMade()
+                InventoryObject.changes_made = True
                 InventoryObject.getByID(thing).container = None
                 self.things.remove(str(thing))
                 self.widget.assignValues()
@@ -616,7 +612,7 @@ class Container(InventoryObject, LogMethods):
             else:
                 raise Exception(f'{thing} {type(thing)} was not deleted')
         else:
-            msg = f'Type {type(thing)} not valid. Must be str, int, Thing, or Container'
+            msg = f'Type {type(thing)} not valid. Must be str or int'
             raise TypeError(msg)
 
     def updateWidget(self, data_grid=None):
@@ -629,8 +625,7 @@ class Container(InventoryObject, LogMethods):
 
         self.logDebug(f'{self.description} is checking for a data_grid')
         if self.data_grid == None and data_grid != None and self.category == data_grid.category:
-            self.logDebug(f'No data_grid found. Added to Container {self.ID}')
-            self.logDebug(data_grid)
+            self.logDebug(f'No data_grid found. Added {data_grid} to {self.description}')
             self.data_grid = data_grid
 
         # If the widget doesn't match the search, undraw it

@@ -32,11 +32,8 @@ class PopupErrorContent(GridLayout, LogMethods):
         self.cols = 1
         self.pos_hint = {'x': 0, 'y': 0}
 
-        # Initialize the log for this class instance
-        self.__initLog__(
-            file_str='kv_popup',
-            class_str='PopupContent'
-        )
+        # Initialize the log for this instance
+        self.__initLog__(file_str='kv_popup', class_str='PopupContent')
 
         # Assign widgets, current_screen, and is_yes_no variables to class variables
         self.widgets = widgets

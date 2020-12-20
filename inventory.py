@@ -130,10 +130,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
     def on_stop(self):
         '''Execute this function when the application is exited'''
-        self.logDebug('Saving data...')
-        # Save the user data to a file if necessary
         self.saveData()
-        self.logDebug('Exiting the application..')
+        self.logDebug('Shutting down..')
 
 
 if __name__ == '__main__':

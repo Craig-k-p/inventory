@@ -23,7 +23,6 @@ class DataGrid(GridLayout, LogMethods):
         '''Creates the widgets in a user-defined manner'''
         # Init the parent, ScrollView
         super().__init__(**kwargs)
-        # Setup the logger
         self.__initLog__(file_str='kv_DG.py', class_str='DataGrid')
 
         self.logInfo('Creating DataGrid instance')
@@ -107,15 +106,7 @@ class DataGrid(GridLayout, LogMethods):
         '''Delete an object and its row from the GridLayout in the DataGrid'''
         # Delete the inventory object and its data
         self.app.Selection.get().getObj().delete()
-        InventoryObject.changeMade()
-
-    def editObject(self):
-        '''Edit an object's data'''
-
-        # Open a popup and allow a user to edit the object's data
-
-
-        InventoryObject.changeMade()
+        InventoryObject.changes_made = True
 
     def fillUserData(self, app):
         '''Populate the data rows with user data during application startup'''

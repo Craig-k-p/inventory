@@ -27,6 +27,7 @@ from graphics.py.pre_auth.screens import InventoryScreenManager
 from graphics.py.account.datagrid import DataGrid, ContainerHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.inventoryhandler import InventoryHandler
+from resources.inventoryobjects import InventoryObject
 from resources.utilities import LogMethods
 from resources.selection import Selection
 
@@ -131,6 +132,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
     def on_stop(self):
         '''Execute this function when the application is exited'''
         self.saveData()
+        self.logDebug(f'self.inventoryobject.changes_made = {self.inventoryobject.wasChangeMade()}')
+        self.logDebug(f'InventoryObject.changes_made = {InventoryObject.wasChangeMade()}')
         self.logDebug('Shutting down..')
 
 

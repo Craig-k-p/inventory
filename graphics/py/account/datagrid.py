@@ -106,7 +106,7 @@ class DataGrid(GridLayout, LogMethods):
         '''Delete an object and its row from the GridLayout in the DataGrid'''
         # Delete the inventory object and its data
         self.app.Selection.get().getObj().delete()
-        InventoryObject.changes_made = True
+        InventoryObject.changeMade()
 
     def fillUserData(self, app):
         '''Populate the data rows with user data during application startup'''

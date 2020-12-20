@@ -371,6 +371,11 @@ class InventoryObject():
             cls.objs[ID].updateWidget(data_grid)
 
     @classmethod
+    def resetChangeMade(cls):
+        '''Reset the _changes_made class attribute'''
+        cls._changes_made = False
+
+    @classmethod
     def wasChangeMade(cls):
         '''Returns cls._changes_made'''
         return cls._changes_made

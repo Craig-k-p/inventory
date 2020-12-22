@@ -84,7 +84,6 @@ class DataGrid(GridLayout, LogMethods):
         '''Add a row of fields to the GridLayout with the given data
            data is a dict of user input'''
 
-
         # Allow easy access to the app instance
         if self.app == None:
             self.app = self.parent.parent.parent.parent.app

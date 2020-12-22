@@ -195,21 +195,33 @@ class InventoryObject():
     def _checkSearch(self):
         '''Compare attributes to the search term and return True or False if a match is found'''
 
+        self.logDebug(self.search_term)
+
         # If there is no search term, return True
         if self.search_term == '':
             return True
+
         else:
             # If the search term is in the description str return True
             if self.search_term in self.description.lower():
-                self.logDebug(f'{self.search_term} found in {self.description}. Return True')
                 return True
+
             # If the search term is in the set of tags return True
             elif self.search_term in self.tag_search_str:
                 return True
-            # If there is no match, return False
-            else:
-                self.logDebug(f'{self.search_term} not found. Return False')
+
+            elif isinstance(self, Thing):
+                self.logDebug(f'Search term not found for {self}')
                 return False
+
+            elif isinstance(self, Container):
+                if self.search_term in self.location.lower():
+                    self.logDebug(F'{self.search_term} WAS found in {self}! Returning TRUE!')
+                    return True
+
+                else:
+                    self.logDebug(f'{self.search_term} not found in {self}. Return False')
+                    return False
 
     def _checkSearchTags(self):
         '''Searches all tags for a match to the search term'''

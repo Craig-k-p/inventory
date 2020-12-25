@@ -87,7 +87,6 @@ class InventoryObject():
         else:  # Raise an error if the wrong type is found
             raise TypeError(f'Was expecting type str for location. Got {type(location)}')
 
-
     @property
     def usd_value(self):
         '''This is called when "self.usd_value" is used in code'''
@@ -307,8 +306,9 @@ class InventoryObject():
             return cls.objs[str(ID)]
         else:
             s = f'ID {ID} {type(ID)} was not found in InventoryObject.objs'
-            s += f'\n{cls.objs.keys()}'
-            raise ValueError(s)
+            s += f'\n.objs: {cls.objs.keys()}'
+            Logger.warning(s)
+            return None
 
     @classmethod
     def getSaveData(cls):
@@ -454,7 +454,8 @@ class Thing(InventoryObject, LogMethods):
         elif isinstance(destination, (str, int)):
             self.container = destination
         else:
-            raise TypeError(f'Recieved the wrong type! ({type(destination)})')
+            self.logWarning(f'destination was the wrong type. Got {type(destination)}')
+        self.logDebug(f'Moved {self} to container {destination}')
 
 
     def updateWidget(self, data_grid=None):
@@ -506,11 +507,10 @@ class Container(InventoryObject, LogMethods):
         '''Create a container instance, call the parent class __init__ and assign its
            attributes'''
 
-        # Handle a loaded file
-        try:
+        # self.things is a list ID's for "thing" inventory
+        try:  # Handle a loaded file
             self.things = kwargs['things']
-        # Handle a newly created Container
-        except KeyError:
+        except KeyError:   # Handle a newly created Container
             self.things = []
 
         # Call the parent __init__ method to assign attributes and init the log
@@ -527,7 +527,7 @@ class Container(InventoryObject, LogMethods):
         s += f'and {len(self.things)} Thing(s)'
         return s + '>'
 
-    def addThing(self, ID, new_instance=True):
+    def addThing(self, ID, new_instance=True, merge=False):
         '''Add a thing to the container. Turn self.things into a dict if it hasn't been,
            add the Thing to self.things and flag a change'''
         log = f'Adding {self.app.Selection.get(suppress=True).getObj().description}'
@@ -535,7 +535,7 @@ class Container(InventoryObject, LogMethods):
         self.logDebug(log)
         self.things.append(str(ID))
 
-        if new_instance == False:
+        if new_instance == False and merge == False:
             log = f'Removing {InventoryObject.getByID(ID)} from '
             log += f'{self.app.Selection.getLastContainer().getObj().description}'
             self.logDebug(log)
@@ -612,6 +612,25 @@ class Container(InventoryObject, LogMethods):
             return True
         else:
             return False
+
+    def merge(self, destination_id):
+        '''Merge the contents of this container into another container. Accepts a destination
+        container ID. The calling container instance will be deleted'''
+
+        destination = InventoryObject.getByID(destination_id)
+
+        while len(self.things) > 0:
+            thing_id = self.things.pop()
+
+            thing = InventoryObject.getByID(thing_id)
+            dest = InventoryObject.getByID(destination_id)
+
+            self.logDebug(f'Merging {thing} into {dest}')
+
+            destination.addThing(thing_id, merge=True)
+            InventoryObject.getByID(thing_id).moveTo(destination.ID)
+
+        self.app.pop.dismiss()
 
     def removeThing(self, thing):
         '''Remove the provided Thing object if it is inside the Container'''

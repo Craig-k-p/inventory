@@ -8,18 +8,31 @@ from kivy.properties import ObjectProperty, ListProperty
 from resources.utilities import LogMethods
 from resources.inventoryobjects import Container, Thing, InventoryObject
 
-class MoveButton(Button):
-    def move(self, is_container=False):
+class MoveButton(Button, LogMethods):
+    def __init__(self, **kwargs):
+        super(MoveButton, self).__init__(**kwargs)
+        self.__initLog__(file_str='popups.py', class_str='MoveButton')
+
+    def move(self):
         '''Move the inventory item to a new container'''
-        if is_container == False:
-            InventoryObject.getByID(self.container).addThing(self.item_to_move, new_instance=False)
+        item_to_move = InventoryObject.getByID(self.item_to_move)
+
+        if isinstance(item_to_move, Thing):
+            InventoryObject.getByID(self.destination_container_id).addThing(
+                self.item_to_move, new_instance=False
+            )
+        elif isinstance(item_to_move, Container):
+            location = self.location_input.text
+            if location != '':
+                InventoryObject.getByID(self.destination_container_id).location = location
         else:
-            # Assign the new location using the user's text input from the popup
-            self.container.location = self.location_input.text
-            # Update the widgets on screen
-            self.container.widget.assignValues()
+            self.parent.parent.parent.parent.parent.dismiss()
+            self.logWarning(f'Received the wrong type for self.item_to_move: {type(item_to_move)}')
+            self.logWarning('Was expecting Container or Thing type')
 
     def merge(self):
+        '''Merge the contents of the chosen containers'''
+        InventoryObject.getByID(self.origin_container_id).merge(self.destination_container_id)
 
 class PopupErrorContent(GridLayout, LogMethods):
     '''A class linked to popups.kv class definition'''
@@ -229,16 +242,14 @@ class PopupListContent(ScrollView, LogMethods):
                     popup_button = MoveButton(text=new_container.description)
 
                     # Link the Container instance to the button
-                    popup_button.container_id = key
+                    popup_button.destination_container_id = key
 
                     if merge == False:
-                    popup_button.item_to_move = item_to_move.ID
+                        popup_button.item_to_move = item_to_move.ID
                         popup_button.on_release = popup_button.move
                     else:
-                        popup_button.on_release = origin_container.merge(
-                            popup_button.container_id
-                        )
-
+                        popup_button.origin_container_id = origin_container.ID
+                        popup_button.on_release = popup_button.merge
                     # Add the button to the grid widget
                     self.pop_grid.add_widget(popup_button)
 

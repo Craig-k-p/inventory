@@ -19,6 +19,8 @@ class MoveButton(Button):
             # Update the widgets on screen
             self.container.widget.assignValues()
 
+    def merge(self):
+
 class PopupErrorContent(GridLayout, LogMethods):
     '''A class linked to popups.kv class definition'''
 
@@ -188,24 +190,24 @@ class PopupContainerContent(ScrollView, LogMethods):
 class PopInput(TextInput):
     '''An input with special functions'''
 
+
 class PopupMoveContainerContent(GridLayout):
     '''Used to add submit and cancel buttons to container move popups'''
     submit_button = ObjectProperty(None)
 
-class PopupMoveContent(ScrollView, LogMethods):
+
+class PopupListContent(ScrollView, LogMethods):
     '''A popup class for moving inventory between containers or locations'''
     pop_grid = ObjectProperty(None)
 
     def __init__(self, app, **kwargs):
-        super(PopupMoveContent, self).__init__(**kwargs)
+        super(PopupListContent, self).__init__(**kwargs)
         self.__initLog__('popups.py', 'PopupMoveContent')
         self.logDebug('Preparing a "move" popup')
         self.app = app
 
-    def fill(self):
+    def fill(self, merge=False):
         '''Fills the popup with buttons for the user'''
-        # Dictionary that holds lambda functions for each button in the popup
-        calls = {}
 
         # Get the selected item to move and the container that it is getting
         # moved from so we don't give that container as an option
@@ -213,7 +215,7 @@ class PopupMoveContent(ScrollView, LogMethods):
         origin_container = self.app.Selection.getLastContainer().getObj()
 
         # If the selected item to be moved is a Thing instance
-        if isinstance(item_to_move, Thing):
+        if isinstance(item_to_move, Thing) or merge == True:
 
             # Get Container instances from the containers dictionary so we
             for key in Container.objs:
@@ -227,10 +229,15 @@ class PopupMoveContent(ScrollView, LogMethods):
                     popup_button = MoveButton(text=new_container.description)
 
                     # Link the Container instance to the button
-                    popup_button.container = key
-                    popup_button.item_to_move = item_to_move.ID
+                    popup_button.container_id = key
 
-                    popup_button.on_release = popup_button.moveThing
+                    if merge == False:
+                    popup_button.item_to_move = item_to_move.ID
+                        popup_button.on_release = popup_button.move
+                    else:
+                        popup_button.on_release = origin_container.merge(
+                            popup_button.container_id
+                        )
 
                     # Add the button to the grid widget
                     self.pop_grid.add_widget(popup_button)

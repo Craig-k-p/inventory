@@ -2,6 +2,7 @@ ignore.*
 data
 *pycache*
 *.bat
+*.orig
 ingore.runApp.bat - Shortcut
 ingore.runApp.bat
 Ignores

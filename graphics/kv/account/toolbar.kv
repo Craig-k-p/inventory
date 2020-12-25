@@ -27,16 +27,30 @@
 
     # Left side
     ToolbarInner:
+        size_hint: (None, None)
+        height: 45
+        width: 100
         direction: 'right'
         ToolbarButton:
             pos_hint: {'center_x': .25, 'center_y': .5}
             text: 'back'
             on_release:
                 app.buttonPress('changeScreen', screen='back')
+        ToolbarButton:
+            id: create_item_button
+            # Centers the widget on the y-axis
+            pos_hint: {'center_y': .5}
+            text: '+'
+            on_release:
+                # Check that the proper screen is open before opening the popup
+                # Pass the instance of app to toolbar so it can reference needed attributes
+                toolbar.checkForScreen()
         Widget:  # Fill the rest of the ToolbarInner
+            size_hint_x: .2
 
     # Right side
     ToolbarInner:
+        size_hint: (1, 1)
         id: toolbar_right
         direction: 'right'
         # Pushes all widgets to the side!  Since the other widgets below have a fixed size,
@@ -52,12 +66,3 @@
             write_tab: False
             multiline: False
             hint_text: 'search'
-        ToolbarButton:
-            id: create_item_button
-            # Centers the widget on the y-axis
-            pos_hint: {'center_y': .5}
-            text: '+'
-            on_release:
-                # Check that the proper screen is open before opening the popup
-                # Pass the instance of app to toolbar so it can reference needed attributes
-                toolbar.checkForScreen()

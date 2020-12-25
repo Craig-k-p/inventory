@@ -4,7 +4,7 @@ from kivy.properties import ObjectProperty
 from kivy.uix.widget import WidgetException
 
 from resources.utilities import LogMethods
-# from resources.inventoryobjects import InventoryObject
+from resources.inventoryobjects import Container
 
 
 class Toolbar(BoxLayout, LogMethods):
@@ -38,6 +38,10 @@ class Toolbar(BoxLayout, LogMethods):
         elif self.app.sm.current == 'account':
             self.app.containerPopup(container=self.app.Selection.get(suppress=True).getObj())
 
+    def mergeObject(self):
+        '''Merge the contents of this container with another'''
+        self.app.createPopup(merge=True)
+
     def moveObject(self):
         '''Open a popup to give the user options for moving the inventory to a new container'''
         self.app.createPopup(move=True)
@@ -46,54 +50,73 @@ class Toolbar(BoxLayout, LogMethods):
         '''Display toolbar options for selected objects in user's inventory'''
 
         if self.options == None:
+            self.logDebug('self.options=None')
             # Allows us to assign call_delete to the on_press variable without calling
             # the function within the lambda declaration
-            call_delete = lambda call_return : self.app.sm.current_screen.data_grid.deleteObject()
+            self.call_delete = lambda call_return : self.app.sm.current_screen.data_grid.deleteObject()
 
             # Allows us to assign call_edit to the on_press variable without calling
             # the function within the lambda declaration
-            call_edit = lambda call_return : self.editObject()
+            self.call_edit = lambda call_return : self.editObject()
 
             # Allows us to assign call_move to the on_press variable without calling
             # the function within the lambda declaration
-            call_move = lambda call_return : self.moveObject()
-            # call_move = lambda call_return : self.app.createPopup(move=True)
+            self.call_move = lambda call_return : self.moveObject()
+
+            # Allows us to assign call_merge to the on_press variable without calling
+            # the function within the lambda declaration
+            self.call_merge = lambda call_return : self.mergeObject()
 
             self.options = [
                     Button(
-                        text='delete',
+                        text='Delete',
                         size=('50px', '30px'),
                         size_hint=(None, None),
-                        on_release=call_delete,
+                        on_release=self.call_delete,
                         pos_hint={'center_x': .25, 'center_y': .5}
                     ),
                     Button(
-                        text='edit',
-                        size=('38px', '30px'),
+                        text='Edit',
+                        size=('50px', '30px'),
                         size_hint=(None, None),
-                        on_release=call_edit,
+                        on_release=self.call_edit,
                         pos_hint={'center_x': .25, 'center_y': .5}
                     ),
                     Button(
-                        text='move',
-                        size=('47px', '30px'),
+                        text='Move',
+                        size=('50px', '30px'),
                         size_hint=(None, None),
-                        on_release=call_move,
+                        on_release=self.call_move,
                         pos_hint={'center_x': .25, 'center_y': .5}
                     ),
             ]
 
+            self.option_merge = Button(
+                        text='Merge',
+                        size=('50px', '30px'),
+                        size_hint=(None, None),
+                        on_release=self.call_merge,
+                        pos_hint={'center_x': .25, 'center_y': .5}
+                        )
+
+        selection = self.app.Selection.get(suppress=True).getObj()
+
         # If an object is selected, add the widgets to the toolbar
-        if self.app.Selection.get(suppress=True).getObj() != None:
+        if selection != None:
             # For each widget in self.options list
             for widget in self.options:
                 # If it is not in the toolbar
                 if widget not in self.toolbar_right.children:
                     # Add the widget to the toolbar
                     self.toolbar_right.add_widget(widget, index=-1)
+            # Add a special option for containers
+            if self.option_merge not in self.toolbar_right.children:
+                if isinstance(selection, Container):
+                    self.toolbar_right.add_widget(self.option_merge, index=-1)
+
             self.options_drawn = True
 
-        # If an object isn't selected, remove the widgets from the toolbar
+        # If an object isn't selected
         else:
             # For each widget in self.options list
             for widget in self.options:
@@ -101,4 +124,9 @@ class Toolbar(BoxLayout, LogMethods):
                 if widget in self.toolbar_right.children:
                     # Remove the widget from the toolbar
                     self.toolbar_right.remove_widget(widget)
+
+            # Remove the merge button
+            if self.option_merge in self.toolbar_right.children:
+                self.toolbar_right.remove_widget(self.option_merge)
+
             self.options_drawn = False

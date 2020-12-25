@@ -49,7 +49,6 @@ class InventoryHandler():
         if object_class_str == 'thing':
             popup.inventory_object.getContainer().widget.assignValues()
 
-
     def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''
         self.logDebug(f'Creating a thing with ID {data["ID"]}:')
@@ -116,7 +115,6 @@ class InventoryHandler():
         # Reset the InventoryObject._changes_made attribute to False to avoid saving the same data
         InventoryObject.resetChangeMade()
         InventoryObject.checkLoad()
-
 
     def saveData(self):
         '''Hash user data to see if a save is needed.  Save and backup data if necessary'''

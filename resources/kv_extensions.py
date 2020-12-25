@@ -7,7 +7,7 @@ from kivy.uix.textinput import TextInput
 from resources.inventoryobjects import InventoryObject
 from graphics.py.account.row import ContainerDataRow, ThingDataRow
 from graphics.py.pre_auth.popups import PopupThingContent, PopupContainerContent
-from graphics.py.pre_auth.popups import PopupErrorContent, PopupMoveContent
+from graphics.py.pre_auth.popups import PopupErrorContent, PopupListContent
 from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen
 from graphics.py.account.screens import ThingOverviewScreen
 from resources.inventoryobjects import Thing, Container
@@ -33,7 +33,6 @@ class KivyExtensions():
 
             Commands:
                 'changeScreen',
-                'createAccount',
                 'login',
                 'createThingPopup',
                 'createContainerPopup',
@@ -107,7 +106,7 @@ class KivyExtensions():
     def createAccount(self, new_screen, direction):
         pass
 
-    def createPopup(self, move=False):
+    def createPopup(self, move=False, merge=False):
         '''Method that does the following:
             -Load the kv file that defines what goes into the popup
             -Create an instance of Popup
@@ -121,13 +120,18 @@ class KivyExtensions():
         if move == True:
             pop_title = f'Move {selected.description}'
             if isinstance(selected, Thing):
-                pop_title += f' from {self.Selection.getLastContainer().getObj().description} to...'
+                pop_title += f' from {self.Selection.getLastContainer().getObj().description} to..'
             elif isinstance(selected, Container):
                 pop_title += f' from {selected.location} to...'
             else:
                 self.logWarning(f'Selection is wrong type ({type(selected)}) to move')
                 return
-            popup_content = PopupMoveContent(self)
+            popup_content = PopupListContent(self)
+
+        elif merge == True:
+            pop_title = f'Merge contents of {selected.description} into..'
+            popup_content = PopupListContent(self)
+
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
@@ -140,11 +144,14 @@ class KivyExtensions():
                          )
         self.pop.open()
 
-        if move != True:
+        if move != True and merge != True:
             # Assign the popup
             popup_content.assignParentMethod(self.pop.dismiss)
-        else:
+        elif move == True:
             popup_content.fill()
+
+        elif merge == True:
+            popup_content.fill(merge=True)
 
         # Open the popup
         self.logDebug('Opening the popup..')

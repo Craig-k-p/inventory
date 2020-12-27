@@ -43,7 +43,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         file = 'save_data/ignore.save_data'
 
         # Allow access to the Selection class through the app instance
-        self.Selection = Selection
+        self.selection = Selection
 
         # Error messages here will display to the user
         self.popup_errors = []
@@ -73,7 +73,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'overview weight field width': 60,
             'popup auto_dismiss': False,
             'popup required fields': ['description', 'usd_value', 'weight'],
-            'popup size_hint': (.75, .75),
+            'popup size_hint': (None, None),
+            'popup size': (600, 600),
             'standard font': 'arial',
             'text color': (1, 1, 1, 1),
             'title font name': 'segoesc',}

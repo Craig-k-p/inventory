@@ -56,7 +56,7 @@ class InventoryHandler():
 
         if self.data_was_loaded == True:
             # Add the thing to the last selected container
-            self.Selection.getLastContainer().getObj().addThing(new_thing.ID)
+            self.selection.getLastContainer().getObj().addThing(new_thing.ID)
             # Set the changes_made flag to True for saving purposes
             InventoryObject.changeMade()
         return new_thing

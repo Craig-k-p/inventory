@@ -253,3 +253,40 @@
         on_release:
             self.move(is_container=True)
             app.pop.dismiss()
+
+<PopupWarningDelete>:
+    GridLayout:
+        cols: 1
+        size_hint: (1, 1)
+        padding: 10
+        spacing: 10
+        AllignLayout:
+            anchor_x: 'center'
+            PopLabel:
+                text: 'This container still has contents that will be deleted.'
+        AllignLayout:
+            anchor_x: 'center'
+            PopLabel:
+                text: 'Proceed?'
+
+        GridLayout:
+            rows: 1
+            size_hint: (1, 1)
+            padding: 20
+            spacing: 20
+            AllignLayout:
+                anchor_x: 'center'
+                PopButton:
+                    size_hint: (None, None)
+                    size: (120,70)
+                    text: 'Cancel'
+                    on_release: app.pop.dismiss()
+            AllignLayout:
+                anchor_x: 'center'
+                PopButton:
+                    size_hint: (None, None)
+                    size: (120,70)
+                    text: 'Delete it all'
+                    on_release:
+                        app.selection.get(suppress=True).getObj().delete()
+                        app.pop.dismiss()

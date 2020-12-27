@@ -59,7 +59,7 @@ class DataGrid(GridLayout, LogMethods):
 
                 if was_clicked == True:
                     row_clicked = True
-                    self.app.Selection(widget.object)
+                    self.app.selection(widget.object)
 
                     # Check for a double-click
                     if touch.is_double_tap:
@@ -68,15 +68,15 @@ class DataGrid(GridLayout, LogMethods):
                         # If container is double-clicked, change screen
                         if isinstance(widget, ContainerDataRow):
                             self.app.buttonPress('changeScreen', 'container', 'left')
-                            self.app.Selection(None)
+                            self.app.selection(None)
                         # If a thing is selected, pass
                         elif isinstance(self.clicked, ThingDataRow):
                             pass
                         else:   # Empty space clicked.  Deselect
-                            self.app.Selection(None)
+                            self.app.selection(None)
 
         if row_clicked == False:
-            self.app.Selection(None)
+            self.app.selection(None)
 
         self.app.sm.current_screen.toolbar.presentOptions()
 
@@ -104,7 +104,15 @@ class DataGrid(GridLayout, LogMethods):
     def deleteObject(self):
         '''Delete an object and its row from the GridLayout in the DataGrid'''
         # Delete the inventory object and its data
-        self.app.Selection.get().getObj().delete()
+        selection = self.app.selection.get().getObj()
+        try:
+            if selection.hasContents() == True:
+                self.logDebug(f'{selection} has contents. Warning user.')
+                self.app.createPopup(warn=True)
+            else:
+                selection.delete()
+        except:
+            selection.delete()
         InventoryObject.changeMade()
 
     def fillUserData(self, app):
@@ -148,23 +156,3 @@ class DataGrid(GridLayout, LogMethods):
         # Create the heading widgets used to label the top of the data fields
         self.heading_row = self.getHeadingClass()()
         self.add_widget(self.heading_row)
-
-    def _assignColumnWidths(self):
-        '''Loop thru each child widget that needs a fixed width and set its width.  This
-           makes sure that each row has a uniform width.
-        Comments:
-            Not working.  Recieving 0 and 10 for x and y no matter the actual size
-        Future maybe's:
-            -Set the column width to the minimum needed width to fit the values
-           '''
-        self.logInfo('Assigning column widths')
-        for row in self.dataRows:
-            tex_width = self.dataRows[row].val_lo.width
-            self.logDebug(f'Label size: {tex_width}')
-            # tex_width = row.val_lo.texture_size
-            # self.logDebug('kvLogic', f'Label size: {tex_width}')
-
-    def _getMaxWidth(self):
-        '''Loop thru each child widget's children and get the maximum width needed for the
-        column'''
-        self.logInfo(f'Did nothing...')

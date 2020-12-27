@@ -34,9 +34,9 @@ class Toolbar(BoxLayout, LogMethods):
     def editObject(self):
         '''Open a popup to edit the selected object'''
         if self.app.sm.current == 'container':
-            self.app.thingPopup(thing=self.app.Selection.get(suppress=True).getObj())
+            self.app.thingPopup(thing=self.app.selection.get(suppress=True).getObj())
         elif self.app.sm.current == 'account':
-            self.app.containerPopup(container=self.app.Selection.get(suppress=True).getObj())
+            self.app.containerPopup(container=self.app.selection.get(suppress=True).getObj())
 
     def mergeObject(self):
         '''Merge the contents of this container with another'''
@@ -99,7 +99,7 @@ class Toolbar(BoxLayout, LogMethods):
                         pos_hint={'center_x': .25, 'center_y': .5}
                         )
 
-        selection = self.app.Selection.get(suppress=True).getObj()
+        selection = self.app.selection.get(suppress=True).getObj()
 
         # If an object is selected, add the widgets to the toolbar
         if selection != None:

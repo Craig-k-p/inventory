@@ -8,6 +8,7 @@ from kivy.properties import ObjectProperty, ListProperty
 from resources.utilities import LogMethods
 from resources.inventoryobjects import Container, Thing, InventoryObject
 
+
 class MoveButton(Button, LogMethods):
     def __init__(self, **kwargs):
         super(MoveButton, self).__init__(**kwargs)
@@ -33,6 +34,7 @@ class MoveButton(Button, LogMethods):
     def merge(self):
         '''Merge the contents of the chosen containers'''
         InventoryObject.getByID(self.origin_container_id).merge(self.destination_container_id)
+
 
 class PopupErrorContent(GridLayout, LogMethods):
     '''A class linked to popups.kv class definition'''
@@ -224,8 +226,8 @@ class PopupListContent(ScrollView, LogMethods):
 
         # Get the selected item to move and the container that it is getting
         # moved from so we don't give that container as an option
-        item_to_move = self.app.Selection.get(suppress=True).getObj()
-        origin_container = self.app.Selection.getLastContainer().getObj()
+        item_to_move = self.app.selection.get(suppress=True).getObj()
+        origin_container = self.app.selection.getLastContainer().getObj()
 
         # If the selected item to be moved is a Thing instance
         if isinstance(item_to_move, Thing) or merge == True:
@@ -276,3 +278,8 @@ class PopupListContent(ScrollView, LogMethods):
             log = f'The selected object was not an InventoryObject instance. Got {type(item_to_move)}'
             self.logWarning(log)
             self.app.pop.dismiss()
+
+
+class PopupWarningDelete(ScrollView, LogMethods):
+    '''Used to warn the user if they are deleting a container that has contents'''
+

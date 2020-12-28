@@ -1,5 +1,4 @@
-'''
-https://www.youtube.com/watch?v=xaYn4XdieCs
+'''https://www.youtube.com/watch?v=xaYn4XdieCs
 
 Create executable that can be pinned to Start or Task bar:
 

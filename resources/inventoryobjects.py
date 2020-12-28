@@ -408,7 +408,7 @@ class Thing(InventoryObject, LogMethods):
             self.container = kwargs['container']
         # ..or as a newly created instance without one
         except KeyError:
-            self.container = str(self.app.Selection.getLastContainer().getObj().ID)
+            self.container = str(self.app.selection.getLastContainer().getObj().ID)
 
         Thing.objs[self.ID] = self
         self.category = 'thing'
@@ -476,12 +476,12 @@ class Thing(InventoryObject, LogMethods):
 
         else:
             # Get the selection
-            selection = self.app.Selection.get(suppress=True)
+            selection = self.app.selection.get(suppress=True)
 
             # If something is selected and...
             # ...if the last selected container contains this object
             if selection != None and \
-            self.app.Selection.getLastContainer().getObj().contains(self) == True:
+            self.app.selection.getLastContainer().getObj().contains(self) == True:
                 # Draw the widget
                 self.logDebug(f'Drawing widget for {self}')
                 self.drawWidget()
@@ -489,7 +489,7 @@ class Thing(InventoryObject, LogMethods):
             # If something is selected and...
             # ...if the last selected container does not contain this object
             elif selection != None and \
-            self.app.Selection.getLastContainer().getObj().contains(self) == False:
+            self.app.selection.getLastContainer().getObj().contains(self) == False:
                 self.logDebug(f'Undrawing widget for {self}')
                 self.undrawWidget()
 
@@ -530,16 +530,16 @@ class Container(InventoryObject, LogMethods):
     def addThing(self, ID, new_instance=True, merge=False):
         '''Add a thing to the container. Turn self.things into a dict if it hasn't been,
            add the Thing to self.things and flag a change'''
-        log = f'Adding {self.app.Selection.get(suppress=True).getObj().description}'
+        log = f'Adding {self.app.selection.get(suppress=True).getObj().description}'
         log += f' to {self.description}'
         self.logDebug(log)
         self.things.append(str(ID))
 
         if new_instance == False and merge == False:
             log = f'Removing {InventoryObject.getByID(ID)} from '
-            log += f'{self.app.Selection.getLastContainer().getObj().description}'
+            log += f'{self.app.selection.getLastContainer().getObj().description}'
             self.logDebug(log)
-            self.app.Selection.getLastContainer().getObj().removeThing(ID)
+            self.app.selection.getLastContainer().getObj().removeThing(ID)
 
             thing = InventoryObject.getByID(ID)
             self.logDebug(f'Thing being added to this container: {thing}')

@@ -7,7 +7,7 @@ from kivy.uix.textinput import TextInput
 from resources.inventoryobjects import InventoryObject
 from graphics.py.account.row import ContainerDataRow, ThingDataRow
 from graphics.py.pre_auth.popups import PopupThingContent, PopupContainerContent
-from graphics.py.pre_auth.popups import PopupErrorContent, PopupListContent
+from graphics.py.pre_auth.popups import PopupErrorContent, PopupListContent, PopupWarningDelete
 from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen
 from graphics.py.account.screens import ThingOverviewScreen
 from resources.inventoryobjects import Thing, Container
@@ -36,9 +36,7 @@ class KivyExtensions():
                 'login',
                 'createThingPopup',
                 'createContainerPopup',
-                'createInventoryObject'
-
-                '''
+                'createInventoryObject''''
 
         log = 'Button pressed. Received input:'
         log += f'\n\tscreen: {screen}'
@@ -86,7 +84,7 @@ class KivyExtensions():
             elif self.sm.current_screen.name == 'container':
                 self.sm.current = 'account'
                 #  Update the selected object to match the current screen
-                self.Selection(self.Selection.getLastContainer().getObj())
+                self.selection(self.selection.getLastContainer().getObj())
                 # Update visible inventory
                 InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
 
@@ -106,7 +104,7 @@ class KivyExtensions():
     def createAccount(self, new_screen, direction):
         pass
 
-    def createPopup(self, move=False, merge=False):
+    def createPopup(self, move=False, merge=False, warn=False):
         '''Method that does the following:
             -Load the kv file that defines what goes into the popup
             -Create an instance of Popup
@@ -115,12 +113,12 @@ class KivyExtensions():
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
-        selected = self.Selection.get(suppress=True).getObj()
+        selected = self.selection.get(suppress=True).getObj()
 
         if move == True:
             pop_title = f'Move {selected.description}'
             if isinstance(selected, Thing):
-                pop_title += f' from {self.Selection.getLastContainer().getObj().description} to..'
+                pop_title += f' from {self.selection.getLastContainer().getObj().description} to..'
             elif isinstance(selected, Container):
                 pop_title += f' from {selected.location} to...'
             else:
@@ -132,6 +130,15 @@ class KivyExtensions():
             pop_title = f'Merge contents of {selected.description} into..'
             popup_content = PopupListContent(self)
 
+        elif warn == True:
+            pop_title = f'Delete {selected.description}'
+            popup_content = PopupWarningDelete()
+
+        else:
+            self.logWarning('move, merge, and warn flags are all False. Returning.')
+            # Make sure the file isn't loaded more than once
+            Builder.unload_file(self.kv_settings['kv popup file'])
+            return
 
         # Create the popup, assign the title, content, etc
         # auto_dismiss prevents clicking outside of the popup to close the popup
@@ -140,21 +147,21 @@ class KivyExtensions():
                          separator_height=2,
                          content=popup_content,
                          size_hint=self.kv_settings['popup size_hint'],
+                         size=self.kv_settings['popup size'],
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
+
+        # Open the popup
+        self.logDebug('Opening the popup..')
         self.pop.open()
 
-        if move != True and merge != True:
+        if True not in (move, merge, warn):
             # Assign the popup
             popup_content.assignParentMethod(self.pop.dismiss)
         elif move == True:
             popup_content.fill()
-
         elif merge == True:
             popup_content.fill(merge=True)
-
-        # Open the popup
-        self.logDebug('Opening the popup..')
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
@@ -167,7 +174,7 @@ class KivyExtensions():
         popup_content = PopupContainerContent(container)
         # If a container instance was provided, this is an edit
         if container != None:
-            pop_title = f'Edit {self.Selection.get(suppress=True).getObj().description}'
+            pop_title = f'Edit {self.selection.get(suppress=True).getObj().description}'
         # If not, this is a new container
         else:
             pop_title = 'Add container to inventory'
@@ -202,7 +209,7 @@ class KivyExtensions():
 
         # If a thing was provided, this is an edit
         if thing != None:
-            pop_title = f'Edit {self.Selection.get(suppress=True).getObj().description}'
+            pop_title = f'Edit {self.selection.get(suppress=True).getObj().description}'
         else:
             pop_title = 'Add item to container'
 

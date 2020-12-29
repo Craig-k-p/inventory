@@ -147,13 +147,42 @@ class PopupThingContent(ScrollView, LogMethods):
         tags_str = tags_str.replace('\n', ' ')
         self.tags.text = tags_str
 
-    def updateTextInputErrors(self, keys):
-        '''Change the text inputs with an error to a red tone. Accepts a list of keys
-           as input'''
-        self.logDebug(f'{keys} TextInput fields being changed to red')
+    # def updateTextInputErrors(self, keys):
+    #     '''Change the text inputs with an error to a red tone. Accepts a list of keys
+    #        as input'''
+    #     self.logDebug(f'{keys} TextInput fields being changed to red')
 
-        for key in keys:
-            self.ids[key].error = True
+    #     for key in keys:
+    #         self.ids[key].error = True
+
+    def checkFormat(self, popup_content, object_class_str):
+        '''Check for input errors to determine if we should accept or reject user input'''
+        self.error = 0
+
+        if len(self.description.text) == 0:
+            self.description.error = True
+            self.error += 1
+        else:
+            self.description.error = False
+
+        try:
+            float(self.usd_value.text)
+            self.usd_value.error = False
+        except ValueError:
+            self.usd_value.error = True
+            self.error += 1
+
+        try:
+            float(self.weight.text)
+            self.weight.error = False
+        except ValueError:
+            self.weight.error = True
+            self.error += 1
+
+        if self.error > 0:
+            pass
+        else:
+            self.app.closePopup(popup_content, object_class_str)
 
 
 class PopupContainerContent(ScrollView, LogMethods):
@@ -163,6 +192,7 @@ class PopupContainerContent(ScrollView, LogMethods):
     usd_value = ObjectProperty(None)
     weight = ObjectProperty(None)
     tags = ObjectProperty(None)
+    app = ObjectProperty(None)
     submit_button = ObjectProperty(None)
 
     def __init__(self, container, **kwargs):
@@ -199,6 +229,41 @@ class PopupContainerContent(ScrollView, LogMethods):
 
         for key in keys:
             self.ids[key].error = True
+
+    def checkFormat(self, popup_content, object_class_str):
+        '''Check for input errors to determine if we should accept or reject user input'''
+        self.error = 0
+
+        if len(self.description.text) == 0:
+            self.description.error = True
+            self.error += 1
+        else:
+            self.description.error = False
+
+        try:
+            float(self.usd_value.text)
+            self.usd_value.error = False
+        except ValueError:
+            self.usd_value.error = True
+            self.error += 1
+
+        try:
+            float(self.weight.text)
+            self.weight.error = False
+        except ValueError:
+            self.weight.error = True
+            self.error += 1
+
+        if len(self.location.text) == 0:
+            self.location.error = True
+            self.error += 1
+        else:
+            self.location.error = False
+
+        if self.error > 0:
+            pass
+        else:
+            self.app.closePopup(popup_content, object_class_str)
 
 
 class PopInput(TextInput):

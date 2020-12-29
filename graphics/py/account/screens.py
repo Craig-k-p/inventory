@@ -45,13 +45,6 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
 
         self.toolbar.search.bind(text=app.inventoryobject.applySearch)
 
-    def initDefaultPopupText(self):
-        '''Set the default text to be displayed in certain situations'''
-
-    def buttonPress(self):
-        self.logInfo('Enter pressed in AccountOverviewScreen!')
-
-
 class ContainerOverviewScreen(Screen, LogMethods):
     '''Overview of all containers in the user's inventory'''
 
@@ -88,12 +81,6 @@ class ContainerOverviewScreen(Screen, LogMethods):
 
         self.toolbar.search.bind(text=app.inventoryobject.applySearch)
 
-    def initDefaultPopupText(self):
-        '''Set the default text to be displayed in certain situations'''
-
-    def buttonPress(self):
-        self.logInfo('Enter pressed in ContainerOverviewScreen!')
-
 
 class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
     thing_view = ObjectProperty(None)
@@ -115,6 +102,3 @@ class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
         self.widgets = {
             'TextInputs': {}
         }
-
-    def buttonPress(self):
-        self.logInfo('Enter pressed in ThingOverviewScreen!')

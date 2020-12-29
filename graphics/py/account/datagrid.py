@@ -67,7 +67,7 @@ class DataGrid(GridLayout, LogMethods):
 
                         # If container is double-clicked, change screen
                         if isinstance(widget, ContainerDataRow):
-                            self.app.buttonPress('changeScreen', 'container', 'left')
+                            self.app.changeScreen('container')
                             self.app.selection(None)
                         # If a thing is selected, pass
                         elif isinstance(self.clicked, ThingDataRow):

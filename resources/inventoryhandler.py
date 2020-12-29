@@ -13,29 +13,25 @@ class InventoryHandler():
     def createInventoryObject(self, object_class_str, kv_obj_reference):
         '''Create a new object using the popup user input'''
 
-        if self._isValidPopupUserInput(kv_obj_reference) is True:
-            # Get the method (thing or container) from InventoryHandler for creating
-            # a new object
-            createObject = getattr(self, object_class_str)
+        # Get the method (thing or container) from InventoryHandler for creating
+        # a new object
+        createObject = getattr(self, object_class_str)
 
-            # Get the data for the new object
-            # Add the object's ID
-            data = self._getObjectCreationUserInput(kv_obj_reference)
-            data['ID'] = InventoryObject.getNewID()
-            self.logInfo(f'User input:\n{json.dumps(data, indent=4)}')
+        # Get the data for the new object
+        # Add the object's ID
+        data = self._getObjectCreationUserInput(kv_obj_reference)
+        data['ID'] = InventoryObject.getNewID()
+        self.logInfo(f'User input:\n{json.dumps(data, indent=4)}')
 
-            # Create a new object with user's input and dismiss the popup
-            new_object = createObject(data)
-            self.pop.dismiss()
+        # Create a new object with user's input and dismiss the popup
+        new_object = createObject(data)
+        self.pop.dismiss()
 
-            # Add a new row with the new data to the user's screen
-            self.sm.current_screen.data_grid.addDataRow(new_object)
+        # Add a new row with the new data to the user's screen
+        self.sm.current_screen.data_grid.addDataRow(new_object)
 
-            # Return the object's data
-            return data
-
-        else:
-            pass
+        # Return the object's data
+        return data
 
     def updateObjectData(self, popup, object_class_str):
         '''Update an inventory item's data from user input'''
@@ -43,6 +39,12 @@ class InventoryHandler():
         popup.inventory_object.description = popup.description.text
         popup.inventory_object.usd_value = popup.usd_value.text
         popup.inventory_object.weight = popup.weight.text
+
+        try:
+            popup.inventory_object.location = popup.location.text
+        except AttributeError:
+            pass
+
         popup.inventory_object.addTags(popup.tags.text)
         popup.inventory_object.widget.assignValues()
 

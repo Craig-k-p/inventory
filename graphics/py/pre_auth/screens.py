@@ -50,12 +50,6 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         user = self.widgets['TextInputs']['account'].text
         pw = self.widgets['TextInputs']['pswd'].text
 
-        # if len(user) < settings['username min length'] or len(pw) < settings['password min length']:
-        #     self.logInfo('AUTH', f'Login information is invalid')
-        #     errors.append(f'Username must be at least {settings["username min length"]} characters.')
-        #     errors.append(f'Password must be at least {settings["password min length"]} characters.')
-        #     check = False
-
         if check is True:
             self.logInfo(f'self.checkFormat accepted {self.account.text}')
             check = (user, pw)
@@ -66,18 +60,18 @@ class LoginScreen(Screen, UtilityMethods, LogMethods):
         '''Set the default popup text messages, popup button prompt, and popup title.  Must be done
            after the app is instantiated so we can access app.settings.'''
 
-        self.popup_text = {}
-        self.popup_text['messages'] = {
-            'invalid login': 'Invalid username/email or password.',
-            'Userpass too short': f'Username must be {self.manager.app.settings["username min length"]} and password must be {self.manager.app.settings["password min length"]} characters long',
-            'blank login': 'Please provide a username/email and password.',
-            'footer': 'Please check and try again.'
-        }
-        self.popup_text['button'] = 'Try again'
-        self.popup_text['title'] = 'Invalid Login'
+        # self.popup_text = {}
+        # self.popup_text['messages'] = {
+        #     'invalid login': 'Invalid username/email or password.',
+        #     'Userpass too short': f'Username must be {self.manager.app.settings["username min length"]} and password must be {self.manager.app.settings["password min length"]} characters long',
+        #     'blank login': 'Please provide a username/email and password.',
+        #     'footer': 'Please check and try again.'
+        # }
+        # self.popup_text['button'] = 'Try again'
+        # self.popup_text['title'] = 'Invalid Login'
 
-        log = f'Init\'d self.popup_text dictionary:\n{pprint.pformat(self.popup_text, indent=4)}'
-        self.logDebug(log)
+        # log = f'Init\'d self.popup_text dictionary:\n{pprint.pformat(self.popup_text, indent=4)}'
+        # self.logDebug(log)
 
 
 class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
@@ -159,23 +153,23 @@ class CreateAccountScreen(Screen, UtilityMethods, LogMethods):
     def initDefaultPopupText(self):
         '''Set the default popup text messages, popup button prompt, and popup title.  Must be done
            after the app is instantiated so we can access app.settings.'''
-        self.popup_text = {
-            'messages': {
-                'invalid username length': 'Username should be at least ' +
-                                           f'{self.manager.app.settings["username min length"]} ' +
-                'characters long',
-                'invalid email': 'The email must be a properly formatted email.',
-                'password mismatch': 'The passwords do not match.',
-                'password length': f'Your password must be at least ' +
-                f'{self.manager.app.settings["password min length"]} characters long',
-                'footer': 'Please try again.'
-            },
-            'button': 'Try again',
-            'title': 'Invalid Account Creation Attempt'
-        }
-        self.logDebug(
-            f'Init\'d self.popup_text dictionary:\n{pprint.pformat(self.popup_text, indent=4)}'
-        )
+        # self.popup_text = {
+        #     'messages': {
+        #         'invalid username length': 'Username should be at least ' +
+        #                                    f'{self.manager.app.settings["username min length"]} ' +
+        #         'characters long',
+        #         'invalid email': 'The email must be a properly formatted email.',
+        #         'password mismatch': 'The passwords do not match.',
+        #         'password length': f'Your password must be at least ' +
+        #         f'{self.manager.app.settings["password min length"]} characters long',
+        #         'footer': 'Please try again.'
+        #     },
+        #     'button': 'Try again',
+        #     'title': 'Invalid Account Creation Attempt'
+        # }
+        # self.logDebug(
+        #     f'Init\'d self.popup_text dictionary:\n{pprint.pformat(self.popup_text, indent=4)}'
+        # )
 
 
 class InventoryScreenManager(ScreenManager, LogMethods):

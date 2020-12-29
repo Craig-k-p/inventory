@@ -1,6 +1,7 @@
 import pprint
 from kivy.lang import Builder
 from kivy.uix.button import Button
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
@@ -146,14 +147,6 @@ class PopupThingContent(ScrollView, LogMethods):
         tags_str = self.inventory_object.tag_search_str.replace(' ', '_')
         tags_str = tags_str.replace('\n', ' ')
         self.tags.text = tags_str
-
-    # def updateTextInputErrors(self, keys):
-    #     '''Change the text inputs with an error to a red tone. Accepts a list of keys
-    #        as input'''
-    #     self.logDebug(f'{keys} TextInput fields being changed to red')
-
-    #     for key in keys:
-    #         self.ids[key].error = True
 
     def checkFormat(self, popup_content, object_class_str):
         '''Check for input errors to determine if we should accept or reject user input'''
@@ -318,6 +311,18 @@ class PopupListContent(ScrollView, LogMethods):
                         popup_button.on_release = popup_button.merge
                     # Add the button to the grid widget
                     self.pop_grid.add_widget(popup_button)
+
+        if merge == True:
+            layout = AnchorLayout(anchor_x='center')
+            layout.add_widget(
+                MoveButton(
+                    text='Cancel',
+                    on_release=self.app.pop.dismiss,
+                    width=100,
+                    size_hint_x=None
+                    )
+                )
+            self.pop_grid.add_widget(layout)
 
         # If a container is being moved
         elif isinstance(item_to_move, Container):

@@ -6,7 +6,7 @@
 # Set custom attributes for all instances of the TextInput class
 #    Ensure that tab moves the cursor to the next input
 #    Don't allow multiline text input
-    
+
 
 # Set custom fonts for Buttons, TextInputs, and Labels
 <Button>:
@@ -52,13 +52,6 @@
     size_hint: (.2, .05)
     font_size: (root.width**2 + root.height**2) / 7**4
 
-# <ToolbarButton@Button>:
-#     width: 10
-#     height: 10
-#     size_hint: (None, None)
-
-
-
 # Login screen for the user with labels, textinput and buttons
 # This is a class, automatically bound to the class declaration with the same name
 # in the inventory.py file.  Class declarations that must be bound to .py files must
@@ -85,7 +78,7 @@
             id: account
             hint_text: 'Enter username or email here'
             pos_hint: {'center_x':.67, 'center_y':.7}
-            
+
         # Password Label/TextInput pair
         AuthLabel:
             text: 'Password'
@@ -101,14 +94,14 @@
         PrimaryButton:
             text: 'Login'
             pos_hint: {'center_x': .5, 'center_y':.2}
-            on_release: 
-                app.buttonPress(call='login', screen='account', direction='down')
+            on_release:
+                app.login(new_screen='account', direction='down')
         # Create account screen Button
         SecondaryButton:
             text: 'Create an account'
             pos_hint: {'center_x': .5, 'center_y': .1}
             on_release:
-                app.buttonPress(call='changeScreen', screen='create account', direction='left')
+                app.changeScreen(new_screen='create account')
 
 # Create account window for new users
 <CreateAccountScreen>:
@@ -143,7 +136,7 @@
             id: email
             hint_text: 'Enter email here'
             pos_hint: {'center_x':.67, 'center_y':.6}
-            
+
         # Password Label/TextInput pair
         AuthLabel:
             text: 'Password'
@@ -170,12 +163,12 @@
         PrimaryButton:
             text: 'Create Account'
             pos_hint: {'center_x': .5, 'center_y':.2}
-            on_release: 
-                app.buttonPress(call='createAccount', screen='account', direction='down')
+            on_release:
+                app.createAccount()
 
         # Login screen Button
         SecondaryButton:
             text: 'Login'
             pos_hint: {'center_x': .5, 'center_y': .1}
             on_release:
-                app.buttonPress(call='changeScreen', screen='login', direction='right')
+                app.changeScreen(new_screen='login')

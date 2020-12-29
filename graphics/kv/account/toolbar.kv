@@ -35,7 +35,7 @@
             pos_hint: {'center_x': .25, 'center_y': .5}
             text: 'back'
             on_release:
-                app.buttonPress('changeScreen', screen='back')
+                app.changeScreen(screen='back')
         ToolbarButton:
             id: create_item_button
             # Centers the widget on the y-axis

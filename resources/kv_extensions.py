@@ -36,7 +36,7 @@ class KivyExtensions():
                 'login',
                 'createThingPopup',
                 'createContainerPopup',
-                'createInventoryObject''''
+                'createInventoryObject'''
 
         log = 'Button pressed. Received input:'
         log += f'\n\tscreen: {screen}'
@@ -241,7 +241,7 @@ class KivyExtensions():
         self.sm.add_widget(ContainerOverviewScreen(self))
         self.sm.add_widget(ThingOverviewScreen())
 
-    def login(self, new_screen, direction):
+    def login(self, new_screen=None, direction=None):
         '''Handles the graphics operations of logging in and calls the self.authenticate
         method'''
 

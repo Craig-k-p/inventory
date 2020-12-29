@@ -16,24 +16,21 @@ class MoveButton(Button, LogMethods):
 
     def move(self):
         '''Move the inventory item to a new container'''
-        item_to_move = InventoryObject.getByID(self.item_to_move)
-
-        if isinstance(item_to_move, Thing):
-            InventoryObject.getByID(self.destination_container_id).addThing(
-                self.item_to_move, new_instance=False
-            )
-        elif isinstance(item_to_move, Container):
+        if isinstance(self.item_to_move, Thing):
+            self.destination_container.addThing(self.item_to_move.ID, new_instance=False)
+        elif isinstance(self.item_to_move, Container):
             location = self.location_input.text
             if location != '':
-                InventoryObject.getByID(self.destination_container_id).location = location
+                self.item_to_move.location = location
+                self.item_to_move.widget.assignValues()
         else:
             self.parent.parent.parent.parent.parent.dismiss()
-            self.logWarning(f'Received the wrong type for self.item_to_move: {type(item_to_move)}')
+            self.logWarning(f'Received the wrong type for self.item_to_move: {type(self.item_to_move)}')
             self.logWarning('Was expecting Container or Thing type')
 
     def merge(self):
         '''Merge the contents of the chosen containers'''
-        InventoryObject.getByID(self.origin_container_id).merge(self.destination_container_id)
+        self.origin_container.merge(self.destination_container.ID)
 
 
 class PopupErrorContent(GridLayout, LogMethods):
@@ -244,13 +241,13 @@ class PopupListContent(ScrollView, LogMethods):
                     popup_button = MoveButton(text=new_container.description)
 
                     # Link the Container instance to the button
-                    popup_button.destination_container_id = key
+                    popup_button.destination_container = InventoryObject.getByID(key)
 
                     if merge == False:
-                        popup_button.item_to_move = item_to_move.ID
+                        popup_button.item_to_move = item_to_move
                         popup_button.on_release = popup_button.move
                     else:
-                        popup_button.origin_container_id = origin_container.ID
+                        popup_button.origin_container = origin_container
                         popup_button.on_release = popup_button.merge
                     # Add the button to the grid widget
                     self.pop_grid.add_widget(popup_button)
@@ -269,7 +266,7 @@ class PopupListContent(ScrollView, LogMethods):
 
             # Allow the submit button to grab the user's input from the location_input field
             buttons.submit_button.location_input = location_input
-            buttons.submit_button.container = item_to_move
+            buttons.submit_button.item_to_move = item_to_move
 
             self.pop_grid.add_widget(location_input)
             self.pop_grid.add_widget(buttons)

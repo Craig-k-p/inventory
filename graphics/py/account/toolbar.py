@@ -27,9 +27,9 @@ class Toolbar(BoxLayout, LogMethods):
         self.logDebug('Checking app.sm.current for a match')
         self.logDebug(f'self.app.sm.current = {self.app.sm.current}')
         if self.app.sm.current == 'container':
-            self.app.buttonPress('thingPopup', None, None)
+            self.app.thingPopup()
         elif self.app.sm.current == 'account':
-            self.app.buttonPress('containerPopup', None, None)
+            self.app.containerPopup()
 
     def editObject(self):
         '''Open a popup to edit the selected object'''

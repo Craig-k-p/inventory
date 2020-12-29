@@ -550,6 +550,7 @@ class Container(InventoryObject, LogMethods):
 
         self.contentChanged()
         InventoryObject.changeMade()
+        self.widget.assignValues()
 
     def delete(self):
         '''Flag a change, fix self.things if necessary, delete any contents and call the

@@ -287,26 +287,6 @@ class KivyExtensions():
             self._clearPopupErrors()
             return None
 
-    def _isValidPopupUserInput(self, popup_content):
-        '''Verify that user input from the popup is valid'''
-        required = self.kv_settings['popup required fields']
-        # self.logDebug(f'Required input keys: {required}')
-
-        # Loop through the popup_content.ids (text_inputs) keys and check if they're required
-        # Add the key of required TextInputs with empty text fields to the error_keys list
-        error_keys = []
-        for key in popup_content.ids:
-            if key in required and popup_content.ids[key].text == '':
-                # self.logDebug(f'Found error for key: {key}')
-                error_keys.append(key)
-
-        if len(error_keys) > 0:
-            popup_content.updateTextInputErrors(error_keys)
-            return False
-
-        # Return True if no empty fields were found
-        return True
-
     def _getObjectCreationUserInput(self, popup_content):
         '''Get user input text from popup fields for container and object creation
            Takes popup_content instance as an argument to access the TextInput instances

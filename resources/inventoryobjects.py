@@ -530,9 +530,6 @@ class Container(InventoryObject, LogMethods):
     def addThing(self, ID, new_instance=True, merge=False):
         '''Add a thing to the container. Turn self.things into a dict if it hasn't been,
            add the Thing to self.things and flag a change'''
-        log = f'Adding {self.app.selection.get(suppress=True).getObj().description}'
-        log += f' to {self.description}'
-        self.logDebug(log)
         self.things.append(str(ID))
 
         if new_instance == False and merge == False:

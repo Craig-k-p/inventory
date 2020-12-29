@@ -64,6 +64,7 @@
     usd_value: usd_value
     weight: weight
     tags: tags
+    app: app
     submit_button: submit_button
 
     id: popup_content
@@ -136,7 +137,7 @@
                     size_hint: (None, None)
                     size: (180, 90)
                     on_release:
-                        app.closePopup(popup_content=popup_content, object_class_str='thing')
+                        popup_content.checkFormat(popup_content=popup_content, object_class_str='thing')
 
 
 <PopupContainerContent>:
@@ -145,6 +146,7 @@
     usd_value: usd_value
     weight: weight
     tags: tags
+    app: app
     submit_button: submit_button
 
     id: popup_content
@@ -223,7 +225,7 @@
                     size_hint: (None, None)
                     size: (180, 90)
                     on_release:
-                        app.closePopup(popup_content=popup_content, object_class_str='container')
+                        popup_content.checkFormat(popup_content=popup_content, object_class_str='container')
 
 <PopupListContent>:  # ScrollView inheritance - popup.py
     pop_grid: pop_grid

@@ -159,6 +159,7 @@ class PopupThingContent(ScrollView, LogMethods):
 class PopupContainerContent(ScrollView, LogMethods):
     '''A class linked to popups.kv class definition'''
     description = ObjectProperty(None)
+    location = ObjectProperty(None)
     usd_value = ObjectProperty(None)
     weight = ObjectProperty(None)
     tags = ObjectProperty(None)
@@ -184,6 +185,7 @@ class PopupContainerContent(ScrollView, LogMethods):
     def setContainerValues(self):
         '''Fill the textinput boxes with the object's data'''
         self.description.text = self.inventory_object.description
+        self.location.text = self.inventory_object.location
         self.usd_value.text = self.inventory_object.usd_value
         self.weight.text = self.inventory_object.weight
         tags_str = self.inventory_object.tag_search_str.replace(' ', '_')

@@ -39,7 +39,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
         self.logInfo('Creating MyInventoryApp instance')
 
-        file = 'save_data/ignore.save_data'
+        file = 'save_data/save_data.inventory'
 
         # Allow access to the Selection class through the app instance
         self.selection = Selection

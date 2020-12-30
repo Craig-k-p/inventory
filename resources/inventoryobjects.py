@@ -34,7 +34,8 @@ class InventoryObject():
            weight - int as string
            tags - single-word or multi-word (separated by _) tags separated by a space
            things - None; dummy kwarg to prevent errors from kwarg unpacking from file load
-           container -  None; dummy kwarg to prevent errors kwarg unpacking from file load'''
+           container -  None; dummy kwarg to prevent errors during unpacking from file load
+           location - string'''
         self.ID = ID
         self._description = description
         self._usd_value = usd_value
@@ -465,7 +466,7 @@ class Thing(InventoryObject, LogMethods):
 
         self.logDebug(f'{self.description} is checking for a data_grid')
 
-        # If the Thing has no Datadata_grid assigned and the category matches, assign it
+        # If the Thing has no data_grid assigned and the category matches, assign it
         if self.data_grid == None and data_grid != None and self.category == data_grid.category:
             self.logDebug(f'data_grid not found. Added data_grid to {self.description}')
             self.data_grid = data_grid

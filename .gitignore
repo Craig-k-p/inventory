@@ -1,5 +1,5 @@
 ignore.*
-data
+save_data
 *pycache*
 *.bat
 *.orig

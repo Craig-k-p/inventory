@@ -1,5 +1,7 @@
 import pprint
+
 from kivy.lang import Builder
+from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.scrollview import ScrollView
@@ -8,6 +10,12 @@ from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty, ListProperty
 from resources.utilities import LogMethods
 from resources.inventoryobjects import Container, Thing, InventoryObject
+
+
+class PopLabel(Label):
+    '''Defined in popups.kv'''
+class PopButton(Button):
+    '''Defined in popups.kv'''
 
 
 class MoveButton(Button, LogMethods):
@@ -36,79 +44,26 @@ class MoveButton(Button, LogMethods):
 
 class PopupErrorContent(GridLayout, LogMethods):
     '''A class linked to popups.kv class definition'''
-
-    # Grab the BoxLayout from kv/popups.kv
-    box = ObjectProperty(None)
-
-    def __init__(self, widgets, current_screen, is_yes_no=False, **kwargs):
-        '''Grab a list of child widgets to be added to the popup after self.parent
+    def __init__(self, errors, **kwargs):
+        '''Takes a list of child widgets to be added to the popup after self.parent
            (reference to the parent popup) is assigned.
            widgets -> list of Kivy widgets'''
-        self.cols = 1
-        self.pos_hint = {'x': 0, 'y': 0}
-
-        # Initialize the log for this instance
+        super(PopupErrorContent, self).__init__(**kwargs)
         self.__initLog__(file_str='kv_popup', class_str='PopupContent')
+        self.errors = errors
+        self.logDebug('Creating popup to notify user of errors')
 
-        # Assign widgets, current_screen, and is_yes_no variables to class variables
-        self.widgets = widgets
-        self.current_screen = current_screen
-        self.is_yes_no = is_yes_no
-        log = 'New instance:\n\t\tPopupContent('
-        log += f'\n\t\t\twidgets = {self.widgets},'
-        log += f'\n\t\t\tcurrent_screen = {self.current_screen.manager.current},'
-        log += f'\n\t\t\tis_yes_no = {self.is_yes_no}'
-        self.logDebug(log)
-
-    def assignParentMethod(self, parentMethod):
-        '''Allows us to reference the popup from the kv file as root.parent.do_something.
-           See kv_extensions.py > KivyExtensions.createPopup() for usage.
-           parentMethod -> method to be executed by popup button'''
-
-        # Method to be executed by the popup button
-        self.parentMethod = parentMethod
-        self.logDebug(f'Recieved parentMethod: {parentMethod.__name__}')
-
-        # Add the child widgets to the popup
-        self._assignChildren()
-
-    def _assignChildren(self):
-        '''Loop through self.labels list of child widgets and add them to the popup'''
-
-        # If we have a populated list of widgets
-        if isinstance(self.widgets, list) and len(self.widgets) > 0:
-
-            # Add each widget to the parent before it is drawn
-            for widget in self.widgets:
-                self.box.add_widget(widget)
-
-            self.logInfo(f'Added widgets to popup:\n{pprint.pformat(self.widgets)}')
-
-            if self.is_yes_no is False:
-                # Create a button
-                btn = Button(
-                    text=self.current_screen.popup_text['button'],
-                    font_size=18,
-                    size=(200, 50),
-                    size_hint=(.5, 0),
-                    id='button',
-                    pos_hint={'center_x': .5}
+    def fill(self):
+        '''Fill the popup with error labels and an "OK" button'''
+        self.logDebug('Filling the popup with error messages')
+        for error in self.errors:
+            self.add_widget(PopLabel(text=error))
+        self.add_widget(
+            PopButton(
+                text='continue',
+                on_release=self.app.pop.dismiss
                 )
-                btn.bind(on_release=self.parentMethod)
-                self.logDebug('self.is_yes_no is False.  Added a single button to popup')
-                # Add a button to the BoxLayout with the given text and parentMethod
-                self.box.add_widget(btn)
-
-            else:
-                print('Not implemented --- kv_popup.PopupContent._assignChildren')
-                log = 'self.is_yes_no is True.  Added a yes/no button pair'
-                self.logError('Not implemented!  self.is_yes_no is True')
-
-        else:
-            log = f'Error!  self.widgets is either not a list or is empty:'
-            log += f'\n\t\t\ttype: {type(self.widgets)}'
-            log += f'\n\t\t\tcontent: {self.widgets}'
-            self.logWarning('Kv Ops', log)
+            )
 
 
 class PopupThingContent(ScrollView, LogMethods):
@@ -275,7 +230,7 @@ class PopupListContent(ScrollView, LogMethods):
     def __init__(self, app, **kwargs):
         super(PopupListContent, self).__init__(**kwargs)
         self.__initLog__('popups.py', 'PopupMoveContent')
-        self.logDebug('Preparing a "move" popup')
+        self.logDebug('Preparing a popup')
         self.app = app
 
     def fill(self, merge=False):
@@ -288,6 +243,8 @@ class PopupListContent(ScrollView, LogMethods):
 
         # If the selected item to be moved is a Thing instance
         if isinstance(item_to_move, Thing) or merge == True:
+
+            self.logDebug(f'Filling popup for {item_to_move}')
 
             # Get Container instances from the containers dictionary so we
             for key in Container.objs:
@@ -312,7 +269,7 @@ class PopupListContent(ScrollView, LogMethods):
                     # Add the button to the grid widget
                     self.pop_grid.add_widget(popup_button)
 
-        if merge == True:
+        if isinstance(item_to_move, Thing) or merge == True:
             layout = AnchorLayout(anchor_x='center')
             layout.add_widget(
                 MoveButton(

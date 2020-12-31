@@ -20,22 +20,7 @@ class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
         super(AccountOverviewScreen, self).__init__(**kwargs)
         self.app = app
-
-        # # Allow me to check if the enter key is pressed
-        # Window.bind(on_key_down=self._on_keyboard_down)
-
-        # Creates a logger for the current class
-        self.__initLog__(
-            file_str='account_screens',
-            class_str='AccountOverviewScreen'
-        )
-
-        self.logInfo('Creating an AccountOverviewScreen instance..')
-
-        # Put input widgets here so we can grab the user input at some point
-        self.widgets = {
-            'TextInputs': {}
-        }
+        self.__initLog__(file_str='account_screens', class_str='AccountOverviewScreen')
 
         # Make sure the data_grid knows what format to follow
         self.data_grid.setDataGridObjectType('container')
@@ -56,22 +41,7 @@ class ContainerOverviewScreen(Screen, LogMethods):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
         super(ContainerOverviewScreen, self).__init__(**kwargs)
         self.app = app
-
-        # # Allow me to check if the enter key is pressed
-        # Window.bind(on_key_down=self._on_keyboard_down)
-
-        # Creates a logger for the current class
-        self.__initLog__(
-            file_str='account_screens',
-            class_str='ContainerOverviewScreen'
-        )
-
-        self.logInfo('Creating a ContainerOverviewScreen instance..')
-
-        # Put input widgets here so we can grab the user input at some point
-        self.widgets = {
-            'TextInputs': {}
-        }
+        self.__initLog__(file_str='account_screens', class_str='ContainerOverviewScreen')
 
         # Make sure the data_grid knows what format to follow
         self.data_grid.setDataGridObjectType('thing')
@@ -80,25 +50,3 @@ class ContainerOverviewScreen(Screen, LogMethods):
         self.data_grid.fillUserData(self.app)
 
         self.toolbar.search.bind(text=app.inventoryobject.applySearch)
-
-
-class ThingOverviewScreen(Screen, UtilityMethods, LogMethods):
-    thing_view = ObjectProperty(None)
-
-    def __init__(self, **kwargs):
-        # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
-        super(ThingOverviewScreen, self).__init__(**kwargs)
-
-        # # Allow me to check if the enter key is pressed
-        # Window.bind(on_key_down=self._on_keyboard_down)
-
-        # Creates a logger for the current class
-        self.__initLog__(
-            file_str='screens.py',
-            class_str='AccountOverviewScreen'
-        )
-
-        # Put input widgets here so we can grab the user input at some point
-        self.widgets = {
-            'TextInputs': {}
-        }

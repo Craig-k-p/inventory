@@ -67,7 +67,7 @@ class DataGrid(GridLayout, LogMethods):
 
                         # If container is double-clicked, change screen
                         if isinstance(widget, ContainerDataRow):
-                            self.app.changeScreen('container')
+                            self.app.changeScreen('contents')
                             self.app.selection(None)
                         # If a thing is selected, pass
                         elif isinstance(self.clicked, ThingDataRow):
@@ -117,7 +117,7 @@ class DataGrid(GridLayout, LogMethods):
 
     def fillUserData(self, app):
         '''Populate the data rows with user data during application startup'''
-        self.logDebug(f'Filling the{self.category} DataGrid with objects')
+        self.logDebug(f'Filling the {self.category} DataGrid with objects')
 
         # Get access to the application instance
         if self.app == None:

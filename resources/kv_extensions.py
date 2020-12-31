@@ -9,60 +9,13 @@ from graphics.py.account.row import ContainerDataRow, ThingDataRow
 from graphics.py.pre_auth.popups import PopupThingContent, PopupContainerContent
 from graphics.py.pre_auth.popups import PopupErrorContent, PopupListContent, PopupWarningDelete
 from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen
-from graphics.py.account.screens import ThingOverviewScreen
+# from graphics.py.account.screens import ThingOverviewScreen
 from resources.inventoryobjects import Thing, Container
 
 
 class KivyExtensions():
     '''Used to separate the Kivy graphics methods needed in MyInventoryApp
        from the IO methods'''
-
-    def buttonPress(self,
-                    call=None,
-                    screen=None,
-                    direction=None,
-                    kv_object_reference=None,
-                    object_class_str=None,
-                    close_popup_on_success=True
-                    ):
-        ''' Do various things like log the user in and change the current screen.
-            screen -> string
-            command -> function name as string
-            kv_object_reference -> kv popup content instance (defined in popups.kv)
-            object_class_str -> 'Thing' or 'Container'
-
-            Commands:
-                'changeScreen',
-                'login',
-                'createThingPopup',
-                'createContainerPopup',
-                'createInventoryObject'''
-
-        log = 'Button pressed. Received input:'
-        log += f'\n\tscreen: {screen}'
-        log += f'\n\tcall: {call}'
-        self.logDebug(log)
-
-        if screen == 'back':
-            self.changeScreen(screen)
-
-        # If call is among the allowed calls or, in other words, if the string matches a
-        # method name
-        else:
-
-            # Access the class method by string name using getattr
-            # self is passed to getattr so it knows in what object to search for call
-            method = getattr(self, call)
-
-            if kv_object_reference is None:
-                # Pass the necessary arguments to the method
-                verdict = method(screen, direction)
-            else:
-                verdict = method(object_class_str, kv_object_reference)
-
-            if close_popup_on_success is True:
-                if verdict is True:
-                    self.pop.dismiss()
 
     def closePopup(self, popup_content, object_class_str):
         if popup_content.inventory_object == None:
@@ -73,16 +26,17 @@ class KivyExtensions():
         self.pop.dismiss()
 
 
-    def changeScreen(self, screen, direction=None):
+    def changeScreen(self, screen):
         '''Change to a screen using direction.  Make sure the screen does not need
         authentication.
         '''
         if screen == 'back':
             InventoryObject.search_term = ''
-            if self.sm.current_screen.name == 'account':
-                self.sm.current = 'login'
-            elif self.sm.current_screen.name == 'container':
-                self.sm.current = 'account'
+            if self.sm.current_screen.name == 'containers':
+                self.sm.current = 'load file'
+                self.user_file = None
+            elif self.sm.current_screen.name == 'contents':
+                self.sm.current = 'containers'
                 #  Update the selected object to match the current screen
                 self.selection(self.selection.getLastContainer().getObj())
                 # Update visible inventory
@@ -101,26 +55,29 @@ class KivyExtensions():
             except AttributeError:
                 pass
 
-    def createAccount(self, new_screen, direction):
-        pass
-
-    def createPopup(self, move=False, merge=False, warn=False):
+    def createPopup(self, move=False, merge=False, warn=False, errors=None):
         '''Method that does the following:
             -Load the kv file that defines what goes into the popup
             -Create an instance of Popup
             -Draw the popup to the screen
-            -Unload the file to avoid errors.'''
+            -Unload the file to avoid errors'''
 
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
-        selected = self.selection.get(suppress=True).getObj()
+
+        try:
+            selected = self.selection.get(suppress=True).getObj()
+        except AttributeError:
+            pass
 
         if move == True:
             pop_title = f'Move {selected.description}'
             if isinstance(selected, Thing):
                 pop_title += f' from {self.selection.getLastContainer().getObj().description} to..'
+                self.logDebug(f'Popup title assigned for thing')
             elif isinstance(selected, Container):
                 pop_title += f' from {selected.location} to...'
+                self.logDebug(f'Popup title assigned for container')
             else:
                 self.logWarning(f'Selection is wrong type ({type(selected)}) to move')
                 return
@@ -133,6 +90,10 @@ class KivyExtensions():
         elif warn == True:
             pop_title = f'Delete {selected.description}'
             popup_content = PopupWarningDelete()
+
+        elif isinstance(errors, list):
+            pop_title = 'Error'
+            popup_content = PopupErrorContent(errors)
 
         else:
             self.logWarning('move, merge, and warn flags are all False. Returning.')
@@ -155,10 +116,7 @@ class KivyExtensions():
         self.logDebug('Opening the popup..')
         self.pop.open()
 
-        if True not in (move, merge, warn):
-            # Assign the popup
-            popup_content.assignParentMethod(self.pop.dismiss)
-        elif move == True:
+        if move == True or errors != None:
             popup_content.fill()
         elif merge == True:
             popup_content.fill(merge=True)
@@ -239,9 +197,9 @@ class KivyExtensions():
         able to get the information they need!'''
         self.sm.add_widget(AccountOverviewScreen(self))
         self.sm.add_widget(ContainerOverviewScreen(self))
-        self.sm.add_widget(ThingOverviewScreen())
+        self.sm.current = 'containers'
 
-    def login(self, new_screen=None, direction=None):
+    def login(self, new_screen=None):
         '''Handles the graphics operations of logging in and calls the self.authenticate
         method'''
 
@@ -250,7 +208,6 @@ class KivyExtensions():
         self.createUserScreens()
 
         # Change the transition properties and current screen
-        self.sm.transition.direction = direction
         self.sm.current = new_screen
 
         old_screen.resetTextInputs()

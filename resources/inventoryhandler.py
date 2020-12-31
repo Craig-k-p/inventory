@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 from resources.inventoryobjects import Thing, Container, InventoryObject
 from graphics.py.account.row import ContainerDataRow, ThingDataRow
@@ -33,24 +34,6 @@ class InventoryHandler():
         # Return the object's data
         return data
 
-    def updateObjectData(self, popup, object_class_str):
-        '''Update an inventory item's data from user input'''
-        self.logDebug('Updating the object\'s data')
-        popup.inventory_object.description = popup.description.text
-        popup.inventory_object.usd_value = popup.usd_value.text
-        popup.inventory_object.weight = popup.weight.text
-
-        try:
-            popup.inventory_object.location = popup.location.text
-        except AttributeError:
-            pass
-
-        popup.inventory_object.addTags(popup.tags.text)
-        popup.inventory_object.widget.assignValues()
-
-        if object_class_str == 'thing':
-            popup.inventory_object.getContainer().widget.assignValues()
-
     def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''
         self.logDebug(f'Creating a thing with ID {data["ID"]}:')
@@ -63,6 +46,16 @@ class InventoryHandler():
             InventoryObject.changeMade()
         return new_thing
 
+    def doesFileExist(self, file_name):
+        '''Make sure we aren't overwriting any saved files'''
+        file_name = file_name.strip() + '.inventory'
+
+        for file in self.files:
+            if file == file_name:
+                return True
+
+        return False
+
     def container(self, data):  # createObject
         '''Create a new container'''
         self.logDebug(f'Creating a container with ID {data["ID"]}:')
@@ -73,28 +66,52 @@ class InventoryHandler():
             InventoryObject.changeMade()
         return new_container
 
+    def getSaveFiles(self):
+        '''Get the save file names'''
+        self.files = []
+        for file in os.listdir(self.settings['save file path']):
+            if file.endswith(".inventory"):
+                self.files.append(file)
+
+        self.logDebug(self.files)
+
+        return self.files
+
+    def getObjects(self):
+        for ID in InventoryObject.objs:
+            self.logDebug(f'{InventoryObject.objs[ID].description} has grid: {InventoryObject.objs[ID].grid}')
+
     def loadData(self):
-        '''Make a backup of the save file and load and hash the user's data'''
+        '''Load the user's data'''
 
         if self.data_was_loaded == True:
             return
+
+        self.logDebug(self.user_file)
 
         # Catch errors if the file doesn't exist
         try:
             self.logDebug(f'Attempting to load from the save file')
             # Open the file in read mode with utf-8 encoding
-            with open(self.settings['save file'], 'r', encoding='utf-8') as f:
+            with open(self.user_file, 'r', encoding='utf-8') as f:
                 # Load the data as a dictionary
                 inventory = json.load(f)
                 self.logInfo(f'loaded data:\n{json.dumps(inventory, indent=4)}')
 
         except FileNotFoundError:
-            # If the load data is None, set the data to its default
-            self.logDebug(f'No save file found')
-            inventory = {
-                'container': {},
-                'thing': {}
-            }
+            try:
+                with open(self.settings['save file path'] + self.user_file) as f:
+                    # Load the data as a dictionary
+                    inventory = json.load(f)
+                    self.logInfo(f'loaded data:\n{json.dumps(inventory, indent=4)}')
+
+            except FileNotFoundError:
+                # If the load data is None, set the data to its default
+                self.logDebug(f'No save file found')
+                inventory = {
+                    'container': {},
+                    'thing': {}
+                }
 
         # Create the inventory objects with the loaded data
         containers = inventory['container']
@@ -119,14 +136,18 @@ class InventoryHandler():
         InventoryObject.checkLoad()
 
     def saveData(self):
-        '''Hash user data to see if a save is needed.  Save and backup data if necessary'''
+        '''Save data if necessary'''
 
         if self.inventoryobject.wasChangeMade() == True:
             self.logDebug('Changes were made. Getting data to save')
             data = InventoryObject.getSaveData()
             self.logDebug('Saving the JSON data to the save file')
             # Open the save file and write json data to the file
-            with open(self.settings['save file'], 'w', encoding='utf-8') as f:
+            if '.inventory' not in self.user_file:
+                self.user_file += '.inventory'
+            if self.settings['save file path'] not in self.user_file:
+                self.user_file = self.settings['save file path'] + self.user_file
+            with open(self.user_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
         else:
             self.logInfo('No changes made. Skipping save')
@@ -151,6 +172,20 @@ class InventoryHandler():
 
         self.logDebug(f'SELECTED: {self.selected}')
 
-    def getObjects(self):
-        for ID in InventoryObject.objs:
-            self.logDebug(f'{InventoryObject.objs[ID].description} has grid: {InventoryObject.objs[ID].grid}')
+    def updateObjectData(self, popup, object_class_str):
+        '''Update an inventory item's data from user input'''
+        self.logDebug('Updating the object\'s data')
+        popup.inventory_object.description = popup.description.text
+        popup.inventory_object.usd_value = popup.usd_value.text
+        popup.inventory_object.weight = popup.weight.text
+
+        try:
+            popup.inventory_object.location = popup.location.text
+        except AttributeError:
+            pass
+
+        popup.inventory_object.addTags(popup.tags.text)
+        popup.inventory_object.widget.assignValues()
+
+        if object_class_str == 'thing':
+            popup.inventory_object.getContainer().widget.assignValues()

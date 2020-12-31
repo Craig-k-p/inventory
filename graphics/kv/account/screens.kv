@@ -8,7 +8,7 @@
 
 
 <AccountOverviewScreen>:
-    name: 'account'
+    name: 'containers'
     # Pass these back to the class variable definitions that = ObjectProperty(None)
     toolbar: toolbar
     parent_layout: parent_layout
@@ -28,11 +28,10 @@
             id: scroll_view
             DataGrid:
                 id: data_grid
-
 
 
 <ContainerOverviewScreen>:
-    name: 'container'
+    name: 'contents'
     # Pass these back to the class variable definitions that = ObjectProperty(None)
     toolbar: toolbar
     parent_layout: parent_layout
@@ -52,15 +51,3 @@
             id: scroll_view
             DataGrid:
                 id: data_grid
-
-<ThingOverviewScreen>:
-    toolbar: toolbar
-    name: 'thing'
-
-    BoxLayout:
-        orientation: 'vertical'
-
-        # Toolbar goes on top
-        Toolbar:
-            id: toolbar
-        ThingView:

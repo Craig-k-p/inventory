@@ -26,16 +26,16 @@ class Toolbar(BoxLayout, LogMethods):
         '''Use app to reference the main application instance to check which screen we are using'''
         self.logDebug('Checking app.sm.current for a match')
         self.logDebug(f'self.app.sm.current = {self.app.sm.current}')
-        if self.app.sm.current == 'container':
+        if self.app.sm.current == 'contents':
             self.app.thingPopup()
-        elif self.app.sm.current == 'account':
+        elif self.app.sm.current == 'containers':
             self.app.containerPopup()
 
     def editObject(self):
         '''Open a popup to edit the selected object'''
-        if self.app.sm.current == 'container':
+        if self.app.sm.current == 'contents':
             self.app.thingPopup(thing=self.app.selection.get(suppress=True).getObj())
-        elif self.app.sm.current == 'account':
+        elif self.app.sm.current == 'containers':
             self.app.containerPopup(container=self.app.selection.get(suppress=True).getObj())
 
     def mergeObject(self):

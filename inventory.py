@@ -69,7 +69,9 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         log += f"{self.kv_settings['transition']} --- {self.sm}"
         self.logDebug(log)
 
+        self._setup()
 
+    def _setup(self):
         # name='name' allows the screen manager to change screens using self.current='screen'
         # name can also be defined in the kv/main_widgets.kv file using "name: 'load file'" under
         # class declaration

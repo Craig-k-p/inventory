@@ -34,7 +34,7 @@ class KivyExtensions():
             InventoryObject.search_term = ''
             if self.sm.current_screen.name == 'containers':
                 self.sm.current = 'load file'
-                self.user_file = None
+                self.restart()
             elif self.sm.current_screen.name == 'contents':
                 self.sm.current = 'containers'
                 #  Update the selected object to match the current screen
@@ -124,6 +124,13 @@ class KivyExtensions():
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
 
+    def createUserScreens(self):
+        '''Create user screens after the user has been logged in to be sure the widgets are
+        able to get the information they need!'''
+        self.sm.add_widget(AccountOverviewScreen(self))
+        self.sm.add_widget(ContainerOverviewScreen(self))
+        self.sm.current = 'containers'
+
     def containerPopup(self, screen=None, direction=None, container=None):
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
@@ -191,13 +198,6 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-
-    def createUserScreens(self):
-        '''Create user screens after the user has been logged in to be sure the widgets are
-        able to get the information they need!'''
-        self.sm.add_widget(AccountOverviewScreen(self))
-        self.sm.add_widget(ContainerOverviewScreen(self))
-        self.sm.current = 'containers'
 
     def login(self, new_screen=None):
         '''Handles the graphics operations of logging in and calls the self.authenticate

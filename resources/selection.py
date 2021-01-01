@@ -35,8 +35,7 @@ class Selection(LogMethods):
 
     def __repr__(self):
         '''A brief description of the object'''
-        s = f'<Selection obj {self._s}>'
-        return s
+        return f'<Selection obj {self._s}>'
 
     def getObj(self):
         '''Return the inventory object that was linked to the selection'''
@@ -48,6 +47,30 @@ class Selection(LogMethods):
             return False
         else:
             return True
+
+    @classmethod
+    def cleanup(cls):
+        '''Delete all selections and their associated inventory when user exits their inventory'''
+        cls._history = []
+        cls._last_container = None
+
+    @classmethod
+    def get(cls, suppress=False):
+        '''Return the most recent selection'''
+        if cls._history != []:
+            selected = cls._history[-1]  # Returns the last item in the list
+            if suppress == False:
+                Logger.debug(f'Selection.get()-> selected object: {selected}')
+            return selected
+
+    @classmethod
+    def getLastContainer(cls):
+        '''Return the last container that was selected or raise an error if one wasn't selected'''
+        if cls._last_container == None:
+            Logger.warning(f'Selection.get()-> No container has been selected yet')
+            return None
+        else:
+            return cls._last_container
 
     @classmethod
     def _deselectPrevious(cls):
@@ -66,22 +89,4 @@ class Selection(LogMethods):
         current_selection = cls.get()
         if current_selection._isInventory():
             current_selection.getObj().widget.select()
-
-    @classmethod
-    def get(cls, suppress=False):
-        '''Return the most recent selection'''
-        if cls._history != []:
-            selected = cls._history[-1]  # Returns the last item in the list
-            if suppress == False:
-                Logger.debug(f'Selection.get()-> selected object: {selected}')
-            return selected
-
-    @classmethod
-    def getLastContainer(cls):
-        '''Return the last container that was selected or raise an error if one wasn't selected'''
-        if cls._last_container == None:
-            Logger.critical(f'Selection.get()-> No container has been selected yet')
-            raise ValueError('No selected container')
-        else:
-            return cls._last_container
 

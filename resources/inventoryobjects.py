@@ -252,6 +252,11 @@ class InventoryObject():
             self.tag_search_str = self.tag_search_str.replace('_', ' ')
 
     @classmethod
+    def cleanup(cls):
+        '''Cleanup inventory when the user exits their inventory'''
+        cls.objs = {}
+
+    @classmethod
     def applySearch(cls, search_widget, search_term):
         '''Assign cls.search_term to find matching objects when cls.updateWidgets
            is called'''
@@ -681,3 +686,4 @@ class Container(InventoryObject, LogMethods):
                 raise AttributeError('self.updateWidget was unable to resolve draw/undraw choice')
 
             self.widget.setBounds()
+

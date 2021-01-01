@@ -3,10 +3,12 @@ import os
 import shutil
 from resources.inventoryobjects import Thing, Container, InventoryObject
 from graphics.py.account.row import ContainerDataRow, ThingDataRow
+from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen
 
 
 class InventoryHandler():
     def __init__(self):
+        self.data_screens = (AccountOverviewScreen, ContainerOverviewScreen)
         self.data_was_loaded = False
         InventoryObject.app = self
         self.inventoryobject = InventoryObject
@@ -135,6 +137,11 @@ class InventoryHandler():
         InventoryObject.resetChangeMade()
         InventoryObject.checkLoad()
 
+    def restart(self):
+        '''Reset user data and start over'''
+        self._cleanup()
+        self._setup()
+
     def saveData(self):
         '''Save data if necessary'''
 
@@ -189,3 +196,16 @@ class InventoryHandler():
 
         if object_class_str == 'thing':
             popup.inventory_object.getContainer().widget.assignValues()
+
+    def _cleanup(self):
+        '''Remove the inventory that was loaded previously'''
+        self.user_file = None
+        InventoryObject.cleanup()
+        Container.cleanup()
+        Thing.cleanup()
+        self.selection.cleanup()
+
+        while len(self.sm.screens) > 0:
+           self.sm.remove_widget(self.sm.screens[0])
+
+        self.data_was_loaded = False

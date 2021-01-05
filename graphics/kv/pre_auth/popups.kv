@@ -1,3 +1,5 @@
+#: include graphics/kv/pre_auth/screens.kv
+
 <AllignLayout@AnchorLayout>:
     size_hint: (1, 1)
     anchor_x: 'left'
@@ -6,8 +8,13 @@
 
 <MoveButton>:
     color: app.kv_settings['text color']
-    font_size: 18
-
+    size_hint: (None, None)
+    size: (250, 50)
+    background_normal: ''
+    background_color: (.79, .73, .51, 1)
+    font_size: '22sp'
+    bold: True
+    color: (0,0,0,1)
 
 
 <PopLabel>:
@@ -16,9 +23,6 @@
     # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
     # Allows the AnchorLayout to allign this widget along the x axis (left, center, right)
     size_hint: (None, None)
-    # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
-    # https://stackoverflow.com/questions/24803773/...
-    # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
     font_size: 22
     size: (self.texture_size[0]+10, self.texture_size[1])
 
@@ -222,24 +226,6 @@
                     on_release:
                         popup_content.checkFormat(popup_content=popup_content, object_class_str='container')
 
-<PopupListContent>:  # ScrollView inheritance - popup.py
-    pop_grid: pop_grid
-    size_hint: (.75, .75)
-
-    GridLayout:
-        id: pop_grid
-        cols: 1
-        size_hint: (1, 1)
-        padding: 10
-        spacing: 10
-        # Allow ScrollView to scroll (next two lines)
-        size_hint_y: None
-        height: self.minimum_height
-        row_default_height: 45
-        row_force_default: True
-        padding: 20
-        spacing: 20
-
 # Makes the submit and cancel buttons for moving a container
 <PopupMoveContainerContent>:
     submit_button: submit_button
@@ -295,3 +281,22 @@
                     on_release:
                         app.selection.get(suppress=True).getObj().delete()
                         app.pop.dismiss()
+
+
+<PopupListContent>:  # ScrollView inheritance - popup.py
+    pop_grid: pop_grid
+    size_hint: (1, 1)
+    bar_width: 20  # Make sure users know they can scroll
+    # Allow using the bar or click and drag to scroll
+    scroll_type: ['bars', 'content']
+
+    GridLayout:
+        id: pop_grid
+        cols: 1
+        size_hint_x: 1
+        # Allow ScrollView to scroll
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: 75
+        row_force_default: True
+        spacing: 10

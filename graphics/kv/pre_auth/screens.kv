@@ -6,7 +6,6 @@
     bold: True
     font_size: 18
 
-
 <TextInput>:
     font_name: 'arial'
     bold: True
@@ -16,24 +15,25 @@
     color: app.kv_settings['text color']
     background_color: (.8,.8,1,1) if self.focus else ((1,.8,.8,1) if self.error else (1,1,1,1))
 
-
 <Label>:
     font_name: 'arial'
     bold: True
     color: app.kv_settings['text color']
 
-
 <CenterAnchorLayout>:  # Inherits from AnchorLayout in screens.py
     anchor_x: 'center'
     anchor_y: 'center'
-
 
 # These are custom classes inherited from Button, TextInput, etc
 <FileButton>:
     app: app
     size_hint: (None, None)
     size: (350, 65)
-
+    background_normal: ''
+    background_color: (.79, .73, .51, 1)
+    font_size: '22sp'
+    color: (0,0,0,1)
+    bold: True
 
 <PrimaryButton@Button>:
     size_hint: (None, None)
@@ -183,7 +183,7 @@
         # This fills the rest of the screen underneath the title and instructions
         ScrollView:
             size_hint: (1, 1)  # Fill the rest of the screen
-            bar_width: 25      # Make sure users know they can scroll
+            bar_width: 20      # Make sure users know they can scroll
             # Allow using the bar or click and drag to scroll
             scroll_type: ['bars', 'content']
             # Background color for the widget

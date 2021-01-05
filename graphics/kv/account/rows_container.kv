@@ -1,3 +1,6 @@
+<Label>:
+    font_size: 18
+
 <ContainerHeadingRow>:
     rows: 1
     id: heading_row
@@ -6,21 +9,14 @@
     weight_label: weight_label
     val_label: val_label
     loc_label: loc_label
-    tag_button: tag_label
 
     # Object heading
     AnchorLayout:
-        # label: label
-        # Fit the text into its box:
-        #     https://kivy.org/doc/stable/api-kivy.core.text.html
-        # AnchorLayout allows me to allign text to one side or the other of it's field
-        # width: 40
-        anchor_x: 'center'
-        anchor_y: 'center'  # Has no effect if size_hint_y is 1
+        anchor_x: 'left'
         size_hint: (1, 1)
         canvas:
             Color:
-                rgba: .15, .15, .15, 1
+                rgba: app.kv_settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -32,78 +28,21 @@
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
             size_hint: (None, 1)
-            # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
-            # https://stackoverflow.com/questions/24803773/...
-            # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
-            size: (self.texture_size[0]+10, self.texture_size[1])
-
-    # Weight heading
-    AnchorLayout:
-        # label: label
-        width: self.parent.weight_col_width
-        anchor_x: 'center'
-        size_hint: (None, 1)  # Allows setting the width of layout
-        canvas:
-            Color:
-                rgba: .15, .15, .15, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            id: weight_label
-            width: app.kv_settings['overview weight field width']
-            # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
-            text: 'LBs'
-            bold: True
-            # Allows anchoring to the sides
-            size_hint: (None, 1)
-            # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
-            # https://stackoverflow.com/questions/24803773/...
-            # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
-            size: (self.texture_size[0]+10, self.texture_size[1])
-            color: app.kv_settings['row heading text color']
-
-    # Value heading
-    AnchorLayout:
-        # width: val_label.width
-        width: self.parent.val_col_width
-        anchor_x: 'center'
-        size_hint: (None, 1)  # Allows setting the width of layout
-        canvas:
-            Color:
-                rgba: .15, .15, .15, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            id: val_label
-            # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
-            # Allows anchoring to the sides
-            text: '$'
-            bold: True
-            size_hint: (None, 1)
-            # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
-            # https://stackoverflow.com/questions/...
-            # ...24803773/how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
-            size: (self.texture_size[0]+10, self.texture_size[1])
-            color: app.kv_settings['row heading text color']
+            size: (self.texture_size[0]+15, self.texture_size[1])
 
     # Location heading
     AnchorLayout:
         # AnchorLayout allows me to allign text to one side or the other of it's field
-        # label: label
-        anchor_x: 'center'
-        anchor_y: 'center'  # Has no effect if size_hint_y is 1
-        size_hint: (.5, 1)
+        anchor_x: 'left'
+        size_hint: (.8, 1)
         canvas:
             Color:
-                rgba: .15, .15, .15, 1
+                rgba: app.kv_settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
         Label:
             id: loc_label
-            # text: 'South Dakota'
             color: app.kv_settings['text color']
             bold: True
             text: 'Location'
@@ -111,29 +50,49 @@
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
             # as well as changing the widget's x size
             size_hint: (None, 1)
-            # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
-            # https://stackoverflow.com/questions/24803773/...
-            # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
-            size: (self.texture_size[0]+10, self.texture_size[1])
-            color: app.kv_settings['row heading text color']
+            size: (self.texture_size[0]+15, self.texture_size[1])
 
-    # Tag heading
-    FloatLayout:
-        width: 40
-        # Setting size_hint: (x=None, y) allows me to manually size the width of the Layout to 40
-        size_hint: (None, 1)
+    # Weight heading
+    AnchorLayout:
+        # label: label
+        width: app.kv_settings['weight_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: .15, .15, .15, 1
+                rgba: app.kv_settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
         Label:
-            id: tag_label
+            id: weight_label
+            # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
+            text: 'Weight'
             bold: True
-            text: f'Tags'
-            pos_hint: {'x': 0, 'y': 0}
-            color: app.kv_settings['row heading text color']
+            # Allows anchoring to the sides
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])
+
+    # Value heading
+    AnchorLayout:
+        # width: val_label.width
+        width: app.kv_settings['val_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
+        canvas:
+            Color:
+                rgba: app.kv_settings['row heading color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: val_label
+            # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
+            # Allows anchoring to the sides
+            text: 'Value'
+            bold: True
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+20, self.texture_size[1])
 
 
 <ContainerDataRow>:
@@ -144,13 +103,9 @@
     val_lo: val_lo
     val_label: val_label
     loc_label: loc_label
-    tag_button: tag_button
 
     # Object field
     AnchorLayout:
-        # label: label
-        # Fit the text into its box:
-        #     https://kivy.org/doc/stable/api-kivy.core.text.html
         # AnchorLayout allows me to allign text to one side or the other of it's field
         anchor_x: 'left'
         anchor_y: 'center'  # Has no effect if size_hint_y is 1
@@ -167,17 +122,30 @@
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
             size_hint: (None, 1)
-            # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
-            # https://stackoverflow.com/questions/24803773/...
-            # ...how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
-            size: (self.texture_size[0]+10, self.texture_size[1])
+            size: (self.texture_size[0]+15, self.texture_size[1])
+
+    # Location field
+    AnchorLayout:
+        # AnchorLayout allows me to allign text to one side or the other of it's field
+        anchor_x: 'left'
+        size_hint: (.8, 1)
+        canvas:
+            Color:
+                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: loc_label
+            color: app.kv_settings['text color']
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])
 
     # Weight field
     AnchorLayout:
         # Future: size rows only as wide as needed using weight_label.texture if possible!
         id: weight_lo
-        # width: weight_label.width
-        width: self.parent.weight_col_width
+        width: app.kv_settings['weight_col_width']
         anchor_x: 'right'
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
@@ -189,15 +157,14 @@
         Label:
             id: weight_label
             size_hint: (None, 1)
-            size: (self.texture_size[0]+10, self.texture_size[1])
+            size: (self.texture_size[0]+15, self.texture_size[1])
 
     # Value field
     AnchorLayout:
         id: val_lo
-        # width: val_label.width
-        width: self.parent.val_col_width
+        width: app.kv_settings['val_col_width']
         anchor_x: 'right'
-        size_hint: (None, 1)  # Allows setting the width of layout
+        size_hint: (None, 1)
         canvas:
             Color:
                 rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
@@ -206,47 +173,5 @@
                 size: self.size
         Label:
             id: val_label
-            # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
-            # Allows anchoring to the sides
             size_hint: (None, 1)
-            # SETS THE SIZE OF THE LABEL TO ITS ACTUAL TEXT'S SIZE
-            # https://stackoverflow.com/questions/...
-            # ...24803773/how-do-i-set-minimum-allowable-width-height-for-widget-layout-in-kivy
-            size: (self.texture_size[0]+10, self.texture_size[1])
-
-    # Location field
-    AnchorLayout:
-        # AnchorLayout allows me to allign text to one side or the other of it's field
-        # label: label
-        anchor_x: 'left'
-        anchor_y: 'center'  # Has no effect if size_hint_y is 1
-        size_hint: (.5, 1)
-        canvas:
-            Color:
-                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            id: loc_label
-            color: app.kv_settings['text color']
-            size_hint: (None, 1)
-            size: (self.texture_size[0]+10, self.texture_size[1])
-
-    # Tag button
-    FloatLayout:
-        width: 40
-        # Setting size_hint: (x=None, y) allows me to manually size the width of the Layout to 40
-        size_hint: (None, 1)
-        canvas:
-            Color:
-                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Button:
-            id: tag_button
-            text: f'{random.randint(1,11)}'
-            pos_hint: {'x': 0, 'y': 0}
-            on_press:
-                pass
+            size: (self.texture_size[0]+15, self.texture_size[1])

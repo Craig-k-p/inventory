@@ -16,6 +16,8 @@ class PopLabel(Label):
     '''Defined in popups.kv'''
 class PopButton(Button):
     '''Defined in popups.kv'''
+class CenterAnchorLayout(AnchorLayout):
+    '''FileButton class declared in screens.kv'''
 
 
 class MoveButton(Button, LogMethods):
@@ -246,16 +248,38 @@ class PopupListContent(ScrollView, LogMethods):
 
             self.logDebug(f'Filling popup for {item_to_move}')
 
+            layout = AnchorLayout(anchor_x='center')
+            layout.add_widget(
+                MoveButton(
+                    text='Cancel',
+                    on_release=self.app.pop.dismiss,
+                    width=100,
+                    size_hint_x=None,
+                    background_color=(.64, .2, .2, 1)
+                    )
+                )
+            self.pop_grid.add_widget(layout)
+
             # Get Container instances from the containers dictionary so we
             for key in Container.objs:
 
                 # If this is not the origin_container, make a button for the container
                 if Container.objs[key] != origin_container:
+                    layout = CenterAnchorLayout()
 
                     new_container = Container.objs[key]
 
                     # Create a button with the container's descrition
-                    popup_button = MoveButton(text=new_container.description)
+                    count = new_container.hasContents(count=True)
+
+                    if count == 0:
+                        description = f'{new_container.description} [empty]'
+                    elif count == 1:
+                        description = description = f'{new_container.description} [{count} item]'
+                    else:
+                        description = f'{new_container.description} [{count} items]'
+
+                    popup_button = MoveButton(text=description)
 
                     # Link the Container instance to the button
                     popup_button.destination_container = InventoryObject.getByID(key)
@@ -266,20 +290,11 @@ class PopupListContent(ScrollView, LogMethods):
                     else:
                         popup_button.origin_container = origin_container
                         popup_button.on_release = popup_button.merge
-                    # Add the button to the grid widget
-                    self.pop_grid.add_widget(popup_button)
 
-        if isinstance(item_to_move, Thing) or merge == True:
-            layout = AnchorLayout(anchor_x='center')
-            layout.add_widget(
-                MoveButton(
-                    text='Cancel',
-                    on_release=self.app.pop.dismiss,
-                    width=100,
-                    size_hint_x=None
-                    )
-                )
-            self.pop_grid.add_widget(layout)
+                    layout.add_widget(popup_button)
+
+                    # Add the button to the grid widget
+                    self.pop_grid.add_widget(layout)
 
         # If a container is being moved
         elif isinstance(item_to_move, Container):

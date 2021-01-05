@@ -6,10 +6,10 @@ from kivy.uix.screenmanager import Screen
 
 from graphics.py.account.thing_view import ThingView
 from graphics.py.account.toolbar import Toolbar
-from resources.utilities import UtilityMethods, LogMethods
+from resources.utilities import LogMethods
 
 
-class AccountOverviewScreen(Screen, UtilityMethods, LogMethods):
+class AccountOverviewScreen(Screen, LogMethods):
 
     parent_layout = ObjectProperty(None)
     data_grid = ObjectProperty(None)

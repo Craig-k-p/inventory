@@ -7,7 +7,7 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import ObjectProperty
 
-from resources.utilities import UtilityMethods, LogMethods
+from resources.utilities import LogMethods
 
 
 class CenterAnchorLayout(AnchorLayout):
@@ -27,7 +27,7 @@ class FileButton(Button, LogMethods):
         self.app.createUserScreens()
 
 
-class LoadFileScreen(Screen, UtilityMethods, LogMethods):
+class LoadFileScreen(Screen, LogMethods):
     ''' The window that draws necesary widgets to the screen such as buttons, text inputs,
         and labels. It inherits from kivy.uix.screenmanager.screen.Screen'''
 
@@ -55,7 +55,7 @@ class LoadFileScreen(Screen, UtilityMethods, LogMethods):
             self.logDebug(f'Added {file} button')
 
 
-class CreateFileScreen(Screen, UtilityMethods, LogMethods):
+class CreateFileScreen(Screen, LogMethods):
     ''' The screen that draws necesary widgets to the window such as buttons, text inputs,
         and labels. It inherits from kivy.uix.screenmanager.screen.Screen'''
 

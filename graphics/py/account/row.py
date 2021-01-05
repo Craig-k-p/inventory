@@ -12,6 +12,45 @@ class DataRow():
         self.selected = True
     def getBounds(self):
         return self.bounds
+
+    def formatValue(self, obj_value, value_symbol='$'):
+        value = round(float(obj_value), 2)
+        dollars, cents = str(value).split('.')
+
+        if value > 9999:
+            return f"{value_symbol}{format(int(dollars), ',.0f')}"
+
+        # Make sure cents are 2 decimal places
+        if len(cents) == 0:
+            cents = '.00'
+        elif len(cents) == 1:
+            cents = f'.{cents}0'
+
+        value = float(f'{dollars}{cents}')
+
+        if 0 <= value:
+            return f"{value_symbol}{format(value, ',.2f')}"
+
+        else:
+            return f"-{value_symbol}{format(abs(value), ',.2f')}"
+
+
+    def formatWeight(self, obj_weight, weight_symbol='lbs'):
+        weight = round(float(obj_weight), 1)
+        whole_number, decimal = str(weight).split('.')
+
+        if len(decimal) == 0 or decimal == '0':
+            return f'{whole_number} {weight_symbol}'
+
+        weight = float(f'{whole_number}.{decimal}')
+
+        if 0 <= weight < 100:
+            return f"{format(weight, ',.1f')} {weight_symbol}"
+        else:
+            return f'{whole_number} {weight_symbol}'
+
+
+
     def setBounds(self):
         # the to_window method gets the coordinates according to the window
         # instead of according to the parent widget
@@ -41,10 +80,7 @@ class ContainerHeadingRow(GridLayout, LogMethods):
     weight = ObjectProperty(None)
     val = ObjectProperty(None)
     loc = ObjectProperty(None)
-    tag = ObjectProperty(None)
     my_text = StringProperty(None)
-    weight_col_width = NumericProperty(50)
-    val_col_width = NumericProperty(65)
 
     settings = {
         'heading_color': Color(.1, .1, .1, 0.2)
@@ -61,12 +97,11 @@ class ContainerHeadingRow(GridLayout, LogMethods):
                        weight='LBS',
                        usd_value='$$',
                        location='Location',
-                       tags='Tags',
                        options='Opts'
                        ):
         '''Set the heading text for each child widget Label'''
         log = f'Setting heading Label text values to {container}, {weight}, {usd_value}, '
-        log += f'{location}, {tags}, and {options}'
+        log += f'{location}, and {options}'
         self.logDebug(log)
         self.logDebug(f'self.weight.label = {self.weight_label.text}')
 
@@ -74,7 +109,6 @@ class ContainerHeadingRow(GridLayout, LogMethods):
         self.weight_label.text = weight
         self.val_label.text = self.my_text
         self.loc_label.text = location
-        self.tag_button.text = tags
         self.opt_button.text = options
 
         self.logDebug(f'container.label = {self.obj_label.text}')
@@ -90,9 +124,6 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
     loc_label = ObjectProperty(None)
-    tag_button = ObjectProperty(None)
-    weight_col_width = NumericProperty(50)
-    val_col_width = NumericProperty(65)
     selected = BooleanProperty(False)
 
     def __init__(self, inventory_object, **kwargs):
@@ -103,9 +134,6 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
         super(ContainerDataRow, self).__init__(**kwargs)
         self.__initLog__('rows_inventory.py', 'ContainerDataRow')
         self.logDebug('Creating a ContainerDataRow instance')
-
-        self.usd_value_col_width = 65
-        self.weight_col_width = 45
 
         self.object.widget = self
 
@@ -119,8 +147,8 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
     def assignValues(self):
         self.logDebug(f'Assigning data from {self.object}')
         self.obj_label.text = str(self.object.description)
-        self.val_label.text = str(self.object.getValue())
-        self.weight_label.text = str(self.object.getWeight())
+        self.val_label.text = self.formatValue(self.object.getValue())
+        self.weight_label.text = self.formatWeight(self.object.getWeight())
         self.loc_label.text = self.object.location
 
         self.logDebug(f'got values: {self.weight_label.text} lbs, ${self.val_label.text}')
@@ -130,10 +158,7 @@ class ThingHeadingRow(GridLayout, LogMethods):
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
-    tag_label = ObjectProperty(None)
     opt_label = ObjectProperty(None)
-    weight_col_width = NumericProperty(50)
-    val_col_width = NumericProperty(65)
 
     settings = {
         'heading_color': Color(.1, .1, .1, 0.2)
@@ -149,31 +174,25 @@ class ThingHeadingRow(GridLayout, LogMethods):
                        container='Thing',
                        weight='LBs',
                        usd_value='$$',
-                       tags='Tags',
                        options='Opts'
                        ):
         '''Set the heading text for each child widget Label'''
-        log = f'Setting heading Label text values to {container}, {weight}, {usd_value}, '
-        log += f'{tags}, and {options}'
+        log = f'Setting heading Label text values to {container}, {weight}, {usd_value},'
+        log += f'and {options}'
         self.logDebug(log)
 
         self.obj_label.text = 'HELP'
         self.weight_label.text = weight
         self.val_label.text = self.my_text
-        self.tag_button.text = tags
         self.opt_button.text = options
 
 
 class ThingDataRow(GridLayout, DataRow, LogMethods):
 
-    # fields = ListProperty(None)
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
-    tag_button = ObjectProperty(None)
     opt_button = ObjectProperty(None)
-    weight_col_width = NumericProperty(50)
-    val_col_width = NumericProperty(65)
     selected = BooleanProperty(False)
 
     def __init__(self, inventory_object, **kwargs):
@@ -186,9 +205,6 @@ class ThingDataRow(GridLayout, DataRow, LogMethods):
         self.logDebug('Creating a ThingDataRow instance')
 
         self.logDebug(f'self.object = {self.object}')
-
-        self.value_col_width = 65
-        self.weight_col_width = 40
 
         self.object.widget = self
 
@@ -204,5 +220,5 @@ class ThingDataRow(GridLayout, DataRow, LogMethods):
         self.logDebug(f'Assigning data from {self.object}')
 
         self.obj_label.text = str(self.object.description)
-        self.val_label.text = str(self.object.usd_value)
-        self.weight_label.text = str(self.object.weight)
+        self.val_label.text = self.formatValue(self.object.usd_value)
+        self.weight_label.text = self.formatWeight(self.object.weight)

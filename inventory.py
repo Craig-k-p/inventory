@@ -1,5 +1,6 @@
 from pprint import pformat
 
+from kivy.config import Config
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
@@ -13,6 +14,9 @@ from resources.inventoryhandler import InventoryHandler
 from resources.inventoryobjects import InventoryObject
 from resources.utilities import LogMethods
 from resources.selection import Selection
+
+# Without this, right clicking will leave a red circle behind
+Config.set('input', 'mouse', 'mouse, multitouch_on_demand')
 
 
 class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
@@ -36,16 +40,14 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'row color': (.2, .2, .2, 1),
             'row selected color': (.2, .75, .8, 1),
             'row heading text color': (.95, .95, .95, 1),
-            'overview options button size_hint': (None, 1),
-            'overview options button width': 35,
-            'overview weight field width': 60,
             'popup auto_dismiss': False,
             'popup size_hint': (None, None),
             'popup size': (600, 600),
             'font': 'arial',
             'text color': (1, 1, 1, 1),
-            'title font name': 'segoesc',
             'transition': NoTransition(),
+            'val_col_width': 110,
+            'weight_col_width': 60
             }
 
         self.logInfo(f'Started session with settings:\n{pformat(self.settings, indent=4)}')

@@ -610,12 +610,15 @@ class Container(InventoryObject, LogMethods):
             weight += float(InventoryObject.getByID(ID).weight)
         return int(weight)
 
-    def hasContents(self):
+    def hasContents(self, count=False):
         '''Check for contents and return True or False'''
-        if len(self.things) > 0:
-            return True
+        if count == True:
+            return len(self.things)
         else:
-            return False
+            if len(self.things) > 0:
+                return True
+            else:
+                return False
 
     def merge(self, destination_id):
         '''Merge the contents of this container into another container. Accepts a destination

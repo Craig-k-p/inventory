@@ -222,7 +222,10 @@
                             font_size: 20
 
                 CenterAnchorLayout:
-                    FileButton:
+                    Button:
+                        size_hint: (None, None)
+                        font_size: '22sp'
+                        bold: True
                         size: (150, 60)
                         text: 'Create'
                         on_release: create_file_screen.checkUserInputFormat()

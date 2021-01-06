@@ -250,12 +250,14 @@ class PopupListContent(ScrollView, LogMethods):
 
             layout = AnchorLayout(anchor_x='center')
             layout.add_widget(
-                MoveButton(
+                Button(
                     text='Cancel',
                     on_release=self.app.pop.dismiss,
-                    width=100,
-                    size_hint_x=None,
-                    background_color=(.64, .2, .2, 1)
+                    size_hint=(None, None),
+                    size=(250, 50),
+                    color=self.app.kv_settings['text color'],
+                    font_size='22sp',
+                    bold=True
                     )
                 )
             self.pop_grid.add_widget(layout)

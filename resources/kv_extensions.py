@@ -65,6 +65,9 @@ class KivyExtensions():
         # Load the popup content from file and create an instance of PopupContent
         Builder.load_file(self.kv_settings['kv popup file'])
 
+        popup_size_hint = self.kv_settings['popup size_hint']
+        popup_size = self.kv_settings['popup size']
+
         try:
             selected = self.selection.get(suppress=True).getObj()
         except AttributeError:
@@ -90,6 +93,7 @@ class KivyExtensions():
         elif warn == True:
             pop_title = f'Delete {selected.description}'
             popup_content = PopupWarningDelete()
+            popup_size = (600,300)
 
         elif isinstance(errors, list):
             pop_title = 'Error'
@@ -107,8 +111,8 @@ class KivyExtensions():
                          title_size=24,
                          separator_height=2,
                          content=popup_content,
-                         size_hint=self.kv_settings['popup size_hint'],
-                         size=self.kv_settings['popup size'],
+                         size_hint=popup_size_hint,
+                         size=popup_size,
                          auto_dismiss=self.kv_settings['popup auto_dismiss'],
                          )
 

@@ -250,15 +250,19 @@
         cols: 1
         size_hint: (1, 1)
         padding: 10
-        spacing: 10
-        AllignLayout:
-            anchor_x: 'center'
-            PopLabel:
-                text: 'This container still has contents that will be deleted.'
-        AllignLayout:
-            anchor_x: 'center'
-            PopLabel:
-                text: 'Proceed?'
+
+        GridLayout:
+            cols: 1
+            spacing: 10
+
+            AllignLayout:
+                anchor_x: 'center'
+                PopLabel:
+                    text: 'This container still has contents that will be deleted.'
+            AllignLayout:
+                anchor_x: 'center'
+                PopLabel:
+                    text: 'Proceed?'
 
         GridLayout:
             rows: 1
@@ -276,7 +280,7 @@
                 anchor_x: 'center'
                 PopButton:
                     size_hint: (None, None)
-                    size: (120,70)
+                    size: (140,70)
                     text: 'Delete it all'
                     on_release:
                         app.selection.get(suppress=True).getObj().delete()

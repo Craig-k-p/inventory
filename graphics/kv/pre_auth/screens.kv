@@ -39,9 +39,6 @@
     size_hint: (None, None)
     size: (280, 75)
 
-<Title@Label>:
-    font_size: 60
-
 
 # Load file screen for the user with labels and buttons
 # This is a class, automatically bound to the class declaration with the same name
@@ -66,7 +63,8 @@
             # Make sure the y size hint is None so we can manually choose the height
             size_hint_y: None
             height: 100
-            Title:
+            Label:
+                font_size: '60sp'
                 text: 'My Inventory'
                 color: (1, .7, .25, 1)
 
@@ -147,7 +145,8 @@
             # Make sure the y size hint is None so we can manually choose the height
             size_hint_y: None
             height: 100
-            Title:
+            Label:
+                font_size: '60sp'
                 text: 'My Inventory'
                 color: (1, .7, .25, 1)
 

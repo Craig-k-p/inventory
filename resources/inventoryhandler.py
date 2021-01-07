@@ -1,9 +1,7 @@
-import json
-import os
-import shutil
+import json, os, shutil
 from resources.inventoryobjects import Thing, Container, InventoryObject
-from graphics.py.account.row import ContainerDataRow, ThingDataRow
-from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen
+from graphics.row import ContainerDataRow, ThingDataRow
+from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen
 
 
 class InventoryHandler():

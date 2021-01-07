@@ -5,11 +5,10 @@ from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 
 from resources.inventoryobjects import InventoryObject
-from graphics.py.account.row import ContainerDataRow, ThingDataRow
-from graphics.py.pre_auth.popups import PopupThingContent, PopupContainerContent
-from graphics.py.pre_auth.popups import PopupErrorContent, PopupListContent, PopupWarningDelete
-from graphics.py.account.screens import AccountOverviewScreen, ContainerOverviewScreen
-# from graphics.py.account.screens import ThingOverviewScreen
+from graphics.row import ContainerDataRow, ThingDataRow
+from graphics.popups import PopupThingContent, PopupContainerContent
+from graphics.popups import PopupErrorContent, PopupListContent, PopupWarningDelete
+from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen
 from resources.inventoryobjects import Thing, Container
 
 

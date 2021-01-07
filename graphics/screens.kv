@@ -1,3 +1,57 @@
+#: import random random
+#: include graphics/thing_view.kv
+#: include graphics/toolbar.kv
+#: include graphics/rows_container.kv
+#: include graphics/rows_thing.kv
+#: include graphics/datagrid.kv
+
+
+<AccountOverviewScreen>:
+    name: 'containers'
+    # Pass these back to the class variable definitions that = ObjectProperty(None)
+    toolbar: toolbar
+    parent_layout: parent_layout
+    data_grid: data_grid
+    app: app
+
+    BoxLayout:
+        # Allows the ScreenManager instance to refer to this screen
+        id: parent_layout
+        orientation: 'vertical'
+
+        # Toolbar goes on top
+        Toolbar:
+            id: toolbar
+
+        ScrollView:
+            id: scroll_view
+            DataGrid:
+                id: data_grid
+
+
+<ContainerOverviewScreen>:
+    name: 'contents'
+    # Pass these back to the class variable definitions that = ObjectProperty(None)
+    toolbar: toolbar
+    parent_layout: parent_layout
+    data_grid: data_grid
+    app: app
+
+    BoxLayout:
+        # Allows the ScreenManager instance to refer to this screen
+        id: parent_layout
+        orientation: 'vertical'
+
+        # Toolbar goes on top
+        Toolbar:
+            id: toolbar
+
+        ScrollView:
+            id: scroll_view
+            DataGrid:
+                id: data_grid
+
+
 # Set custom fonts for Buttons, TextInputs, and Labels
 <Button>:
     # These settings affect all Buttons in every file unless overridden
@@ -228,3 +282,4 @@
                         size: (150, 60)
                         text: 'Create'
                         on_release: create_file_screen.checkUserInputFormat()
+

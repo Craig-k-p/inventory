@@ -6,9 +6,9 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import NoTransition, SlideTransition
 
-from graphics.py.pre_auth.screens import LoadFileScreen, CreateFileScreen
-from graphics.py.pre_auth.screens import InventoryScreenManager
-from graphics.py.account.datagrid import DataGrid, ContainerHeadingRow
+from graphics.screens import LoadFileScreen, CreateFileScreen
+from graphics.screens import InventoryScreenManager
+from graphics.datagrid import DataGrid, ContainerHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.inventoryhandler import InventoryHandler
 from resources.inventoryobjects import InventoryObject
@@ -32,10 +32,10 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
         self.kv_settings = {
             'startup kv files': [
-                'graphics/kv/pre_auth/screens.kv',
-                'graphics/kv/account/screens.kv'
+                'graphics/screens.kv',
+                'graphics/screens.kv'
             ],
-            'kv popup file': 'graphics/kv/pre_auth/popups.kv',
+            'kv popup file': 'graphics/popups.kv',
             'row heading color': (.15, .15, .15, 1),
             'row color': (.2, .2, .2, 1),
             'row selected color': (.2, .75, .8, 1),

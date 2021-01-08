@@ -220,9 +220,25 @@ class PopInput(TextInput):
     '''An input with special functions'''
 
 
-class PopupMoveContainerContent(GridLayout):
+class PopupContentMoveContainer(GridLayout, LogMethods):
     '''Used to add submit and cancel buttons to container move popups'''
     submit_button = ObjectProperty(None)
+
+    def __init__(self, app, **kwargs):
+        super(PopupContentMoveContainer, self).__init__(**kwargs)
+        self.__initLog__('popups.py', 'PopupListContent')
+        self.logDebug('Preparing a popup')
+        self.app = app
+
+    def fill(self):
+        '''Give the necessary information to the submit button'''
+        item_to_move = self.app.selection.get(suppress=True).getObj()
+        # If a container is being moved
+        if isinstance(item_to_move, Container):
+            # Allow the submit button to have access to the selected inventory
+            self.submit_button.item_to_move = item_to_move
+        else:
+            self.logWarning(f'Was expetcing Container. Received {type(item_to_move)}')
 
 
 class PopupListContent(ScrollView, LogMethods):
@@ -231,7 +247,7 @@ class PopupListContent(ScrollView, LogMethods):
 
     def __init__(self, app, **kwargs):
         super(PopupListContent, self).__init__(**kwargs)
-        self.__initLog__('popups.py', 'PopupMoveContent')
+        self.__initLog__('popups.py', 'PopupListContent')
         self.logDebug('Preparing a popup')
         self.app = app
 
@@ -298,27 +314,9 @@ class PopupListContent(ScrollView, LogMethods):
                     # Add the button to the grid widget
                     self.pop_grid.add_widget(layout)
 
-        # If a container is being moved
-        elif isinstance(item_to_move, Container):
-
-            # Make a text input for the user
-            location_input = TextInput(
-                hint_text='New location',
-                font_size=18,
-                size_hint=(1, 1),
-                multiline=False
-                )
-            buttons = PopupMoveContainerContent()
-
-            # Allow the submit button to grab the user's input from the location_input field
-            buttons.submit_button.location_input = location_input
-            buttons.submit_button.item_to_move = item_to_move
-
-            self.pop_grid.add_widget(location_input)
-            self.pop_grid.add_widget(buttons)
 
         else:
-            log = f'The selected object was not an InventoryObject instance. Got {type(item_to_move)}'
+            log = f'The selected object was not a Thing instance. Got {type(item_to_move)}'
             self.logWarning(log)
             self.app.pop.dismiss()
 

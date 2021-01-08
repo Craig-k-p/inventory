@@ -6,7 +6,7 @@ from kivy.uix.textinput import TextInput
 
 from resources.inventoryobjects import InventoryObject
 from graphics.row import ContainerDataRow, ThingDataRow
-from graphics.popups import PopupThingContent, PopupContainerContent
+from graphics.popups import PopupThingContent, PopupContainerContent, PopupContentMoveContainer
 from graphics.popups import PopupErrorContent, PopupListContent, PopupWarningDelete
 from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen
 from resources.inventoryobjects import Thing, Container
@@ -77,13 +77,15 @@ class KivyExtensions():
             if isinstance(selected, Thing):
                 pop_title += f' from {self.selection.getLastContainer().getObj().description} to..'
                 self.logDebug(f'Popup title assigned for thing')
+                popup_content = PopupListContent(self)
             elif isinstance(selected, Container):
                 pop_title += f' from {selected.location} to...'
                 self.logDebug(f'Popup title assigned for container')
+                popup_content = PopupContentMoveContainer(self)
+                popup_size = (600, 300)
             else:
                 self.logWarning(f'Selection is wrong type ({type(selected)}) to move')
                 return
-            popup_content = PopupListContent(self)
 
         elif merge == True:
             pop_title = f'Merge contents of {selected.description} into..'
@@ -92,7 +94,7 @@ class KivyExtensions():
         elif warn == True:
             pop_title = f'Delete {selected.description}'
             popup_content = PopupWarningDelete()
-            popup_size = (600,300)
+            popup_size = (600, 300)
 
         elif isinstance(errors, list):
             pop_title = 'Error'

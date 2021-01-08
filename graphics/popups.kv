@@ -227,23 +227,46 @@
                         popup_content.checkFormat(popup_content=popup_content, object_class_str='container')
 
 # Makes the submit and cancel buttons for moving a container
-<PopupMoveContainerContent>:
+<PopupContentMoveContainer>:
     submit_button: submit_button
     size_hint: (1, 1)
-    cols: 2
-    MoveButton:
-        size_hint: (.3, .3)
-        size: (120,70)
-        text: 'Cancel'
-        on_release: app.pop.dismiss()
-    MoveButton:
-        id: submit_button
-        size_hint: (.3, .3)
-        size: (120,70)
-        text: 'Submit'
-        on_release:
-            self.move()
-            app.pop.dismiss()
+    cols: 1
+    row_default_height: 60
+    row_force_default: True
+    padding: 20
+    spacing: 40
+
+    # Top half of popup with text input
+    CenterAnchorLayout:
+        PopInput:
+            id: location_input
+            hint_text: 'New location'
+            size: (250, 50)
+
+    # Bottom half of popup with cancel/move buttons
+    GridLayout:
+        rows: 1
+        CenterAnchorLayout:
+            MoveButton:
+                text: 'Cancel'
+                size: (100, 50)
+                color: app.kv_settings['text color']
+                background_normal: 'atlas://data/images/defaulttheme/button'
+                background_color: (1, 1, 1, 1)
+                on_release: app.pop.dismiss()
+
+        CenterAnchorLayout:
+            MoveButton:
+                text: 'Move'
+                id: submit_button
+                location_input: location_input
+                color: app.kv_settings['text color']
+                background_normal: 'atlas://data/images/defaulttheme/button'
+                background_color: (1, 1, 1, 1)
+                size: (100,50)
+                on_release:
+                    self.move()
+                    app.pop.dismiss()
 
 <PopupWarningDelete>:
     GridLayout:

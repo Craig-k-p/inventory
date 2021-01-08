@@ -8,7 +8,6 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.button import Button
 
-from graphics.thing_view import ThingView
 from graphics.toolbar import Toolbar
 from resources.utilities import LogMethods
 

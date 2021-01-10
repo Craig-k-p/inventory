@@ -44,13 +44,13 @@ class MoveButton(Button, LogMethods):
         self.origin_container.merge(self.destination_container.ID)
 
 
-class PopupErrorContent(GridLayout, LogMethods):
+class PopupContentError(GridLayout, LogMethods):
     '''A class linked to popups.kv class definition'''
     def __init__(self, errors, **kwargs):
         '''Takes a list of child widgets to be added to the popup after self.parent
            (reference to the parent popup) is assigned.
            widgets -> list of Kivy widgets'''
-        super(PopupErrorContent, self).__init__(**kwargs)
+        super(PopupContentError, self).__init__(**kwargs)
         self.__initLog__(file_str='kv_popup', class_str='PopupContent')
         self.errors = errors
         self.logDebug('Creating popup to notify user of errors')
@@ -68,7 +68,7 @@ class PopupErrorContent(GridLayout, LogMethods):
             )
 
 
-class PopupThingContent(ScrollView, LogMethods):
+class PopupContentThing(ScrollView, LogMethods):
     '''A class linked to popups.kv class definition'''
     description = ObjectProperty(None)
     usd_value = ObjectProperty(None)
@@ -78,7 +78,7 @@ class PopupThingContent(ScrollView, LogMethods):
     submit_button = ObjectProperty(None)
 
     def __init__(self, thing, **kwargs):
-        super(PopupThingContent, self).__init__(**kwargs)
+        super(PopupContentThing, self).__init__(**kwargs)
 
         # Initialize the log for this class instance
         self.__initLog__(
@@ -135,7 +135,7 @@ class PopupThingContent(ScrollView, LogMethods):
             self.app.closePopup(popup_content, object_class_str)
 
 
-class PopupContainerContent(ScrollView, LogMethods):
+class PopupContentContainer(ScrollView, LogMethods):
     '''A class linked to popups.kv class definition'''
     description = ObjectProperty(None)
     location = ObjectProperty(None)
@@ -146,7 +146,7 @@ class PopupContainerContent(ScrollView, LogMethods):
     submit_button = ObjectProperty(None)
 
     def __init__(self, container, **kwargs):
-        super(PopupContainerContent, self).__init__(**kwargs)
+        super(PopupContentContainer, self).__init__(**kwargs)
         self.__initLog__(
             file_str='popups',
             class_str='PopupContainerContent'
@@ -220,17 +220,17 @@ class PopInput(TextInput):
     '''An input with special functions'''
 
 
-class PopupMoveContainerContent(GridLayout):
+class PopupContentMoveContainer(GridLayout):
     '''Used to add submit and cancel buttons to container move popups'''
     submit_button = ObjectProperty(None)
 
 
-class PopupListContent(ScrollView, LogMethods):
+class PopupContentList(ScrollView, LogMethods):
     '''A popup class for moving inventory between containers or locations'''
     pop_grid = ObjectProperty(None)
 
     def __init__(self, app, **kwargs):
-        super(PopupListContent, self).__init__(**kwargs)
+        super(PopupContentList, self).__init__(**kwargs)
         self.__initLog__('popups.py', 'PopupMoveContent')
         self.logDebug('Preparing a popup')
         self.app = app
@@ -323,6 +323,11 @@ class PopupListContent(ScrollView, LogMethods):
             self.app.pop.dismiss()
 
 
-class PopupWarningDelete(ScrollView, LogMethods):
+class PopupContentStats(GridLayout, LogMethods):
+    '''Show the user stats for entire inventory'''
+
+
+
+class PopupContentWarningDelete(ScrollView, LogMethods):
     '''Used to warn the user if they are deleting a container that has contents'''
 

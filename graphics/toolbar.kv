@@ -34,17 +34,33 @@
         ToolbarButton:
             pos_hint: {'center_x': .25, 'center_y': .5}
             text: 'back'
+            width: 50
             on_release:
                 app.changeScreen('back')
+
+        # Stats button
         ToolbarButton:
             id: create_item_button
             # Centers the widget on the y-axis
             pos_hint: {'center_y': .5}
-            text: '+'
+            text: 'stats'
+            width: 52
             on_release:
                 # Check that the proper screen is open before opening the popup
                 # Pass the instance of app to toolbar so it can reference needed attributes
-                toolbar.checkForScreen()
+                toolbar.checkForScreen(get_stats=True)
+
+        # Create item button
+        ToolbarButton:
+            id: create_item_button
+            # Centers the widget on the y-axis
+            pos_hint: {'center_y': .5}
+            text: 'Create'
+            width: 65
+            on_release:
+                # Check that the proper screen is open before opening the popup
+                # Pass the instance of app to toolbar so it can reference needed attributes
+                toolbar.checkForScreen(create_inventory=True)
         Widget:  # Fill the rest of the ToolbarInner
             size_hint_x: .2
 

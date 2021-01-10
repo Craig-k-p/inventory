@@ -6,8 +6,8 @@ from kivy.uix.textinput import TextInput
 
 from resources.inventoryobjects import InventoryObject
 from graphics.row import ContainerDataRow, ThingDataRow
-from graphics.popups import PopupThingContent, PopupContainerContent
-from graphics.popups import PopupErrorContent, PopupListContent, PopupWarningDelete
+from graphics.popups import PopupContentThing, PopupContentContainer, PopupContentStats
+from graphics.popups import PopupContentError, PopupContentList, PopupContentWarningDelete
 from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen
 from resources.inventoryobjects import Thing, Container
 
@@ -24,7 +24,6 @@ class KivyExtensions():
 
         self.pop.dismiss()
 
-
     def changeScreen(self, screen):
         '''Change to a screen using direction.  Make sure the screen does not need
         authentication.
@@ -40,7 +39,6 @@ class KivyExtensions():
                 self.selection(self.selection.getLastContainer().getObj())
                 # Update visible inventory
                 InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
-
         else:
             try:
                 self.sm.current_screen.resetTextInputs()
@@ -54,7 +52,7 @@ class KivyExtensions():
             except AttributeError:
                 pass
 
-    def createPopup(self, move=False, merge=False, warn=False, errors=None):
+    def createPopup(self, warn=False, merge=False, move=False, stats=False, errors=None):
         '''Method that does the following:
             -Load the kv file that defines what goes into the popup
             -Create an instance of Popup
@@ -83,20 +81,26 @@ class KivyExtensions():
             else:
                 self.logWarning(f'Selection is wrong type ({type(selected)}) to move')
                 return
-            popup_content = PopupListContent(self)
+            popup_content = PopupContentList(self)
 
         elif merge == True:
             pop_title = f'Merge contents of {selected.description} into..'
-            popup_content = PopupListContent(self)
+            popup_content = PopupContentList(self)
 
         elif warn == True:
             pop_title = f'Delete {selected.description}'
-            popup_content = PopupWarningDelete()
-            popup_size = (600,300)
+            popup_content = PopupContentWarningDelete()
+            popup_size = (500,300)
+
+        elif stats == True:
+            pop_title = f'Inventory Stats'
+            popup_content = PopupContentStats()
+            popup_size = (500, 600)
 
         elif isinstance(errors, list):
             pop_title = 'Error'
-            popup_content = PopupErrorContent(errors)
+            popup_content = PopupContentError(errors)
+            popup_size = (500, 400)
 
         else:
             self.logWarning('move, merge, and warn flags are all False. Returning.')
@@ -139,7 +143,7 @@ class KivyExtensions():
         Builder.load_file(self.kv_settings['kv popup file'])
 
         # Create an instance of PopupContainerContent found in popup.py and popups.kv
-        popup_content = PopupContainerContent(container)
+        popup_content = PopupContentContainer(container)
         # If a container instance was provided, this is an edit
         if container != None:
             pop_title = f'Edit {self.selection.get(suppress=True).getObj().description}'
@@ -173,7 +177,7 @@ class KivyExtensions():
         Builder.load_file(self.kv_settings['kv popup file'])
 
         # Create an instance of PopupThingContent found in popup.py and popups.kv
-        popup_content = PopupThingContent(thing)
+        popup_content = PopupContentThing(thing)
 
         # If a thing was provided, this is an edit
         if thing != None:
@@ -201,19 +205,6 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.kv_settings['kv popup file'])
-
-    def login(self, new_screen=None):
-        '''Handles the graphics operations of logging in and calls the self.authenticate
-        method'''
-
-        old_screen = self.sm.current_screen
-        # Create the screens
-        self.createUserScreens()
-
-        # Change the transition properties and current screen
-        self.sm.current = new_screen
-
-        old_screen.resetTextInputs()
 
     def _clearPopupErrors(self):
         self.popup_errors = []

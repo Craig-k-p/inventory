@@ -9,11 +9,12 @@ class InventoryObject():
 
     ID_counter = 0          # Unique ID counter for each of the user's objects
     objs = {}               # All InventoryObject and inherited instances
+    search_term = ''        # Search term assigned by applySearch method
+    clicked = None
+    _tag_counter = {}       # Used to find the most common tags
     _changes_made = False   # Flag to determine whether a save is needed
                             #   It is very important that this is changed using
                             #   InventoryObject.changeMade(), not self.changeMade()
-    search_term = ''        # Search term assigned by applySearch method
-    clicked = None
 
     def __init__(
             self,
@@ -165,6 +166,10 @@ class InventoryObject():
             self.logDebug(f'Drawing widget {self.widget}')
             self.data_grid.add_widget(self.widget)
 
+    def getTags(self):
+        '''Return a set of tags'''
+        return self.tags
+
     def hasParent(self):
         '''Return True if the widget is drawn, False otherwise'''
         if self.widget != None:
@@ -216,11 +221,12 @@ class InventoryObject():
 
             elif isinstance(self, Container):
                 if self.search_term in self.location.lower():
-                    self.logDebug(F'{self.search_term} WAS found in {self}! Returning TRUE!')
+                    return True
+
+                elif self._checkSearchTags() == True:
                     return True
 
                 else:
-                    self.logDebug(f'{self.search_term} not found in {self}. Return False')
                     return False
 
     def _checkSearchTags(self):
@@ -317,6 +323,16 @@ class InventoryObject():
             return None
 
     @classmethod
+    def getNewID(cls):
+        '''Increment cls.ID_counter and return it as a ID'''
+        while str(cls.ID_counter) not in cls.objs:
+            cls.ID_counter += 1  # Increment the ID counter
+            Logger.debug(f':app.ID_counter incremented to {cls.ID_counter}')
+            if cls.ID_counter not in cls.objs:
+                Logger.debug(f':Returning app.ID_counter {cls.ID_counter}')
+                return cls.ID_counter
+
+    @classmethod
     def getSaveData(cls):
         '''Return a dictionary of json serializable data for saving to a file'''
         data = {
@@ -352,14 +368,41 @@ class InventoryObject():
         return data
 
     @classmethod
-    def getNewID(cls):
-        '''Increment cls.ID_counter and return it as a ID'''
-        while str(cls.ID_counter) not in cls.objs:
-            cls.ID_counter += 1  # Increment the ID counter
-            Logger.debug(f':app.ID_counter incremented to {cls.ID_counter}')
-            if cls.ID_counter not in cls.objs:
-                Logger.debug(f':Returning app.ID_counter {cls.ID_counter}')
-                return cls.ID_counter
+    def getTopTags(cls):
+        '''Returns the six most common tags in the inventory'''
+        tags_to_return = 6
+
+        for obj in cls.objs:
+            tags = cls.objs[obj].tags
+            if len(tags) > 0:
+                for tag in tags:
+                    if tag in cls._tag_counter:
+                        cls._tag_counter[tag] += 1
+                    else:
+                        cls._tag_counter[tag] = 1
+
+        if tags_to_return > len(cls._tag_counter):
+            tags_to_return = len(cls._tag_counter)
+
+        top_tags = []
+
+        for n in range(tags_to_return):
+            top_tag = max(cls._tag_counter, key=cls._tag_counter.get)
+            top_tags.append(top_tag)
+            del cls._tag_counter[top_tag]
+            Logger.debug(f'MAXDICTVAL: {top_tag}, tag_counter: {cls._tag_counter}')
+
+        if len(top_tags) > 0:
+            cls._tag_counter = {}
+            return '\n'.join(top_tags)
+        else:
+            cls._tag_counter = {}
+            return 'N/A'
+
+
+
+
+
 
     @classmethod
     def setBounds(cls, data_grid, touch):
@@ -572,6 +615,27 @@ class Container(InventoryObject, LogMethods):
         del Container.objs[self.ID]
         super(Container, self).delete()
 
+    def _checkSearchTags(self):
+        '''Searches all tags for a match to the search term'''
+
+        # Join all tags into one string, using a newline between each tag
+        tag_str = '\n'.join(self.tags)
+        # Make all search_term characters lower case and search the string
+        if InventoryObject.search_term.lower() in tag_str:
+            return True
+
+        else:
+            self.logDebug('CHECKING')
+            if self.hasContents() == True:
+                for key in self.things:
+                    self.logDebug('CHECKING FOR LOOP')
+                    if InventoryObject.getByID(key)._checkSearchTags() == True:
+                        return True
+                # If we haven't returned True we need to return False
+                return False
+            else:
+                return False
+
     def contentChanged(self):
         '''Set the self.content_changed flag to True'''
         self.content_changed = True
@@ -600,7 +664,6 @@ class Container(InventoryObject, LogMethods):
         usd_value = float(self.usd_value)
         for ID in self.things:
             usd_value += float(InventoryObject.getByID(ID).usd_value)
-            # self.logDebug(ID)
         return int(usd_value)
 
     def getWeight(self):

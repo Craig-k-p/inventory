@@ -51,14 +51,14 @@
     spacing: 10
 
 
-<PopupErrorContent>:
+<PopupContentError>:
     size_hint: (None, None)
     size: (400, 250)
     cols: 1
     app: app
 
 
-<PopupThingContent>:  # ScrollView inheritance - popup.py
+<PopupContentThing>:  # ScrollView inheritance - popups.py
     description: description
     usd_value: usd_value
     weight: weight
@@ -139,7 +139,7 @@
                         popup_content.checkFormat(popup_content=popup_content, object_class_str='thing')
 
 
-<PopupContainerContent>:
+<PopupContentContainer>:  # Scrollview inheritance
     description: description
     location: location
     usd_value: usd_value
@@ -227,7 +227,7 @@
                         popup_content.checkFormat(popup_content=popup_content, object_class_str='container')
 
 # Makes the submit and cancel buttons for moving a container
-<PopupMoveContainerContent>:
+<PopupContentMoveContainer>: # GridLayout inheritance
     submit_button: submit_button
     size_hint: (1, 1)
     cols: 2
@@ -245,7 +245,7 @@
             self.move()
             app.pop.dismiss()
 
-<PopupWarningDelete>:
+<PopupContentWarningDelete>: # Scrollview inheritance
     GridLayout:
         cols: 1
         size_hint: (1, 1)
@@ -254,11 +254,12 @@
         GridLayout:
             cols: 1
             spacing: 10
+            padding: 20
 
             AllignLayout:
                 anchor_x: 'center'
                 PopLabel:
-                    text: 'This container still has contents that will be deleted.'
+                    text: 'All contents will be deleted'
             AllignLayout:
                 anchor_x: 'center'
                 PopLabel:
@@ -266,7 +267,6 @@
 
         GridLayout:
             rows: 1
-            size_hint: (1, 1)
             padding: 20
             spacing: 20
             AllignLayout:
@@ -287,7 +287,7 @@
                         app.pop.dismiss()
 
 
-<PopupListContent>:  # ScrollView inheritance - popup.py
+<PopupContentList>:  # ScrollView inheritance - popups.py
     pop_grid: pop_grid
     size_hint: (1, 1)
     bar_width: 20  # Make sure users know they can scroll
@@ -304,3 +304,89 @@
         row_default_height: 75
         row_force_default: True
         spacing: 10
+
+<PopupContentStats>: # GridLayout inheritance - popups.py
+    cols: 1
+    size_hint: (1, 1)
+    padding: 20
+    spacing: 40
+
+    GridLayout:
+        cols: 2
+        spacing: 10
+
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Containers:'
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(container_count=True)
+
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Total items:'
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(inventory_count=True)
+
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Total value:'
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(value=True)
+
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Total weight:'
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(weight=True)
+
+        AllignLayout:
+            size_hint: (1, 1)
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Top tags:'
+        AllignLayout:
+            size_hint: (1, 1)
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(tags=True)
+
+    GridLayout:
+        rows: 1
+        size_hint: (1, None)
+        height: 100
+        AllignLayout:
+            anchor_x: 'center'
+            PopButton:
+                size_hint: (None, None)
+                size: (100,70)
+                text: 'Close'
+                on_release: app.pop.dismiss()
+        # AllignLayout:
+        #     anchor_x: 'center'
+        #     PopButton:
+        #         size_hint: (None, None)
+        #         size: (100,70)
+        #         text: 'Print'
+

@@ -1,4 +1,8 @@
 import json, os, shutil
+
+from collections import defaultdict
+from operator import itemgetter
+
 from resources.inventoryobjects import Thing, Container, InventoryObject
 from graphics.row import ContainerDataRow, ThingDataRow
 from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen
@@ -194,6 +198,39 @@ class InventoryHandler():
 
         if object_class_str == 'thing':
             popup.inventory_object.getContainer().widget.assignValues()
+
+    def getStat(self,
+                container_count=False,
+                inventory_count=False,
+                value=False,
+                weight=False,
+                tags=False
+                ):
+        '''Return information about the inventory as a string'''
+        if container_count == True:
+            return str(len(Container.objs))
+
+        elif inventory_count == True:
+            return str(len(Thing.objs))
+
+        elif value == True:
+            value = 0
+            for key in Container.objs:
+                value += round(Container.objs[key].getValue(), 0)
+            return f"${format(int(value), ',.0f')}"
+
+        elif weight == True:
+            weight = 0
+            for key in Container.objs:
+                weight += round(Container.objs[key].getWeight(), 0)
+            return f"{format(int(weight), ',.0f')} lbs"
+
+        elif tags == True:
+            return InventoryObject.getTopTags()
+
+        else:
+            self.logError('No flags were set to True')
+            return 'N/A'
 
     def _cleanup(self):
         '''Remove the inventory that was loaded previously'''

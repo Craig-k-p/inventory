@@ -22,14 +22,25 @@ class Toolbar(BoxLayout, LogMethods):
 
         self.options = None
 
-    def checkForScreen(self):
+    def checkForScreen(self, create_inventory=False, get_stats=False):
         '''Use app to reference the main application instance to check which screen we are using'''
-        self.logDebug('Checking app.sm.current for a match')
-        self.logDebug(f'self.app.sm.current = {self.app.sm.current}')
-        if self.app.sm.current == 'contents':
-            self.app.thingPopup()
-        elif self.app.sm.current == 'containers':
-            self.app.containerPopup()
+        self.logDebug(f'Current screen found to be: {self.app.sm.current}')
+
+        if create_inventory == True:
+            self.logDebug(f'Opening the appropriate create item popup')
+            if self.app.sm.current == 'contents':
+                self.app.thingPopup()
+            elif self.app.sm.current == 'containers':
+                self.app.containerPopup()
+
+        elif get_stats == True:
+            self.logDebug(f'Opening a stats popup')
+            self.app.createPopup(stats=True)
+
+        else:
+            log = f'Toolbar.checkForScreen does not know what to do without one of create_inventory'
+            log += f' or get_stats flags set to True'
+            self.logError()
 
     def editObject(self):
         '''Open a popup to edit the selected object'''

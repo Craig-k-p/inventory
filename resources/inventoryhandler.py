@@ -1,8 +1,5 @@
 import json, os, shutil
 
-from collections import defaultdict
-from operator import itemgetter
-
 from resources.inventoryobjects import Thing, Container, InventoryObject
 from graphics.row import ContainerDataRow, ThingDataRow
 from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen

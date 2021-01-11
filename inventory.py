@@ -93,15 +93,27 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         self.sm.transition = self.kv_settings['transition']
 
     def build(self):
-        '''Without returning self.sm, the app would be a blank screen.'''
-        self.logDebug('self.build called')
+        '''Without returning self.sm (ScreenManager), the app would be a blank screen.'''
+        self.logDebug('self.build called. building...')
         self.title = 'My Inventory'
         return self.sm
 
     def on_stop(self):
-        '''Execute this function when the application is exited'''
+        '''Execute this function when the application is closed'''
         self.logInfo(f'self.inventoryobject.changes_made = {self.inventoryobject.wasChangeMade()}')
-        self.saveData()
+        if self.inventoryobject.wasChangeMade() == True:
+            try:
+                log = 'Attempting to save. self.inventoryobject.change_made should be False!'
+                self.logWarning(log)
+                self.saveData()
+                log = 'Last ditch effort to save succeeded. self.inventoryobject.change_made should '
+                log += 'be False!'
+                self.logWarning(log)
+            except AttributeError:
+                log = 'Last ditch effort to save failed. self.inventoryobject.change_made should '
+                log += 'be False!'
+                self.logError(log)
+        self.logInfo('Exiting the application')
 
 
 if __name__ == '__main__':

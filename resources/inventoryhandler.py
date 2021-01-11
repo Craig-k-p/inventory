@@ -137,26 +137,13 @@ class InventoryHandler():
         InventoryObject.checkLoad()
 
     def restart(self):
-        '''Reset user data and start over'''
+        '''Reset the app to the load file screen. Save user data to disk and remove data from memory'''
+        # Save user data
+        self._saveData()
+        # Remove user data from memory
         self._cleanup()
+        # Create new widgets and start at the home screen
         self._setup()
-
-    def saveData(self):
-        '''Save data if necessary'''
-
-        if self.inventoryobject.wasChangeMade() == True:
-            self.logDebug('Changes were made. Getting data to save')
-            data = InventoryObject.getSaveData()
-            self.logDebug('Saving the JSON data to the save file')
-            # Open the save file and write json data to the file
-            if '.inventory' not in self.user_file:
-                self.user_file += '.inventory'
-            if self.settings['save file path'] not in self.user_file:
-                self.user_file = self.settings['save file path'] + self.user_file
-            with open(self.user_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
-        else:
-            self.logInfo('No changes made. Skipping save')
 
     def select(self, selection):
         '''Set the selected object directly or by using the ID.
@@ -241,3 +228,21 @@ class InventoryHandler():
            self.sm.remove_widget(self.sm.screens[0])
 
         self.data_was_loaded = False
+        InventoryObject.resetChangeMade()
+
+    def _saveData(self):
+        '''Save data if necessary'''
+
+        if self.inventoryobject.wasChangeMade() == True:
+            self.logDebug('Changes were made. Getting data to save')
+            data = InventoryObject.getSaveData()
+            self.logDebug('Saving the JSON data to the save file')
+            # Open the save file and write json data to the file
+            if '.inventory' not in self.user_file:
+                self.user_file += '.inventory'
+            if self.settings['save file path'] not in self.user_file:
+                self.user_file = self.settings['save file path'] + self.user_file
+            with open(self.user_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
+        else:
+            self.logInfo('No changes made. Skipping save')

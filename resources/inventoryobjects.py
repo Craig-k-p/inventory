@@ -280,9 +280,9 @@ class InventoryObject():
         '''Set the _changes_made class attribute and log the changes'''
         if cls._changes_made == False:
             cls._changes_made = True
-            Logger.info(f'INFO: cls._changes_made set to {cls._changes_made}')
+            return f'cls._changes_made set to {cls._changes_made}'
         else:
-            Logger.debug(f'DEBUG: cls._changes_made is already {cls._changes_made}')
+            return f'cls._changes_made is already {cls._changes_made}'
 
     @classmethod
     def checkLoad(cls):

@@ -1,6 +1,12 @@
 import datetime
 import os.path
 import inspect
+import base64
+
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 from kivy.app import App
 from kivy.config import Config
@@ -139,3 +145,47 @@ class LogMethods():
         end_folders = file_path.rfind('\\')
         file_name = file_path[end_folders + 1:]
         return file_name
+
+
+class Security(LogMethods):
+    '''Used to encrypt and decrypt user data with a password'''
+    with open('.scrt/.file_salt', 'rb') as f: 
+        salt = f.read()
+    # Key derivation function
+    kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256,
+            length=32,
+            salt=salt,
+            iterations=146214,
+            backend=default_backend()
+        )
+
+    def decryptFile(self, en_file_name):
+        '''Load the encrypted file'''
+        with open(en_file_name, 'rb') as f:
+            return self.getCypher().decrypt(f.read())
+
+    def __init__(self):
+        self.__initLog__('utilities.py', 'Security')
+
+    def encryptFile(self, file_name, data):
+        '''Encrypt the given contents and save to file_name'''
+        with open(file_name, 'wb') as f:
+            f.write(self.getCypher().encrypt(data))
+
+
+    def getCypher(self):
+        '''Get cypher from user's password and return it'''
+        try:
+            # Attempt to return self.__c
+            if self.__c:
+                return Fernet(self.__c)
+
+        except AttributeError:
+            # No __c... get it from the user
+            self.__c = Security.kdf.derive(input('Pass: ').encode())
+            self.__c = base64.urlsafe_b64encode(self.__c)
+            return self.getCypher()
+
+    def makeSalt(self):
+        '''Make a salt if user doesn't have one already'''

@@ -103,14 +103,12 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         self.logInfo(f'self.inventoryobject.changes_made = {self.inventoryobject.wasChangeMade()}')
         if self.inventoryobject.wasChangeMade() == True:
             try:
-                log = 'Attempting to save. self.inventoryobject.change_made should be False!'
-                self.logWarning(log)
-                self.saveData()
-                log = 'Last ditch effort to save succeeded. self.inventoryobject.change_made should '
-                log += 'be False!'
-                self.logWarning(log)
+                log = 'Attempting to save inventory..'
+                self.logInfo(log)
+                self._saveData()
+                self.logInfo('Save succeeded')
             except AttributeError:
-                log = 'Last ditch effort to save failed. self.inventoryobject.change_made should '
+                log = 'Last effort to save failed. self.inventoryobject.change_made should '
                 log += 'be False!'
                 self.logError(log)
         self.logInfo('Exiting the application')

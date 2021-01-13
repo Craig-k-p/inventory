@@ -1,8 +1,6 @@
 ignore.*
-save_data
+!save_data/.gitkeep
 *pycache*
 *.bat
 *.orig
-ingore.runApp.bat - Shortcut
-ingore.runApp.bat
 Ignores

@@ -36,6 +36,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
                 'graphics/screens.kv',
                 'graphics/screens.kv'
             ],
+            'encrypt color': (.79, .51, .51, 1),
+            'standard color': (.79, .73, .51, 1),
             'kv popup file': 'graphics/popups.kv',
             'row heading color': (.15, .15, .15, 1),
             'row color': (.2, .2, .2, 1),
@@ -72,7 +74,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         log += f"{self.kv_settings['transition']} --- {self.sm}"
         self.logDebug(log)
 
-        self.sec = Security()
+        self._sec = Security(self)
         self._setup()
 
     def _setup(self):

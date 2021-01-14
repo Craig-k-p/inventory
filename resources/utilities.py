@@ -3,16 +3,17 @@ import inspect
 import base64
 import os
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
 from kivy.app import App
 from kivy.config import Config
 from kivy.logger import Logger
 from kivy.uix.popup import Popup
 Config.set('kivy', 'log_level', 'debug')
+
+from resources.exceptions import PasswordAttemptsExceededError
 
 
 class LogMethods():
@@ -148,45 +149,49 @@ class LogMethods():
 
 
 class Security(LogMethods):
-    '''Used to encrypt and decrypt user data with a password'''
-
-    def __init__(self):
+    '''Encrypt and decrypt user data with a password'''
+    def __init__(self, app):
         self.__initLog__('utilities.py', 'Security')
-        self.logDebug('Attempting to set up encryption')
-        try:
-            # Key derivation function
-            self.kdf = PBKDF2HMAC(
-                    algorithm=hashes.SHA256,
-                    length=32,
-                    salt=self.loadSalt(),
-                    iterations=146214,
-                    backend=default_backend()
-                )
-        except TypeError:
-            self.logDebug('Unable to set up encryption')
-            return None
+        self.__c = None
+        self._t = 6
+        self._app = app
 
     def decryptFile(self, en_file_name):
         '''Load the encrypted file'''
         with open(en_file_name, 'rb') as f:
-            return self.getCypher().decrypt(f.read())
+            while self._t > 0:
+                try:
+                    self._t -= 1
+                    return self.getCypher(reset=True).decrypt(f.read())
+                except InvalidToken:
+                    self.logInfo('Invalid password attempt')
+
+            raise PasswordAttemptsExceededError('Maximum password attempts exceeded')
 
     def encryptFile(self, file_name, data):
         '''Encrypt the given contents and save to file_name'''
         with open(file_name, 'wb') as f:
             f.write(self.getCypher().encrypt(data))
 
-    def getCypher(self):
+    def getCypher(self, reset=False):
         '''Get cypher from user's password and return it'''
-        try:
-            # Attempt to return self.__c
-            if self.__c:
-                return Fernet(self.__c)
-        except AttributeError:
-            # No __c... get it from the user
-            self.__c = self.kdf.derive(input('Pass: ').encode())
+        if self.__c != None and reset == False:
+            return Fernet(self.__c)
+        else:
+            # No __c... get it from the user's password
+            self.__c = self.getKDF().derive(input('Pass: ').encode())
             self.__c = base64.urlsafe_b64encode(self.__c)
             return self.getCypher()
+
+    def getKDF(self):
+        '''Return key derivation function'''
+        return PBKDF2HMAC(
+                    algorithm=hashes.SHA256,
+                    length=32,
+                    salt=self.loadSalt(),
+                    iterations=146214,
+                    backend=default_backend()
+                )
 
     def generateSalt(self):
         '''Make a salt if user doesn't have one already'''
@@ -200,7 +205,7 @@ class Security(LogMethods):
             f.write(os.urandom(16))
 
     def loadSalt(self):
-        '''Get the saved salt'''
+        '''Return the saved salt or call for one to be created'''
         success = False
         i = 0
         while success == False:

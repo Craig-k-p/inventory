@@ -104,15 +104,19 @@ class InventoryHandler():
                 with open(self.settings['save file path'] + self.user_file) as f:
                     # Load the data as a dictionary
                     inventory = json.load(f)
-                    self.logInfo(f'loaded data:\n{json.dumps(inventory, indent=4)}')
-
+                    self.logDebug(f'loaded data:\n{json.dumps(inventory, indent=4)}')
             except FileNotFoundError:
                 # If the load data is None, set the data to its default
-                self.logDebug(f'No save file found')
+                self.logError(f'File not found')
                 inventory = {
                     'container': {},
                     'thing': {}
                 }
+            except json.decoder.JSONDecodeError:
+                self.loadDataEncrypted(self.settings['save file path'] + self.user_file)
+
+        except json.decoder.JSONDecodeError:
+            self.loadDataEncrypted(self.user_file)
 
         # Create the inventory objects with the loaded data
         containers = inventory['container']
@@ -135,6 +139,13 @@ class InventoryHandler():
         # Reset the InventoryObject._changes_made attribute to False to avoid saving the same data
         InventoryObject.resetChangeMade()
         InventoryObject.checkLoad()
+
+    def loadDataEncrypted(self, file):
+        if self.user_file[0:2] == 'e_':
+            self.logInfo(f'{file} is encrypted')
+            self._sec.decryptFile(file)
+
+
 
     def restart(self):
         '''Reset the app to the load file screen. Save user data to disk and remove data from memory'''

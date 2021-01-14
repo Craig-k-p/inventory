@@ -12,8 +12,9 @@ from graphics.datagrid import DataGrid, ContainerHeadingRow
 from resources.kv_extensions import KivyExtensions
 from resources.inventoryhandler import InventoryHandler
 from resources.inventoryobjects import InventoryObject
-from resources.utilities import LogMethods
+from resources.utilities import LogMethods, Security
 from resources.selection import Selection
+
 
 # Without this, right clicking will leave a red circle behind
 Config.set('input', 'mouse', 'mouse, multitouch_on_demand')
@@ -71,6 +72,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         log += f"{self.kv_settings['transition']} --- {self.sm}"
         self.logDebug(log)
 
+        self.sec = Security()
         self._setup()
 
     def _setup(self):

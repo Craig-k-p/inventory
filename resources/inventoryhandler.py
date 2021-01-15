@@ -113,7 +113,8 @@ class InventoryHandler():
                     'thing': {}
                 }
             except json.decoder.JSONDecodeError:
-                self.loadDataEncrypted(self.settings['save file path'] + self.user_file)
+                inventory = self.loadDataEncrypted(self.settings['save file path'] + self.user_file)
+                print(inventory)
 
         except json.decoder.JSONDecodeError:
             self.loadDataEncrypted(self.user_file)
@@ -143,7 +144,7 @@ class InventoryHandler():
     def loadDataEncrypted(self, file):
         if self.user_file[0:2] == 'e_':
             self.logInfo(f'{file} is encrypted')
-            self._sec.decryptFile(file)
+            return self._sec.decryptFile(file)
 
 
 

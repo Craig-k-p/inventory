@@ -1,6 +1,7 @@
 import datetime
 import inspect
 import base64
+import json
 import os
 
 from cryptography.fernet import Fernet, InvalidToken
@@ -152,7 +153,7 @@ class Security(LogMethods):
     '''Encrypt and decrypt user data with a password'''
     def __init__(self, app):
         self.__initLog__('utilities.py', 'Security')
-        self.__c = None
+        self._c = None
         self._t = 6
         self._app = app
 
@@ -162,7 +163,7 @@ class Security(LogMethods):
             while self._t > 0:
                 try:
                     self._t -= 1
-                    return self.getCypher(reset=True).decrypt(f.read())
+                    return json.loads(self._getCypher(reset=True).decrypt(f.read()))
                 except InvalidToken:
                     self.logInfo('Invalid password attempt')
 
@@ -171,30 +172,31 @@ class Security(LogMethods):
     def encryptFile(self, file_name, data):
         '''Encrypt the given contents and save to file_name'''
         with open(file_name, 'wb') as f:
-            f.write(self.getCypher().encrypt(data))
+            f.write(self._getCypher().encrypt(bytes(json.dumps(data).encode('utf-8'))))
 
-    def getCypher(self, reset=False):
+    def _getCypher(self, reset=False):
         '''Get cypher from user's password and return it'''
-        if self.__c != None and reset == False:
-            return Fernet(self.__c)
+        if self._c != None and reset == False:
+            return Fernet(self._c)
         else:
             # No __c... get it from the user's password
-            self.__c = self.getKDF().derive(input('Pass: ').encode())
-            self.__c = base64.urlsafe_b64encode(self.__c)
-            return self.getCypher()
+            self._c = self._getKDF().derive(input('Pass: ').encode())
+            self._c = base64.urlsafe_b64encode(self._c)
+            return self._getCypher()
 
-    def getKDF(self):
+    def _getKDF(self):
         '''Return key derivation function'''
         return PBKDF2HMAC(
                     algorithm=hashes.SHA256,
                     length=32,
-                    salt=self.loadSalt(),
+                    salt=self._loadSalt(),
                     iterations=146214,
                     backend=default_backend()
                 )
 
-    def generateSalt(self):
+    def _generateSalt(self):
         '''Make a salt if user doesn't have one already'''
+        self.logWarning('Generating new SALT')
         path = os.path.join(os.getcwd(), 'save_data/.scrt/')
         if not os.path.exists(path):
             os.makedirs(path)
@@ -204,7 +206,7 @@ class Security(LogMethods):
         with open(f'{path}/.file_salt', 'wb') as f:
             f.write(os.urandom(16))
 
-    def loadSalt(self):
+    def _loadSalt(self):
         '''Return the saved salt or call for one to be created'''
         success = False
         i = 0
@@ -214,7 +216,7 @@ class Security(LogMethods):
                 with open('save_data/.scrt/.file_salt', 'rb') as salt:
                     return salt.read()
             except FileNotFoundError:
-                self.generateSalt()
+                self._generateSalt()
 
             if i > 4:
                 return None

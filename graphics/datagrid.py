@@ -111,9 +111,8 @@ class DataGrid(GridLayout, LogMethods):
                 self.app.createPopup(warn=True)
             else:
                 selection.delete()
-        except:
+        except AttributeError:
             selection.delete()
-        InventoryObject.changeMade()
 
     def fillUserData(self, app):
         '''Populate the data rows with user data during application startup'''

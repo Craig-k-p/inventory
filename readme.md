@@ -4,4 +4,4 @@ Requires Python version 3.7
 2. Install requirements: pip install -r requirements.txt
 3. Execute the command: python path\to\inventory.py
 
-https://github.com/craig-k-p/inventory/blob/sec/preview.PNG?raw=true
+https://github.com/Craig-k-p/inventory/blob/sec/resources/preview.PNG

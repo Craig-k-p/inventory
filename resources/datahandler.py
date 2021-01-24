@@ -13,6 +13,28 @@ class DataHandler():
         InventoryObject.app = self
         self.inventoryobject = InventoryObject
 
+    def container(self, data):  # createObject
+        '''Create a new container'''
+        # self.logDebug(f'Creating a container with ID {data["ID"]}:')
+        new_container = Container(data)
+
+        if self.data_was_loaded == True or self.is_new_inventory:
+            # Set the changes_made flag to True for saving purposes
+            InventoryObject.changeMade()
+        return new_container
+
+    def thing(self, data):  # createObject
+        '''Create a new thing and assign its container'''
+        # self.logDebug(f'Creating a thing with ID {data["ID"]}:')
+        new_thing = Thing(data)
+
+        if self.data_was_loaded == True or self.is_new_inventory:
+            # Add the thing to the last selected container
+            self.selection.getLastContainer().getObj().addThing(new_thing.ID)
+            # Set the changes_made flag to True for saving purposes
+            InventoryObject.changeMade()
+        return new_thing
+
     def createInventoryObject(self, object_class_str, kv_obj_reference):
         '''Create a new object using the popup user input'''
 
@@ -40,18 +62,6 @@ class DataHandler():
         # Return the object's data
         return data
 
-    def thing(self, data):  # createObject
-        '''Create a new thing and assign its container'''
-        # self.logDebug(f'Creating a thing with ID {data["ID"]}:')
-        new_thing = Thing(data)
-
-        if self.data_was_loaded == True or self.is_new_inventory:
-            # Add the thing to the last selected container
-            self.selection.getLastContainer().getObj().addThing(new_thing.ID)
-            # Set the changes_made flag to True for saving purposes
-            InventoryObject.changeMade()
-        return new_thing
-
     def doesFileExist(self, file_name, encrypted=False):
         '''Make sure we aren't overwriting any saved files'''
         file_name = file_name.strip() + '.inventory'
@@ -67,16 +77,6 @@ class DataHandler():
 
         return False
 
-    def container(self, data):  # createObject
-        '''Create a new container'''
-        # self.logDebug(f'Creating a container with ID {data["ID"]}:')
-        new_container = Container(data)
-
-        if self.data_was_loaded == True or self.is_new_inventory:
-            # Set the changes_made flag to True for saving purposes
-            InventoryObject.changeMade()
-        return new_container
-
     def getSaveFiles(self):
         '''Get the save file names'''
         self.files = []
@@ -90,7 +90,41 @@ class DataHandler():
 
     def getObjects(self):
         for ID in InventoryObject.objs:
-            self.logDebug(f'{InventoryObject.objs[ID].description} has grid: {InventoryObject.objs[ID].grid}')
+            log = f'{InventoryObject.objs[ID].description} has grid: {InventoryObject.objs[ID].grid}'
+            self.logDebug(log)
+
+    def getStat(self,
+                container_count=False,
+                inventory_count=False,
+                value=False,
+                weight=False,
+                tags=False
+                ):
+        '''Return information about the inventory as a string'''
+        if container_count == True:
+            return str(len(Container.objs))
+
+        elif inventory_count == True:
+            return str(len(Thing.objs))
+
+        elif value == True:
+            value = 0
+            for key in Container.objs:
+                value += round(Container.objs[key].getValue(), 0)
+            return f"${format(int(value), ',.0f')}"
+
+        elif weight == True:
+            weight = 0
+            for key in Container.objs:
+                weight += round(Container.objs[key].getWeight(), 0)
+            return f"{format(int(weight), ',.0f')} lbs"
+
+        elif tags == True:
+            return InventoryObject.getTopTags()
+
+        else:
+            self.logError('No flags were set to True')
+            return 'N/A'
 
     def loadData(self):
         '''Load the user's data from any non-encrypted save file.  Changes
@@ -139,32 +173,14 @@ class DataHandler():
             self.logError(f'Was expecting False or dict type. Got: {isinstance(returned_data)}')
             return False
 
-    def _setupNewInventory(self):
-        '''Create a new inventory'''
-        self._inventory = {'container': {}, 'thing': {} }
-
-    def _setupExistingInventory(self):
-        '''Use the loaded data to create the inventory data and objects'''
-        containers = self._inventory['container']
-        things = self._inventory['thing']
-
-        for key in containers:
-            containers[key]['ID'] = int(key)
-            self.container(containers[key])
-        for key in things:
-            things[key]['ID'] = int(key)
-            self.thing(things[key])
-
-        for key in Container.objs:
-            ContainerDataRow(Container.objs[key])
-        for key in Thing.objs:
-            ThingDataRow(Thing.objs[key])
-
-        self.data_was_loaded = True
-
-        # Reset the InventoryObject._changes_made attribute to False to avoid saving the same data
-        InventoryObject.resetChangeMade()
-        # InventoryObject.checkLoad()
+    def restart(self):
+        '''Reset the app to the load file screen. Save user data to disk and remove data from memory'''
+        # Save user data
+        self._saveData()
+        # Remove user data from memory
+        self._cleanup()
+        # Create new widgets and start at the home screen
+        self._setup()
 
     def start(self, file_name, encrypted=False):
         self.user_file = file_name
@@ -176,15 +192,6 @@ class DataHandler():
                 return False
 
         self.createUserScreens()
-
-    def restart(self):
-        '''Reset the app to the load file screen. Save user data to disk and remove data from memory'''
-        # Save user data
-        self._saveData()
-        # Remove user data from memory
-        self._cleanup()
-        # Create new widgets and start at the home screen
-        self._setup()
 
     def select(self, selection):
         '''Set the selected object directly or by using the ID.
@@ -223,39 +230,6 @@ class DataHandler():
 
         if object_class_str == 'thing':
             popup.inventory_object.getContainer().widget.assignValues()
-
-    def getStat(self,
-                container_count=False,
-                inventory_count=False,
-                value=False,
-                weight=False,
-                tags=False
-                ):
-        '''Return information about the inventory as a string'''
-        if container_count == True:
-            return str(len(Container.objs))
-
-        elif inventory_count == True:
-            return str(len(Thing.objs))
-
-        elif value == True:
-            value = 0
-            for key in Container.objs:
-                value += round(Container.objs[key].getValue(), 0)
-            return f"${format(int(value), ',.0f')}"
-
-        elif weight == True:
-            weight = 0
-            for key in Container.objs:
-                weight += round(Container.objs[key].getWeight(), 0)
-            return f"{format(int(weight), ',.0f')} lbs"
-
-        elif tags == True:
-            return InventoryObject.getTopTags()
-
-        else:
-            self.logError('No flags were set to True')
-            return 'N/A'
 
     def _cleanup(self):
         '''Remove the inventory that was loaded previously'''
@@ -301,3 +275,26 @@ class DataHandler():
                     json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
         else:
             self.logInfo('No changes made. Skipping save')
+
+    def _setupExistingInventory(self):
+        '''Use the loaded data to create the inventory data and objects'''
+        containers = self._inventory['container']
+        things = self._inventory['thing']
+
+        for key in containers:
+            containers[key]['ID'] = int(key)
+            self.container(containers[key])
+        for key in things:
+            things[key]['ID'] = int(key)
+            self.thing(things[key])
+
+        for key in Container.objs:
+            ContainerDataRow(Container.objs[key])
+        for key in Thing.objs:
+            ThingDataRow(Thing.objs[key])
+
+        self.data_was_loaded = True
+
+        # Reset the InventoryObject._changes_made attribute to False to avoid saving the same data
+        InventoryObject.resetChangeMade()
+        # InventoryObject.checkLoad()

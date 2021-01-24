@@ -336,7 +336,7 @@ class PopupContentList(ScrollView, LogMethods):
                     on_release=self.app.pop.dismiss,
                     size_hint=(None, None),
                     size=(250, 50),
-                    color=self.app.kv_settings['text color'],
+                    color=self.app.settings['text color'],
                     font_size='22sp',
                     bold=True
                     )

@@ -80,7 +80,7 @@ class DataHandler():
     def getSaveFiles(self):
         '''Get the save file names'''
         self.files = []
-        for file in os.listdir(self.settings['save file path']):
+        for file in os.listdir(self.data_file_path):
             if file.endswith(".inventory"):
                 self.files.append(file)
 
@@ -144,7 +144,7 @@ class DataHandler():
 
         except FileNotFoundError:
             try:
-                with open(self.settings['save file path'] + self.user_file) as f:
+                with open(self.data_file_path + self.user_file) as f:
                     # Load the data as a dictionary
                     self._inventory = json.load(f)
                     # self.logDebug(f'loaded data:\n{json.dumps(inventory, indent=4)}')
@@ -172,6 +172,36 @@ class DataHandler():
         else:
             self.logError(f'Was expecting False or dict type. Got: {isinstance(returned_data)}')
             return False
+
+    def loadSettings(self):
+        '''Load the settings file'''
+        try:
+            with open(self.data_file_path + '.user_settings', 'r') as f:
+                self.settings = json.load(f)
+        except FileNotFoundError:
+            with open(self.data_file_path + '.user_settings', 'w') as f:
+                default_settings = {
+                    'encrypt color': (.79, .51, .51, 1),
+                    'kv popup file': 'graphics/popups.kv',
+                    'popup auto_dismiss': False,
+                    'popup size_hint': (None, None),
+                    'popup size': (600, 600),
+                    'row heading color': (.15, .15, .15, 1),
+                    'row color': (.2, .2, .2, 1),
+                    'row selected color': (.2, .75, .8, 1),
+                    'row heading text color': (.95, .95, .95, 1),
+                    'startup kv files': [
+                        'graphics/screens.kv',
+                        'graphics/screens.kv'
+                    ],
+                    'standard color': (.79, .73, .51, 1),
+                    'text color': (1, 1, 1, 1),
+                    'val_col_width': 110,
+                    'weight_col_width': 60
+                }
+                json.dump(default_settings, f, ensure_ascii=False, indent=4)
+            self.settings = default_settings
+
 
     def restart(self):
         '''Reset the app to the load file screen. Save user data to disk and remove data from memory'''
@@ -263,8 +293,8 @@ class DataHandler():
                     self.user_file = 'e.' + self.user_file
             if '.inventory' not in self.user_file:
                 self.user_file += '.inventory'
-            if self.settings['save file path'] not in self.user_file:
-                self.user_file = self.settings['save file path'] + self.user_file
+            if self.data_file_path not in self.user_file:
+                self.user_file = self.data_file_path + self.user_file
 
             # If the file is encrypted save it encrypted
             if self.user_file_en == True:

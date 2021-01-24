@@ -16,7 +16,7 @@
         size_hint: (1, 1)
         canvas:
             Color:
-                rgba: app.kv_settings['row heading color']
+                rgba: app.settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -24,7 +24,7 @@
             id: obj_label
             text: 'Containers'
             bold: True
-            color: app.kv_settings['row heading text color']
+            color: app.settings['row heading text color']
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
             size_hint: (None, 1)
@@ -37,13 +37,13 @@
         size_hint: (.8, 1)
         canvas:
             Color:
-                rgba: app.kv_settings['row heading color']
+                rgba: app.settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
         Label:
             id: loc_label
-            color: app.kv_settings['text color']
+            color: app.settings['text color']
             bold: True
             text: 'Location'
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
@@ -55,12 +55,12 @@
     # Weight heading
     AnchorLayout:
         # label: label
-        width: app.kv_settings['weight_col_width']
+        width: app.settings['weight_col_width']
         anchor_x: 'right'
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: app.kv_settings['row heading color']
+                rgba: app.settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -76,12 +76,12 @@
     # Value heading
     AnchorLayout:
         # width: val_label.width
-        width: app.kv_settings['val_col_width']
+        width: app.settings['val_col_width']
         anchor_x: 'right'
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: app.kv_settings['row heading color']
+                rgba: app.settings['row heading color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -112,13 +112,13 @@
         size_hint: (1, 1)
         canvas:
             Color:
-                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
         Label:
             id: obj_label
-            color: app.kv_settings['text color']
+            color: app.settings['text color']
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
             size_hint: (None, 1)
@@ -131,13 +131,13 @@
         size_hint: (.8, 1)
         canvas:
             Color:
-                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
         Label:
             id: loc_label
-            color: app.kv_settings['text color']
+            color: app.settings['text color']
             size_hint: (None, 1)
             size: (self.texture_size[0]+15, self.texture_size[1])
 
@@ -145,12 +145,12 @@
     AnchorLayout:
         # Future: size rows only as wide as needed using weight_label.texture if possible!
         id: weight_lo
-        width: app.kv_settings['weight_col_width']
+        width: app.settings['weight_col_width']
         anchor_x: 'right'
         size_hint: (None, 1)  # Allows setting the width of layout
         canvas:
             Color:
-                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -162,12 +162,12 @@
     # Value field
     AnchorLayout:
         id: val_lo
-        width: app.kv_settings['val_col_width']
+        width: app.settings['val_col_width']
         anchor_x: 'right'
         size_hint: (None, 1)
         canvas:
             Color:
-                rgba: app.kv_settings['row selected color'] if data_row.selected else app.kv_settings['row color']
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
             Rectangle:
                 pos: self.pos
                 size: self.size

@@ -7,7 +7,7 @@
 
 
 <MoveButton>:
-    color: app.kv_settings['text color']
+    color: app.settings['text color']
     size_hint: (None, None)
     size: (250, 50)
     background_normal: ''
@@ -15,6 +15,7 @@
     font_size: '22sp'
     bold: True
     color: (0,0,0,1)
+
 
 <PasswordInput@AnchorLayout>:
     text: text_input.text
@@ -37,7 +38,7 @@
 
 <PopLabel>:
     bold: True
-    color: app.kv_settings['text color']
+    color: app.settings['text color']
     # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
     # Allows the AnchorLayout to allign this widget along the x axis (left, center, right)
     size_hint: (None, None)
@@ -47,7 +48,7 @@
 
 <PopInput>:
     hint_text: 'required'
-    color: app.kv_settings['text color']
+    color: app.settings['text color']
     # Python way: Use on_focus and on_error to call self.setBackground
     background_color: (.8,.8,1,1) if self.focus else ((1,.8,.8,1) if self.error else (1,1,1,1))
     size_hint: (.9, None)
@@ -58,7 +59,7 @@
 
 
 <PopButton>:
-    color: app.kv_settings['text color']
+    color: app.settings['text color']
     size_hint: (1, 1)
     font_size: 22
 

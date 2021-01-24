@@ -56,26 +56,23 @@
 <Button>:
     # These settings affect all Buttons in every file unless overridden
     size_hint: (None, None)
-    # font_name: 'arial'
     bold: True
     font_size: 18
 
 <TextInput>:
-    # font_name: 'arial'
     bold: True
     error: False
     write_tab: False
     multiline: False
-    color: app.kv_settings['text color']
+    color: app.settings['text color']
     background_color:
         (.8,.8,1,1) if self.focus \
         else ((1,.8,.8,1) if self.error \
         else (1,1,1,1))
 
 <Label>:
-    font_name: 'arial'
     bold: True
-    color: app.kv_settings['text color']
+    color: app.settings['text color']
 
 <CenterAnchorLayout>:  # Inherits from AnchorLayout in screens.py
     anchor_x: 'center'
@@ -88,8 +85,8 @@
     size: (350, 65)
     background_normal: ''
     background_color:
-        app.kv_settings['standard color'] if self.text[0:2] != 'e.' \
-        else app.kv_settings['encrypt color']
+        app.settings['standard color'] if self.text[0:2] != 'e.' \
+        else app.settings['encrypt color']
     font_size: '22sp'
     color: (0,0,0,1)
     bold: True

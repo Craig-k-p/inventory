@@ -5,7 +5,7 @@
     size_hint: (None, None)
     font_size: 16
     canvas:
-        Color:  
+        Color:
             rgba: random.random(), random.random(), random.random(), .2
         Rectangle:
             pos: self.pos
@@ -14,10 +14,10 @@
 <ThingLabel@Label>:
     font_size: 16
     bold: True
-    color: app.kv_settings['text color']
+    color: app.settings['text color']
     size: (150, 35)
     canvas:
-        Color:  
+        Color:
             rgba: random.random(), random.random(), random.random(), .2
         Rectangle:
             pos: self.pos
@@ -27,7 +27,7 @@
     cols: 2
     size_hint: (1, 1)
     canvas:
-        Color:  
+        Color:
             rgba: random.random(), random.random(), random.random(), .2
         Rectangle:
             pos: self.pos
@@ -36,9 +36,9 @@
 <ThingInput@TextInput>:
     font_size: 16
     bold: True
-    color: app.kv_settings['text color']
+    color: app.settings['text color']
     canvas:
-        Color:  
+        Color:
             rgba: random.random(), random.random(), random.random(), .2
         Rectangle:
             pos: self.pos
@@ -50,7 +50,7 @@
     size_hint: (.9, .9)
     padding: 10
     canvas:
-        Color:  
+        Color:
             rgba: random.random(), random.random(), random.random(), .2
         Rectangle:
             pos: self.pos
@@ -67,7 +67,7 @@
     padding: 10
     spacing: 10
     canvas:
-        Color:  
+        Color:
             rgba: random.random(), random.random(), random.random(), .2
         Rectangle:
             pos: self.pos
@@ -84,7 +84,7 @@
                 size: (0, 70)
                 size_hint: (1, None)
                 canvas:
-                    Color:  
+                    Color:
                         rgba: random.random(), random.random(), random.random(), .2
                     Rectangle:
                         pos: self.pos
@@ -98,7 +98,7 @@
                     spacing: 20
                     padding: 10
                     canvas:
-                        Color:  
+                        Color:
                             rgba: random.random(), random.random(), random.random(), .2
                         Rectangle:
                             pos: self.pos
@@ -126,7 +126,7 @@
                         hint_text: 'my thing'
                         size: (250, 35)
                         size_hint: (1, None)
-                      
+
 
             ThingGrid:
                 # Thing Value pair

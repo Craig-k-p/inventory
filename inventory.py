@@ -27,41 +27,20 @@ class MyInventoryApp(App, KivyExtensions, DataHandler, LogMethods):
         self.__initLog__(file_str='inventory', class_str='MyInventoryApp')
         # Allow access to the Selection class through the app instance
         self.selection = Selection
-        self.settings = {
-            'save file path': 'save_data/'
-            }
+        self.data_file_path = 'save_data/'
 
-        self.kv_settings = {
-            'startup kv files': [
-                'graphics/screens.kv',
-                'graphics/screens.kv'
-            ],
-            'encrypt color': (.79, .51, .51, 1),
-            'standard color': (.79, .73, .51, 1),
-            'kv popup file': 'graphics/popups.kv',
-            'row heading color': (.15, .15, .15, 1),
-            'row color': (.2, .2, .2, 1),
-            'row selected color': (.2, .75, .8, 1),
-            'row heading text color': (.95, .95, .95, 1),
-            'popup auto_dismiss': False,
-            'popup size_hint': (None, None),
-            'popup size': (600, 600),
-            'text color': (1, 1, 1, 1),
-            'val_col_width': 110,
-            'weight_col_width': 60
-            }
+        self.loadSettings()
 
         self.logInfo(f'Started session with settings:\n{pformat(self.settings, indent=4)}')
-        self.logInfo(f'Started session with settings:\n{pformat(self.kv_settings, indent=4)}')
 
         # Set window color:  black: (0, 0, 0, 1), white: (1, 1, 1, 1)
         Window.clearcolor = (0.06, 0.06, 0.06, 1)
 
         # Load the .kv files to start building the GUI
-        for file in self.kv_settings['startup kv files']:
+        for file in self.settings['startup kv files']:
             Builder.load_file(file)
 
-        self.logDebug(f'Used kivy.lang.Builder to load files {self.kv_settings["startup kv files"]}')
+        self.logDebug(f'Used kivy.lang.Builder to load files {self.settings["startup kv files"]}')
 
         # Allow children of the WindowManager instance to access self.settings in the App instance
         InventoryScreenManager.app = self

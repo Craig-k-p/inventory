@@ -8,7 +8,6 @@
     obj_label: obj_label
     weight_label: weight_label
     val_label: val_label
-    loc_label: loc_label
 
     # Object heading
     AnchorLayout:
@@ -27,28 +26,6 @@
             color: app.settings['row heading text color']
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
-            size_hint: (None, 1)
-            size: (self.texture_size[0]+15, self.texture_size[1])
-
-    # Location heading
-    AnchorLayout:
-        # AnchorLayout allows me to allign text to one side or the other of it's field
-        anchor_x: 'left'
-        size_hint: (.8, 1)
-        canvas:
-            Color:
-                rgba: app.settings['row heading color']
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            id: loc_label
-            color: app.settings['text color']
-            bold: True
-            text: 'Location'
-            # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
-            # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
-            # as well as changing the widget's x size
             size_hint: (None, 1)
             size: (self.texture_size[0]+15, self.texture_size[1])
 
@@ -102,7 +79,6 @@
     weight_label: weight_label
     val_lo: val_lo
     val_label: val_label
-    loc_label: loc_label
 
     # Object field
     AnchorLayout:
@@ -121,23 +97,6 @@
             color: app.settings['text color']
             # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
             # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis (left, center, right)
-            size_hint: (None, 1)
-            size: (self.texture_size[0]+15, self.texture_size[1])
-
-    # Location field
-    AnchorLayout:
-        # AnchorLayout allows me to allign text to one side or the other of it's field
-        anchor_x: 'left'
-        size_hint: (.8, 1)
-        canvas:
-            Color:
-                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            id: loc_label
-            color: app.settings['text color']
             size_hint: (None, 1)
             size: (self.texture_size[0]+15, self.texture_size[1])
 

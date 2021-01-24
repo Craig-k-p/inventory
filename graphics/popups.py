@@ -30,10 +30,7 @@ class MoveButton(Button, LogMethods):
         if isinstance(self.item_to_move, Thing):
             self.destination_container.addThing(self.item_to_move.ID, new_instance=False)
         elif isinstance(self.item_to_move, Container):
-            location = self.location_input.text
-            if location != '':
-                self.item_to_move.location = location
-                self.item_to_move.widget.assignValues()
+            pass
         else:
             self.parent.parent.parent.parent.parent.dismiss()
             self.logWarning(f'Received the wrong type for self.item_to_move: {type(self.item_to_move)}')
@@ -219,7 +216,6 @@ class PopupContentThing(ScrollView, LogMethods):
 class PopupContentContainer(ScrollView, LogMethods):
     '''A class linked to popups.kv class definition'''
     description = ObjectProperty(None)
-    location = ObjectProperty(None)
     usd_value = ObjectProperty(None)
     weight = ObjectProperty(None)
     tags = ObjectProperty(None)
@@ -246,7 +242,6 @@ class PopupContentContainer(ScrollView, LogMethods):
     def setContainerValues(self):
         '''Fill the textinput boxes with the object's data'''
         self.description.text = self.inventory_object.description
-        self.location.text = self.inventory_object.location
         self.usd_value.text = self.inventory_object.usd_value
         self.weight.text = self.inventory_object.weight
         tags_str = self.inventory_object.tag_search_str.replace(' ', '_')
@@ -285,12 +280,6 @@ class PopupContentContainer(ScrollView, LogMethods):
             self.weight.error = True
             self.error += 1
 
-        if len(self.location.text) == 0:
-            self.location.error = True
-            self.error += 1
-        else:
-            self.location.error = False
-
         if self.error > 0:
             pass
         else:
@@ -307,7 +296,7 @@ class PopupContentMoveContainer(GridLayout):
 
 
 class PopupContentList(ScrollView, LogMethods):
-    '''A popup class for moving inventory between containers or locations'''
+    '''A popup class for moving inventory between containers'''
     pop_grid = ObjectProperty(None)
 
     def __init__(self, app, **kwargs):
@@ -379,25 +368,25 @@ class PopupContentList(ScrollView, LogMethods):
                     # Add the button to the grid widget
                     self.pop_grid.add_widget(layout)
 
-        # If a container is being moved
-        elif isinstance(item_to_move, Container):
+        # # If a container is being moved
+        # elif isinstance(item_to_move, Container):
 
-            # Make a text input for the user
-            location_input = TextInput(
-                hint_text='New location',
-                font_size=18,
-                size_hint=(1, 1),
-                multiline=False,
-                focus=True
-                )
-            buttons = PopupContentMoveContainer()
+        #     # Make a text input for the user
+        #     location_input = TextInput(
+        #         hint_text='New location',
+        #         font_size=18,
+        #         size_hint=(1, 1),
+        #         multiline=False,
+        #         focus=True
+        #         )
+        #     buttons = PopupContentMoveContainer()
 
-            # Allow the submit button to grab the user's input from the location_input field
-            buttons.submit_button.location_input = location_input
-            buttons.submit_button.item_to_move = item_to_move
+        #     # Allow the submit button to grab the user's input from the location_input field
+        #     buttons.submit_button.location_input = location_input
+        #     buttons.submit_button.item_to_move = item_to_move
 
-            self.pop_grid.add_widget(location_input)
-            self.pop_grid.add_widget(buttons)
+        #     self.pop_grid.add_widget(location_input)
+        #     self.pop_grid.add_widget(buttons)
 
         else:
             log = f'The selected object was not an InventoryObject instance. Got {type(item_to_move)}'

@@ -79,7 +79,6 @@ class ContainerHeadingRow(GridLayout, LogMethods):
     container = ObjectProperty(None)
     weight = ObjectProperty(None)
     val = ObjectProperty(None)
-    loc = ObjectProperty(None)
     my_text = StringProperty(None)
 
     settings = {
@@ -96,19 +95,17 @@ class ContainerHeadingRow(GridLayout, LogMethods):
                        container='Container',
                        weight='LBS',
                        usd_value='$$',
-                       location='Location',
                        options='Opts'
                        ):
         '''Set the heading text for each child widget Label'''
         # log = f'Setting heading Label text values to {container}, {weight}, {usd_value}, '
-        # log += f'{location}, and {options}'
+        # log += f'and {options}'
         # self.logDebug(log)
         # self.logDebug(f'self.weight.label = {self.weight_label.text}')
 
         self.obj_label.text = 'HELP'
         self.weight_label.text = weight
         self.val_label.text = self.my_text
-        self.loc_label.text = location
         self.opt_button.text = options
 
         self.logDebug(f'container.label = {self.obj_label.text}')
@@ -123,7 +120,6 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
-    loc_label = ObjectProperty(None)
     selected = BooleanProperty(False)
 
     def __init__(self, inventory_object, **kwargs):
@@ -148,7 +144,6 @@ class ContainerDataRow(GridLayout, DataRow, LogMethods):
         self.obj_label.text = str(self.object.description)
         self.val_label.text = self.formatValue(self.object.getValue())
         self.weight_label.text = self.formatWeight(self.object.getWeight())
-        self.loc_label.text = self.object.location
 
         # self.logDebug(f'got values: {self.weight_label.text} lbs, ${self.val_label.text}')
 

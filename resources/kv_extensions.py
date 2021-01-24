@@ -78,8 +78,8 @@ class KivyExtensions():
                 pop_title += f' from {self.selection.getLastContainer().getObj().description} to..'
                 self.logDebug(f'Popup title assigned for thing')
             elif isinstance(selected, Container):
-                pop_title += f' from {selected.location} to...'
-                self.logDebug(f'Popup title assigned for container')
+                Builder.unload_file(self.settings['kv popup file'])
+                return
             else:
                 self.logWarning(f'Selection is wrong type ({type(selected)}) to move')
                 return

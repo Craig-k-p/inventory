@@ -83,16 +83,14 @@ class MyInventoryApp(App, KivyExtensions, DataHandler, LogMethods):
         '''Execute this function when the application is closed'''
         self.logInfo(f'changes_made = {self.inventoryobject.wasChangeMade()}')
         if self.inventoryobject.wasChangeMade() == True:
-            # try:
-                # log = 'Attempting to save inventory..'
-                # self.logInfo(log)
+            try:
+                log = 'Attempting to save inventory..'
+                self.logInfo(log)
                 self._saveData()
-                # self.logInfo('Save succeeded')
-        #     except AttributeError:
-        #         log = 'Last effort to save failed. self.inventoryobject.change_made should '
-        #         log += 'be False!'
-        #         self.logError(log)
-        # self.logInfo('Exiting the application')
+                self.logInfo('Save succeeded')
+            except AttributeError:
+                self.logError('Save failed!')
+        self.logInfo('Exiting the application')
 
 
 if __name__ == '__main__':

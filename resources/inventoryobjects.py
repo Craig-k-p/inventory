@@ -25,7 +25,8 @@ class InventoryObject():
             tags='',
             things=None,
             container=None,
-            location=None     ):
+            location = None
+            ):
         '''Create an instance of Inventory object and assign its ID, description,
            USD value, weight, and tags. Add it to the InventoryObject.objs dictionary
            Takes input:
@@ -35,13 +36,11 @@ class InventoryObject():
            weight - int as string
            tags - single-word or multi-word (separated by _) tags separated by a space
            things - None; dummy kwarg to prevent errors from kwarg unpacking from file load
-           container -  None; dummy kwarg to prevent errors during unpacking from file load
-           location - string'''
+           container -  None; dummy kwarg to prevent errors during unpacking from file load'''
         self.ID = ID
         self._description = description
         self._usd_value = usd_value
         self._weight = weight
-        self._location = location
         self.tags = set()
         self.addTags(tags)
         self._setTagSearchString()
@@ -68,26 +67,6 @@ class InventoryObject():
                 self.logDebug(f'"{description}" is already the description')
         else:  # Raise an error if the wrong type is found
             raise TypeError(f'Was expecting type str for desc. Got {type(description)}')
-
-    @property
-    def location(self):
-        return self._location
-
-    @location.setter
-    def location(self, location):
-        '''This is called when "self.location = 'an example str'" is used in code'''
-        # Check for a string type
-        if isinstance(location, str):
-            # Make sure the string is new and assign it
-            if self._location != location:
-                self._location = location
-                # Flag a change made to the inventory
-                self.logDebug(f'Location of {self.description} changed to {location}')
-                InventoryObject.changeMade()
-            else:
-                self.logDebug(f'"{location}" is already the location')
-        else:  # Raise an error if the wrong type is found
-            raise TypeError(f'Was expecting type str for location. Got {type(location)}')
 
     @property
     def usd_value(self):
@@ -224,19 +203,8 @@ class InventoryObject():
             elif self.search_term in self.tag_search_str:
                 return True
 
-            elif isinstance(self, Thing):
-                self.logDebug(f'Search term not found for {self}')
+            else:
                 return False
-
-            elif isinstance(self, Container):
-                if self.search_term in self.location.lower():
-                    return True
-
-                elif self._checkSearchTags() == True:
-                    return True
-
-                else:
-                    return False
 
     def _checkSearchTags(self):
         '''Searches all tags for a match to the search term'''
@@ -338,7 +306,6 @@ class InventoryObject():
                 d = data['container']
                 d[ID] = {}
                 d[ID]['things'] = list(obj.things)
-                d[ID]['location'] = obj.location
 
             else:
                 Logger.critical(

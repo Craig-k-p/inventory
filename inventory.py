@@ -10,7 +10,7 @@ from graphics.screens import LoadFileScreen, CreateFileScreen
 from graphics.screens import InventoryScreenManager
 from graphics.datagrid import DataGrid, ContainerHeadingRow
 from resources.kv_extensions import KivyExtensions
-from resources.inventoryhandler import InventoryHandler
+from resources.datahandler import DataHandler
 from resources.inventoryobjects import InventoryObject
 from resources.utilities import LogMethods, Security
 from resources.selection import Selection
@@ -20,7 +20,7 @@ from resources.selection import Selection
 Config.set('input', 'mouse', 'mouse, multitouch_on_demand')
 
 
-class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
+class MyInventoryApp(App, KivyExtensions, DataHandler, LogMethods):
 
     def __init__(self, **kwargs):
         super(MyInventoryApp, self).__init__(**kwargs)
@@ -47,7 +47,6 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'popup size_hint': (None, None),
             'popup size': (600, 600),
             'text color': (1, 1, 1, 1),
-            'transition': NoTransition(),
             'val_col_width': 110,
             'weight_col_width': 60
             }
@@ -68,9 +67,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         InventoryScreenManager.app = self
 
         # Create a ScreenManager instance with no transition movement
-        self.sm = InventoryScreenManager(transition=self.kv_settings['transition'])
-        log = 'Created self.sm, instance of InventoryScreenManager with startup transition as '
-        log += f"{self.kv_settings['transition']} --- {self.sm}"
+        self.sm = InventoryScreenManager(transition=NoTransition())
+        log = 'Created self.sm, instance of InventoryScreenManager'
         self.logDebug(log)
 
         self.user_file_en = False
@@ -94,7 +92,7 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
         # Set the current screen
         self.sm.current = 'load file'
-        self.sm.transition = self.kv_settings['transition']
+        self.sm.transition = NoTransition()
 
     def build(self):
         '''Without returning self.sm (ScreenManager), the app would be a blank screen.'''

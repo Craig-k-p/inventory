@@ -5,7 +5,7 @@ from graphics.row import ContainerDataRow, ThingDataRow
 from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen
 
 
-class InventoryHandler():
+class DataHandler():
     def __init__(self):
         self.data_screens = (AccountOverviewScreen, ContainerOverviewScreen)
         self.data_was_loaded = False
@@ -16,7 +16,7 @@ class InventoryHandler():
     def createInventoryObject(self, object_class_str, kv_obj_reference):
         '''Create a new object using the popup user input'''
 
-        # Get the method (thing or container) from InventoryHandler for creating
+        # Get the method (thing or container) from DataHandler for creating
         # a new object
         createObject = getattr(self, object_class_str)
 

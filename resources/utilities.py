@@ -162,7 +162,7 @@ class Security(LogMethods):
 
     def decryptFile(self, en_file_name):
         '''Load the encrypted file'''
-        with open(self._app.settings['save file path'] + en_file_name, 'rb') as f:
+        with open(self._app.data_file_path + en_file_name, 'rb') as f:
             try:
                 self._app.user_file_en = True
                 return json.loads(self._getCypher(reset=True).decrypt(f.read()))

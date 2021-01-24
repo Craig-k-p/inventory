@@ -61,7 +61,6 @@ class Toolbar(BoxLayout, LogMethods):
         '''Display toolbar options for selected objects in user's inventory'''
 
         if self.options == None:
-            self.logDebug('self.options=None')
             # Allows us to assign call_delete to the on_press variable without calling
             # the function within the lambda declaration
             self.call_delete = lambda call_return : self.app.sm.current_screen.data_grid.deleteObject()

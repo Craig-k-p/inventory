@@ -132,13 +132,11 @@ class InventoryObject():
     def addTags(self, tags):
         '''Takes tags of string, list, or set type and change self.tags accordingly'''
         if isinstance(tags, list):
-            Logger.debug("Tags was a list")
             tags = set(tags)
             if self._tagsWereChanged(tags):
                 self._addTags(tags)
 
         elif isinstance(tags, set):
-            Logger.debug('Tags was a set')
             if self._tagsWereChanged(tags):
                 self._addTags(tags)
 

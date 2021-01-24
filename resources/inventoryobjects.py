@@ -1,6 +1,9 @@
-from resources.utilities import LogMethods
-from kivy.logger import Logger
 from json import dumps
+
+from kivy.logger import Logger
+
+from resources.utilities import LogMethods
+from graphics.screens import InventoryScreen
 
 
 class InventoryObject():
@@ -25,7 +28,7 @@ class InventoryObject():
             tags='',
             things=None,
             container=None,
-            location = None
+            contents=None
             ):
         '''Create an instance of Inventory object and assign its ID, description,
            USD value, weight, and tags. Add it to the InventoryObject.objs dictionary
@@ -35,8 +38,8 @@ class InventoryObject():
            usd_value - int as string
            weight - int as string
            tags - single-word or multi-word (separated by _) tags separated by a space
-           things - None; dummy kwarg to prevent errors from kwarg unpacking from file load
-           container -  None; dummy kwarg to prevent errors during unpacking from file load'''
+           things - None; to be replaced by contents
+           container -  None; holding container for this object'''
         self.ID = ID
         self._description = description
         self._usd_value = usd_value
@@ -507,11 +510,22 @@ class Container(InventoryObject, LogMethods):
         '''Create a container instance, call the parent class __init__ and assign its
            attributes'''
 
-        # self.things is a list ID's for "thing" inventory
-        try:  # Handle a loaded file
+        # If this is a file-loaded container
+        if 'things' in kwargs.keys():
             self.things = kwargs['things']
-        except KeyError:   # Handle a newly created Container
+        # If this is a new container
+        else:
             self.things = []
+
+        if 'contents' in kwargs.keys():
+            self.contents = kwargs['contents']
+        else:
+            self.contents = []
+
+        self.screen = InventoryScreen(name=self.ID)
+
+        self.logDebug(self.screen)
+
 
         # Call the parent __init__ method to assign attributes and init the log
         super(Container, self).__init__(**kwargs)
@@ -523,8 +537,7 @@ class Container(InventoryObject, LogMethods):
         self.content_changed = False
 
     def __repr__(self):
-        s = f'<Container object {self.description} with ID {self.ID} '
-        s += f'and {len(self.things)} Thing(s)'
+        s = f'<Container object [{self.ID}] {self.description}>'
         return s + '>'
 
     def addThing(self, ID, new_instance=True, merge=False):

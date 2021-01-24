@@ -368,26 +368,6 @@ class PopupContentList(ScrollView, LogMethods):
                     # Add the button to the grid widget
                     self.pop_grid.add_widget(layout)
 
-        # # If a container is being moved
-        # elif isinstance(item_to_move, Container):
-
-        #     # Make a text input for the user
-        #     location_input = TextInput(
-        #         hint_text='New location',
-        #         font_size=18,
-        #         size_hint=(1, 1),
-        #         multiline=False,
-        #         focus=True
-        #         )
-        #     buttons = PopupContentMoveContainer()
-
-        #     # Allow the submit button to grab the user's input from the location_input field
-        #     buttons.submit_button.location_input = location_input
-        #     buttons.submit_button.item_to_move = item_to_move
-
-        #     self.pop_grid.add_widget(location_input)
-        #     self.pop_grid.add_widget(buttons)
-
         else:
             log = f'The selected object was not an InventoryObject instance. Got {type(item_to_move)}'
             self.logWarning(log)
@@ -396,9 +376,6 @@ class PopupContentList(ScrollView, LogMethods):
 
 class PopupContentStats(GridLayout, LogMethods):
     '''Show the user stats for entire inventory'''
-
-
-
 class PopupContentWarningDelete(ScrollView, LogMethods):
     '''Used to warn the user if they are deleting a container that has contents'''
 

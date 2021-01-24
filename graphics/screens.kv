@@ -48,6 +48,14 @@
             DataGrid:
                 id: data_grid
 
+<InventoryScreen>:  # Screen inheritance found in screens.py
+    grid: grid
+    app: app
+
+    ScrollView:
+        DataGrid:
+            id: grid
+
 
 # Set custom fonts for Buttons, TextInputs, and Labels
 <Button>:

@@ -46,7 +46,6 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
             'popup auto_dismiss': False,
             'popup size_hint': (None, None),
             'popup size': (600, 600),
-            'font': 'arial',
             'text color': (1, 1, 1, 1),
             'transition': NoTransition(),
             'val_col_width': 110,
@@ -74,7 +73,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         log += f"{self.kv_settings['transition']} --- {self.sm}"
         self.logDebug(log)
 
-        self._sec = Security(self)
+        self.user_file_en = False
+        self.sec = Security(self)
         self._setup()
 
     def _setup(self):
@@ -82,8 +82,8 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
         # name can also be defined in the kv/main_widgets.kv file using "name: 'load file'" under
         # class declaration
         lfs = LoadFileScreen(self, name='load file')
-        cas = CreateFileScreen(self, name='create file')
-        screens = [lfs, cas]
+        cfs = CreateFileScreen(self, name='create file')
+        screens = [lfs, cfs]
 
         # Make sure sm knows how to handle changes to self.current
         # such as self.current = 'account screen'
@@ -104,18 +104,18 @@ class MyInventoryApp(App, KivyExtensions, InventoryHandler, LogMethods):
 
     def on_stop(self):
         '''Execute this function when the application is closed'''
-        self.logInfo(f'self.inventoryobject.changes_made = {self.inventoryobject.wasChangeMade()}')
+        self.logInfo(f'changes_made = {self.inventoryobject.wasChangeMade()}')
         if self.inventoryobject.wasChangeMade() == True:
-            try:
-                log = 'Attempting to save inventory..'
-                self.logInfo(log)
+            # try:
+                # log = 'Attempting to save inventory..'
+                # self.logInfo(log)
                 self._saveData()
-                self.logInfo('Save succeeded')
-            except AttributeError:
-                log = 'Last effort to save failed. self.inventoryobject.change_made should '
-                log += 'be False!'
-                self.logError(log)
-        self.logInfo('Exiting the application')
+                # self.logInfo('Save succeeded')
+        #     except AttributeError:
+        #         log = 'Last effort to save failed. self.inventoryobject.change_made should '
+        #         log += 'be False!'
+        #         self.logError(log)
+        # self.logInfo('Exiting the application')
 
 
 if __name__ == '__main__':

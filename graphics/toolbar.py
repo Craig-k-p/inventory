@@ -81,7 +81,7 @@ class Toolbar(BoxLayout, LogMethods):
             self.options = [
                     Button(
                         text='Delete',
-                        size=('50px', '30px'),
+                        size=('65px', '30px'),
                         size_hint=(None, None),
                         on_release=self.call_delete,
                         pos_hint={'center_x': .25, 'center_y': .5}
@@ -95,7 +95,7 @@ class Toolbar(BoxLayout, LogMethods):
                     ),
                     Button(
                         text='Move',
-                        size=('50px', '30px'),
+                        size=('55px', '30px'),
                         size_hint=(None, None),
                         on_release=self.call_move,
                         pos_hint={'center_x': .25, 'center_y': .5}
@@ -104,7 +104,7 @@ class Toolbar(BoxLayout, LogMethods):
 
             self.option_merge = Button(
                         text='Merge',
-                        size=('50px', '30px'),
+                        size=('64px', '30px'),
                         size_hint=(None, None),
                         on_release=self.call_merge,
                         pos_hint={'center_x': .25, 'center_y': .5}

@@ -154,33 +154,39 @@ class Security(LogMethods):
     def __init__(self, app):
         self.__initLog__('utilities.py', 'Security')
         self._c = None
-        self._t = 6
+        # self._a = 0
         self._app = app
+
+    def createPassword(self):
+        self._getCypher(reset=True)
 
     def decryptFile(self, en_file_name):
         '''Load the encrypted file'''
-        with open(en_file_name, 'rb') as f:
-            while self._t > 0:
-                try:
-                    self._t -= 1
-                    return json.loads(self._getCypher(reset=True).decrypt(f.read()))
-                except InvalidToken:
-                    self.logInfo('Invalid password attempt')
-
-            raise PasswordAttemptsExceededError('Maximum password attempts exceeded')
+        with open(self._app.settings['save file path'] + en_file_name, 'rb') as f:
+            try:
+                self._app.user_file_en = True
+                return json.loads(self._getCypher(reset=True).decrypt(f.read()))
+            except InvalidToken:
+                # self._a += 1
+                self._app.user_file_en = False
+                self.logInfo('Invalid password attempt')
+                return None
 
     def encryptFile(self, file_name, data):
         '''Encrypt the given contents and save to file_name'''
         with open(file_name, 'wb') as f:
             f.write(self._getCypher().encrypt(bytes(json.dumps(data).encode('utf-8'))))
 
+    def reset(self):
+        self._c = None
+
     def _getCypher(self, reset=False):
         '''Get cypher from user's password and return it'''
         if self._c != None and reset == False:
             return Fernet(self._c)
         else:
-            # No __c... get it from the user's password
-            self._c = self._getKDF().derive(input('Pass: ').encode())
+            # No _c... get it from the user's password
+            self._c = self._getKDF().derive(self._app.pop.content.prompt.text.encode())
             self._c = base64.urlsafe_b64encode(self._c)
             return self._getCypher()
 

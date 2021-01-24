@@ -20,14 +20,16 @@ class CenterAnchorLayout(AnchorLayout):
 class FileButton(Button, LogMethods):
     '''FileButton class declared in screens.kv'''
     app = ObjectProperty(None)
+    prompt = ObjectProperty(None)
     def __init__(self, **kwargs):
         super(FileButton, self).__init__(**kwargs)
         self.__initLog__(file_str='screens.py', class_str='FileButton')
 
     def selectFile(self):
-        self.app.user_file = self.file
-        self.logDebug(self.file)
-        self.app.createUserScreens()
+        if self.text[0:2] == 'e.':
+            self.app.createPopup(prompt_password=True, file=self.user_file)
+        else:
+            self.app.start(self.user_file)
 
 
 class LoadFileScreen(Screen, LogMethods):
@@ -51,7 +53,7 @@ class LoadFileScreen(Screen, LogMethods):
             layout = CenterAnchorLayout()
             b = FileButton(text=file)
             b.on_release = b.selectFile
-            b.file = file
+            b.user_file = file
             on_release = b.selectFile
             layout.add_widget(b)
             self.file_button_parent.add_widget(layout)
@@ -62,6 +64,7 @@ class CreateFileScreen(Screen, LogMethods):
     ''' The screen that draws necesary widgets to the window such as buttons, text inputs,
         and labels. It inherits from kivy.uix.screenmanager.screen.Screen'''
 
+    encrypted_checkbox = ObjectProperty(None)
     file_name_input = ObjectProperty(None)
 
     def __init__(self, app, **kwargs):
@@ -87,7 +90,7 @@ class CreateFileScreen(Screen, LogMethods):
             self.file_name_input.error = False
 
         # Add this error if the file already exists
-        if self.app.doesFileExist(file_name) == True:
+        if self.app.doesFileExist(file_name, self.encrypted_checkbox.active) == True:
             errors.append('File already exists')
             self.file_name_input.error = True
             self.error += 1
@@ -97,7 +100,8 @@ class CreateFileScreen(Screen, LogMethods):
         # Add this error if the file contains anything other than underscors and alphanumeric
         # characters
         if file_name.replace('_','').isalnum() == False:
-            errors.append('Only alphanumeric characters and underscores allowed.')
+            errors.append('Only alphanumeric characters')
+            errors.append('and underscores are allowed.')
             self.file_name_input.error = True
             self.error += 1
         else:
@@ -107,7 +111,13 @@ class CreateFileScreen(Screen, LogMethods):
         if self.error == 0:
             self.logDebug('No errors found')
             self.app.user_file = file_name
-            self.app.createUserScreens()
+            # If the user indicated that they want the file to be encrypted
+            if self.encrypted_checkbox.active == True:
+                self.logInfo(f'User wants to encrypt {file_name}.inventory')
+                self.app.createPopup(create_password=True)
+            else:
+                self.app.createUserScreens()
+                self.app.is_new_inventory = True
         # If there are errors, log them and create a popup to warn the user
         else:
             for error in errors:

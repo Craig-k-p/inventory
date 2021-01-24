@@ -43,6 +43,29 @@ class MoveButton(Button, LogMethods):
         '''Merge the contents of the chosen containers'''
         self.origin_container.merge(self.destination_container.ID)
 
+class PopupContentCreatePassword(GridLayout, LogMethods):
+    '''A class linked to it's popups.kv class definition. Handles user
+       password input for file saving/loading'''
+    prompt = ObjectProperty(None)
+    prompt_b = ObjectProperty(None)
+    def __init__(self, app, **kwargs):
+        super(PopupContentCreatePassword, self).__init__(**kwargs)
+        self.__initLog__(file_str='popups', class_str='PopupContentCreatePassword')
+        self.app = app
+
+    def checkFormat(self):
+        '''Check for input errors to determine if we should accept or reject user input'''
+        if len(self.prompt.text) < 8 or self.prompt.text != self.prompt_b.text:
+            self.prompt.text_input.error, self.prompt_b.text_input.error = True, True
+            self.logDebug('Password error')
+        else:
+            self.prompt.error, self.prompt_b.error = False, False
+            self.app.sec.createPassword()
+            self.app.pop.dismiss()
+            self.app.is_new_inventory = True
+            self.app.user_file_en = True
+            self.app.createUserScreens()
+
 
 class PopupContentError(GridLayout, LogMethods):
     '''A class linked to popups.kv class definition'''
@@ -57,15 +80,77 @@ class PopupContentError(GridLayout, LogMethods):
 
     def fill(self):
         '''Fill the popup with error labels and an "OK" button'''
-        self.logDebug('Filling the popup with error messages')
+        self.logDebug('Filling the popup with error message(s)')
+
+        layout = GridLayout(cols=1)
+
         for error in self.errors:
-            self.add_widget(PopLabel(text=error))
-        self.add_widget(
+            widget = CenterAnchorLayout()
+            widget.add_widget(PopLabel(text=error))
+            layout.add_widget(widget)
+
+        self.add_widget(layout)
+
+        widget = CenterAnchorLayout()
+        widget.add_widget(
             PopButton(
                 text='continue',
+                size_hint=(None, None),
+                size=(120, 70),
                 on_release=self.app.pop.dismiss
                 )
             )
+        layout2 = GridLayout(cols=1, size_hint=(1,1))
+        layout2.add_widget(widget)
+        self.add_widget(layout2)
+
+class PopupContentPassword(GridLayout, LogMethods):
+    '''A class linked to it's popups.kv class definition. Handles user
+       password input for file saving/loading'''
+    prompt = ObjectProperty(None)
+    def __init__(self, app, file, **kwargs):
+        super(PopupContentPassword, self).__init__(**kwargs)
+        self.__initLog__(file_str='popups', class_str='PopupContentPassword')
+        self.app = app
+        self.user_file = file
+
+    def checkPassword(self):
+        '''See if user password unlocks the file'''
+        self.prompt.text_input.error = False
+        if self.app.start(self.user_file, encrypted=True) == False:
+            self.prompt.text_input.error = True
+        else:
+            self.prompt.text_input.error = False
+            self.app.pop.dismiss()
+
+    def checkFormat(self, popup_content, object_class_str):
+        '''Check for input errors to determine if we should accept or reject user input'''
+        self.error = 0
+
+        if len(self.description.text) == 0:
+            self.description.error = True
+            self.error += 1
+        else:
+            self.description.error = False
+
+        try:
+            float(self.usd_value.text)
+            self.usd_value.error = False
+        except ValueError:
+            self.usd_value.error = True
+            self.error += 1
+
+        try:
+            float(self.weight.text)
+            self.weight.error = False
+        except ValueError:
+            self.weight.error = True
+            self.error += 1
+
+        if self.error > 0:
+            pass
+        else:
+            self.app.closePopup(popup_content, object_class_str)
 
 
 class PopupContentThing(ScrollView, LogMethods):
@@ -79,12 +164,8 @@ class PopupContentThing(ScrollView, LogMethods):
 
     def __init__(self, thing, **kwargs):
         super(PopupContentThing, self).__init__(**kwargs)
-
         # Initialize the log for this class instance
-        self.__initLog__(
-            file_str='popups',
-            class_str='PopupThingContent'
-        )
+        self.__initLog__(file_str='popups', class_str='PopupThingContent')
         self.inventory_object = thing
 
         # If a thing was passed as an argument
@@ -306,9 +387,10 @@ class PopupContentList(ScrollView, LogMethods):
                 hint_text='New location',
                 font_size=18,
                 size_hint=(1, 1),
-                multiline=False
+                multiline=False,
+                focus=True
                 )
-            buttons = PopupMoveContainerContent()
+            buttons = PopupContentMoveContainer()
 
             # Allow the submit button to grab the user's input from the location_input field
             buttons.submit_button.location_input = location_input

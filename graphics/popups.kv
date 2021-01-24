@@ -16,6 +16,24 @@
     bold: True
     color: (0,0,0,1)
 
+<PasswordInput@AnchorLayout>:
+    text: text_input.text
+    text_input: text_input
+    h_text: None
+    in_focus: False
+    anchor_x: 'center'
+    anchor_y: 'center'
+    bg: (0,0,0,0)
+    TextInput:
+        id: text_input
+        hint_text: 'Type your password' if self.parent.h_text == None else self.parent.h_text
+        focus: True if self.parent.in_focus == True else False
+        size_hint: (None, None)
+        size: (300, 38)
+        password: True
+        password_mask: '*'
+        font_size: 22
+
 
 <PopLabel>:
     bold: True
@@ -51,9 +69,10 @@
     spacing: 10
 
 
-<PopupContentError>:
-    size_hint: (None, None)
-    size: (400, 250)
+<PopupContentError>:  # GridLayout inheritance - popups.py
+    size_hint: (1, 1)
+    padding: 20
+    spacing: 15
     cols: 1
     app: app
 
@@ -89,6 +108,7 @@
                 PopLabel:
                     text: 'Object description:'
             PopInput:
+                focus: True
                 id: description
 
         PopPairGrid:
@@ -171,6 +191,7 @@
                 PopLabel:
                     text: 'Container description:'
             PopInput:
+                focus: True
                 id: description
 
         PopPairGrid:
@@ -305,6 +326,94 @@
         row_force_default: True
         spacing: 10
 
+# Makes the password inputs, cancel button, and submit button
+<PopupContentCreatePassword>: # GridLayout inheritance
+    id: pop
+    prompt: prompt
+    prompt_b: prompt_b
+    submit_button: submit_button
+    size_hint: (1, 1)
+    padding: 20
+    spacing: 15
+    cols: 1
+
+    GridLayout:
+        cols: 1
+        spacing: 10
+        CenterAnchorLayout:
+            Label:
+                text: 'Please write this down'
+                font_size: 20
+        CenterAnchorLayout:
+            Label:
+                text: 'There is NO recovery for lost passwords'
+                font_size: 20
+                bold: True
+                underline: True
+        CenterAnchorLayout:
+            Label:
+                text: 'Password must be 8 characters or longer'
+                font_size: 20
+
+    PasswordInput:
+        id: prompt
+        h_text: 'Type a new password'
+        in_focus: True
+    PasswordInput:
+        id: prompt_b
+        h_text: 'Retype password'
+
+    GridLayout:
+        size_hint: (1, 1)
+        cols: 2
+        CenterAnchorLayout:
+            MoveButton:
+                size_hint: (None, None)
+                size: (120,70)
+                text: 'Cancel'
+                on_release: app.pop.dismiss()
+        CenterAnchorLayout:
+            MoveButton:
+                id: submit_button
+                size_hint: (None, None)
+                size: (120,70)
+                text: 'Create'
+                on_release:
+                    pop.checkFormat()
+
+# Makes the password input, cancel button, and submit button
+<PopupContentPassword>: # GridLayout inheritance
+    # submit_button: submit_button
+    prompt: prompt
+    id: pop
+    size_hint: (1, 1)
+    padding: 20
+    spacing: 15
+    cols: 1
+
+    PasswordInput:
+        in_focus: True
+        id: prompt
+
+    GridLayout:
+        size_hint: (1, 1)
+        cols: 2
+        CenterAnchorLayout:
+            Button:
+                size_hint: (None, None)
+                size: (120,70)
+                text: 'Cancel'
+                on_release: app.pop.dismiss()
+        CenterAnchorLayout:
+            Button:
+                id: submit_button
+                size_hint: (None, None)
+                size: (120,70)
+                text: 'Submit'
+                on_release:
+                    pop.checkPassword()
+
+
 <PopupContentStats>: # GridLayout inheritance - popups.py
     cols: 1
     size_hint: (1, 1)
@@ -383,10 +492,4 @@
                 size: (100,70)
                 text: 'Close'
                 on_release: app.pop.dismiss()
-        # AllignLayout:
-        #     anchor_x: 'center'
-        #     PopButton:
-        #         size_hint: (None, None)
-        #         size: (100,70)
-        #         text: 'Print'
 

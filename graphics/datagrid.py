@@ -25,8 +25,6 @@ class DataGrid(GridLayout, LogMethods):
         super().__init__(**kwargs)
         self.__initLog__(file_str='kv_DG.py', class_str='DataGrid')
 
-        self.logInfo('Creating DataGrid instance')
-
         self.app = None
 
         self.heading_color = None
@@ -122,8 +120,6 @@ class DataGrid(GridLayout, LogMethods):
         if self.app == None:
             self.app = app
 
-        # Get the containers or things to fill the data grid
-        self.app.loadData()
         InventoryObject.updateWidgets(self)
 
     def getInventoryRowClass(self):

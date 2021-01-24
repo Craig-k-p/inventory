@@ -8,6 +8,7 @@ from resources.inventoryobjects import InventoryObject
 from graphics.row import ContainerDataRow, ThingDataRow
 from graphics.popups import PopupContentThing, PopupContentContainer, PopupContentStats
 from graphics.popups import PopupContentError, PopupContentList, PopupContentWarningDelete
+from graphics.popups import PopupContentCreatePassword, PopupContentPassword
 from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen
 from resources.inventoryobjects import Thing, Container
 
@@ -52,7 +53,8 @@ class KivyExtensions():
             except AttributeError:
                 pass
 
-    def createPopup(self, warn=False, merge=False, move=False, stats=False, errors=None):
+    def createPopup(self, warn=False, merge=False, move=False, stats=False, errors=None,
+                    create_password=False, prompt_password=False, file=None):
         '''Method that does the following:
             -Load the kv file that defines what goes into the popup
             -Create an instance of Popup
@@ -93,14 +95,24 @@ class KivyExtensions():
             popup_size = (500,300)
 
         elif stats == True:
-            pop_title = f'Inventory Stats'
+            pop_title = 'Inventory Stats'
             popup_content = PopupContentStats()
             popup_size = (500, 600)
+
+        elif create_password == True:
+            pop_title = 'Create a new password'
+            popup_content = PopupContentCreatePassword(self)
+            popup_size = (500, 450)
+
+        elif prompt_password == True:
+            pop_title = 'Enter your password'
+            popup_content = PopupContentPassword(self, file)
+            popup_size = (500, 250)
 
         elif isinstance(errors, list):
             pop_title = 'Error'
             popup_content = PopupContentError(errors)
-            popup_size = (500, 400)
+            popup_size = (500, 285 + (60 * len(errors)))
 
         else:
             self.logWarning('move, merge, and warn flags are all False. Returning.')

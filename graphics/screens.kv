@@ -88,7 +88,7 @@
     size: (350, 65)
     background_normal: ''
     background_color:
-        app.kv_settings['standard color'] if self.text[0:2] != 'e_' \
+        app.kv_settings['standard color'] if self.text[0:2] != 'e.' \
         else app.kv_settings['encrypt color']
     font_size: '22sp'
     color: (0,0,0,1)
@@ -188,6 +188,7 @@
 
 
 <CreateFileScreen>:
+    encrypted_checkbox: encrypted_checkbox
     file_name_input: file_name_input
     id: create_file_screen
     # Name used by the screen manager
@@ -264,20 +265,33 @@
                 size_hint_y: None
                 height: self.minimum_height
                 # Make each row 90 pixels high
-                row_default_height: 90
+                row_default_height: 100
                 row_force_default: True
 
                 CenterAnchorLayout:
                     GridLayout:
+                        padding: 10
                         cols: 1
                         size_hint_x: None
-                        width: 350
+                        width: 300
                         Label:
-                            font_size: 20
                             text: 'Inventory name:'
+                            font_size: 20
                         TextInput:
                             id: file_name_input
                             font_size: 20
+
+                CenterAnchorLayout:
+                    GridLayout:
+                        padding: 10
+                        size_hint_x: None
+                        width: 300
+                        rows: 1
+                        Label:
+                            text: 'Encrypt file'
+                            font_size: 16
+                        CheckBox:
+                            id: encrypted_checkbox
 
                 CenterAnchorLayout:
                     Button:

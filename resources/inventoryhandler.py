@@ -9,6 +9,7 @@ class InventoryHandler():
     def __init__(self):
         self.data_screens = (AccountOverviewScreen, ContainerOverviewScreen)
         self.data_was_loaded = False
+        self.is_new_inventory = False
         InventoryObject.app = self
         self.inventoryobject = InventoryObject
 
@@ -25,9 +26,13 @@ class InventoryHandler():
         data['ID'] = InventoryObject.getNewID()
         self.logInfo(f'User input:\n{json.dumps(data, indent=4)}')
 
+        self.logInfo(self.inventoryobject.wasChangeMade())
+
         # Create a new object with user's input and dismiss the popup
         new_object = createObject(data)
         self.pop.dismiss()
+
+        self.logInfo(self.inventoryobject.wasChangeMade())
 
         # Add a new row with the new data to the user's screen
         self.sm.current_screen.data_grid.addDataRow(new_object)
@@ -37,21 +42,26 @@ class InventoryHandler():
 
     def thing(self, data):  # createObject
         '''Create a new thing and assign its container'''
-        self.logDebug(f'Creating a thing with ID {data["ID"]}:')
+        # self.logDebug(f'Creating a thing with ID {data["ID"]}:')
         new_thing = Thing(data)
 
-        if self.data_was_loaded == True:
+        if self.data_was_loaded == True or self.is_new_inventory:
             # Add the thing to the last selected container
             self.selection.getLastContainer().getObj().addThing(new_thing.ID)
             # Set the changes_made flag to True for saving purposes
             InventoryObject.changeMade()
         return new_thing
 
-    def doesFileExist(self, file_name):
+    def doesFileExist(self, file_name, encrypted=False):
         '''Make sure we aren't overwriting any saved files'''
         file_name = file_name.strip() + '.inventory'
 
+        if encrypted == True:
+            file_name = 'e.' + file_name
+
+        self.logDebug(f'Checking for duplicate file against {file_name}')
         for file in self.files:
+            self.logDebug(file)
             if file == file_name:
                 return True
 
@@ -59,10 +69,10 @@ class InventoryHandler():
 
     def container(self, data):  # createObject
         '''Create a new container'''
-        self.logDebug(f'Creating a container with ID {data["ID"]}:')
+        # self.logDebug(f'Creating a container with ID {data["ID"]}:')
         new_container = Container(data)
 
-        if self.data_was_loaded == True:
+        if self.data_was_loaded == True or self.is_new_inventory:
             # Set the changes_made flag to True for saving purposes
             InventoryObject.changeMade()
         return new_container
@@ -83,45 +93,60 @@ class InventoryHandler():
             self.logDebug(f'{InventoryObject.objs[ID].description} has grid: {InventoryObject.objs[ID].grid}')
 
     def loadData(self):
-        '''Load the user's data'''
-
+        '''Load the user's data from any non-encrypted save file.  Changes
+           self._inventory'''
         if self.data_was_loaded == True:
             return
 
-        self.logDebug(self.user_file)
+        self.logDebug(f'Loading {self.user_file}')
 
         # Catch errors if the file doesn't exist
         try:
-            self.logDebug(f'Attempting to load from the save file')
             # Open the file in read mode with utf-8 encoding
             with open(self.user_file, 'r', encoding='utf-8') as f:
                 # Load the data as a dictionary
-                inventory = json.load(f)
-                self.logInfo(f'loaded data:\n{json.dumps(inventory, indent=4)}')
+                self._inventory = json.load(f)
+                # self.logInfo(f'loaded data:\n{json.dumps(inventory, indent=4)}')
 
         except FileNotFoundError:
             try:
                 with open(self.settings['save file path'] + self.user_file) as f:
                     # Load the data as a dictionary
-                    inventory = json.load(f)
-                    self.logDebug(f'loaded data:\n{json.dumps(inventory, indent=4)}')
+                    self._inventory = json.load(f)
+                    # self.logDebug(f'loaded data:\n{json.dumps(inventory, indent=4)}')
             except FileNotFoundError:
                 # If the load data is None, set the data to its default
-                self.logError(f'File not found')
-                inventory = {
-                    'container': {},
-                    'thing': {}
-                }
-            except json.decoder.JSONDecodeError:
-                inventory = self.loadDataEncrypted(self.settings['save file path'] + self.user_file)
-                print(inventory)
+                self.logError(f'{self.user_file} not found')
+                # self._setupNewInventory()
 
-        except json.decoder.JSONDecodeError:
-            self.loadDataEncrypted(self.user_file)
+        if self._inventory == None:
+            return False
 
-        # Create the inventory objects with the loaded data
-        containers = inventory['container']
-        things = inventory['thing']
+        self._setupExistingInventory()
+
+    def loadDataEncrypted(self):
+        '''Load the user's data from an encrypted save file. Changes
+           self._inventory'''
+        returned_data = self.sec.decryptFile(self.user_file)
+        if returned_data == None:
+            return False
+        elif isinstance(returned_data, dict):
+            self._inventory = returned_data
+            self._setupExistingInventory()
+            self.user_file_en
+            return True
+        else:
+            self.logError(f'Was expecting False or dict type. Got: {isinstance(returned_data)}')
+            return False
+
+    def _setupNewInventory(self):
+        '''Create a new inventory'''
+        self._inventory = {'container': {}, 'thing': {} }
+
+    def _setupExistingInventory(self):
+        '''Use the loaded data to create the inventory data and objects'''
+        containers = self._inventory['container']
+        things = self._inventory['thing']
 
         for key in containers:
             containers[key]['ID'] = int(key)
@@ -139,14 +164,18 @@ class InventoryHandler():
 
         # Reset the InventoryObject._changes_made attribute to False to avoid saving the same data
         InventoryObject.resetChangeMade()
-        InventoryObject.checkLoad()
+        # InventoryObject.checkLoad()
 
-    def loadDataEncrypted(self, file):
-        if self.user_file[0:2] == 'e_':
-            self.logInfo(f'{file} is encrypted')
-            return self._sec.decryptFile(file)
+    def start(self, file_name, encrypted=False):
+        self.user_file = file_name
 
+        if encrypted == False:
+            self.loadData()
+        else:
+            if self.loadDataEncrypted() == False:
+                return False
 
+        self.createUserScreens()
 
     def restart(self):
         '''Reset the app to the load file screen. Save user data to disk and remove data from memory'''
@@ -231,6 +260,8 @@ class InventoryHandler():
     def _cleanup(self):
         '''Remove the inventory that was loaded previously'''
         self.user_file = None
+        self.is_new_inventory = False
+        self.sec.reset()
         InventoryObject.cleanup()
         Container.cleanup()
         Thing.cleanup()
@@ -240,21 +271,33 @@ class InventoryHandler():
            self.sm.remove_widget(self.sm.screens[0])
 
         self.data_was_loaded = False
+        self.user_file_en = False
         InventoryObject.resetChangeMade()
 
     def _saveData(self):
         '''Save data if necessary'''
 
         if self.inventoryobject.wasChangeMade() == True:
-            self.logDebug('Changes were made. Getting data to save')
+            self.logDebug('Changes were made. Getting save data')
             data = InventoryObject.getSaveData()
-            self.logDebug('Saving the JSON data to the save file')
-            # Open the save file and write json data to the file
+
+            self.logDebug('Saving JSON data to file')
+
+            # Add necessary file naming conventions
+            if self.user_file_en == True:
+                if self.user_file[0:2] != 'e.':
+                    self.user_file = 'e.' + self.user_file
             if '.inventory' not in self.user_file:
                 self.user_file += '.inventory'
             if self.settings['save file path'] not in self.user_file:
                 self.user_file = self.settings['save file path'] + self.user_file
-            with open(self.user_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
+
+            # If the file is encrypted save it encrypted
+            if self.user_file_en == True:
+                self.sec.encryptFile(self.user_file, data)
+            # If the file isn't encrypted save it without encryption
+            else:
+                with open(self.user_file, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
         else:
             self.logInfo('No changes made. Skipping save')

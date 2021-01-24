@@ -130,29 +130,40 @@ class InventoryObject():
             raise TypeError(f'Was expecting type str, int, or float for weight. Got {type(weight)}')
 
     def addTags(self, tags):
-        '''Take a string or list of tags and adds them to self.tags as a list'''
-        # Combine the list of tags
+        '''Takes tags of string, list, or set type and change self.tags accordingly'''
         if isinstance(tags, list):
+            Logger.debug("Tags was a list")
             tags = set(tags)
-            self.tags = tags | self.tags  # Combine the elements of each set into one set
-            self._setTagSearchString()
-            InventoryObject.changeMade()
+            if self._tagsWereChanged(tags):
+                self._addTags(tags)
+
         elif isinstance(tags, set):
-            self.tags = tags | self.tags  # Combine the elements of each set into one set
-            self._setTagSearchString()
-            InventoryObject.changeMade()
+            Logger.debug('Tags was a set')
+            if self._tagsWereChanged(tags):
+                self._addTags(tags)
+
         # Turn the string into a list of tags and combine it with tags
         elif isinstance(tags, str) and tags != '':
             tags = self._fixTags(tags)
-            self.tags = tags | self.tags  # Combine the elements of each set into one set
-            self._setTagSearchString()
-            InventoryObject.changeMade()
+            if self._tagsWereChanged(tags):
+                self._addTags(tags)
 
         elif tags == '':
             pass
-
         else:
-            raise ValueError(f'addTags received wrong type: {type(tags)}')
+            Logger.warning(f'addTags received wrong type: {type(tags)}')
+
+    def _addTags(self, tags):
+        '''Add the tags to self.tags and set the changes_made flag to True'''
+        self.tags = tags
+        self._setTagSearchString()
+        InventoryObject.changeMade()
+
+    def _tagsWereChanged(self, tags):
+        if self.tags == tags:
+            return False
+        else:
+            return True
 
     def delete(self):
         '''Remove the widget and delete the instance from the InventoryObject.objs dict'''

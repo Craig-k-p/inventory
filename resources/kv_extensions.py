@@ -62,10 +62,10 @@ class KivyExtensions():
             -Unload the file to avoid errors'''
 
         # Load the popup content from file and create an instance of PopupContent
-        Builder.load_file(self.kv_settings['kv popup file'])
+        Builder.load_file(self.settings['kv popup file'])
 
-        popup_size_hint = self.kv_settings['popup size_hint']
-        popup_size = self.kv_settings['popup size']
+        popup_size_hint = self.settings['popup size_hint']
+        popup_size = self.settings['popup size']
 
         try:
             selected = self.selection.get(suppress=True).getObj()
@@ -117,7 +117,7 @@ class KivyExtensions():
         else:
             self.logWarning('move, merge, and warn flags are all False. Returning.')
             # Make sure the file isn't loaded more than once
-            Builder.unload_file(self.kv_settings['kv popup file'])
+            Builder.unload_file(self.settings['kv popup file'])
             return
 
         # Create the popup, assign the title, content, etc
@@ -128,7 +128,7 @@ class KivyExtensions():
                          content=popup_content,
                          size_hint=popup_size_hint,
                          size=popup_size,
-                         auto_dismiss=self.kv_settings['popup auto_dismiss'],
+                         auto_dismiss=self.settings['popup auto_dismiss'],
                          )
 
         # Open the popup
@@ -141,7 +141,7 @@ class KivyExtensions():
             popup_content.fill(merge=True)
 
         # Make sure the file isn't loaded more than once
-        Builder.unload_file(self.kv_settings['kv popup file'])
+        Builder.unload_file(self.settings['kv popup file'])
 
     def createUserScreens(self):
         '''Create user screens after the user has been logged in to be sure the widgets are
@@ -152,7 +152,7 @@ class KivyExtensions():
 
     def containerPopup(self, screen=None, direction=None, container=None):
         # Load the popup content from file and create an instance of PopupContent
-        Builder.load_file(self.kv_settings['kv popup file'])
+        Builder.load_file(self.settings['kv popup file'])
 
         # Create an instance of PopupContainerContent found in popup.py and popups.kv
         popup_content = PopupContentContainer(container)
@@ -170,7 +170,7 @@ class KivyExtensions():
                          separator_height=2,
                          content=popup_content,
                          size_hint=(.9, .9),
-                         auto_dismiss=self.kv_settings['popup auto_dismiss'],
+                         auto_dismiss=self.settings['popup auto_dismiss'],
                          )
         # If a container was provided to edit..
         if container != None:
@@ -182,11 +182,11 @@ class KivyExtensions():
         self.pop.open()
 
         # Make sure the file isn't loaded more than once
-        Builder.unload_file(self.kv_settings['kv popup file'])
+        Builder.unload_file(self.settings['kv popup file'])
 
     def thingPopup(self, screen=None, direction=None, thing=None):
         # Load the popup content from file and create an instance of PopupContent
-        Builder.load_file(self.kv_settings['kv popup file'])
+        Builder.load_file(self.settings['kv popup file'])
 
         # Create an instance of PopupThingContent found in popup.py and popups.kv
         popup_content = PopupContentThing(thing)
@@ -203,7 +203,7 @@ class KivyExtensions():
                          title_size=24,
                          content=popup_content,
                          size_hint=(.9, .9),
-                         auto_dismiss=self.kv_settings['popup auto_dismiss'],
+                         auto_dismiss=self.settings['popup auto_dismiss'],
                          )
 
         # If a thing was provided to edit..
@@ -216,7 +216,7 @@ class KivyExtensions():
         self.pop.open()
 
         # Make sure the file isn't loaded more than once
-        Builder.unload_file(self.kv_settings['kv popup file'])
+        Builder.unload_file(self.settings['kv popup file'])
 
     def _clearPopupErrors(self):
         self.popup_errors = []

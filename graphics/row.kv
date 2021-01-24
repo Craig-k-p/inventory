@@ -175,3 +175,131 @@
             id: val_label
             size_hint: (None, 1)
             size: (self.texture_size[0]+15, self.texture_size[1])
+
+
+<ThingHeadingRow>:
+    rows: 1
+    id: heading_row
+    # Link the ids to the kv_datagrid.py
+    obj_label: obj_label
+    weight_label: weight_label
+    val_label: val_label
+
+    # Object heading
+    AnchorLayout:
+        anchor_x: 'left'
+        canvas:
+            Color:
+                rgba: app.settings['row heading color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: obj_label
+            text: 'Contents'
+            bold: True
+            color: app.settings['row heading text color']
+            # Allow parent layout to modify the x position of Label
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+25, self.texture_size[1])
+
+    # Weight heading
+    AnchorLayout:
+        # label: label
+        width: app.settings['weight_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
+        canvas:
+            Color:
+                rgba: app.settings['row heading color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: weight_label
+            text: 'Weight'
+            bold: True
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+20, self.texture_size[1])
+
+    # Value heading
+    AnchorLayout:
+        width: app.settings['val_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
+        canvas:
+            Color:
+                rgba: app.settings['row heading color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: val_label
+            text: 'Value'
+            bold: True
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+20, self.texture_size[1])
+
+
+
+
+<ThingDataRow>:
+    id: data_row
+    rows: 1
+    fields: [_thing_field, weight_lo, val_lo]
+    obj_label: obj_label
+    weight_label: weight_label
+    val_lo: val_lo
+    val_label: val_label
+
+    # Thing field
+    AnchorLayout:
+        id: _thing_field
+        anchor_x: 'left'
+        anchor_y: 'center'  # Has no effect if size_hint_y is 1
+        size_hint: (1, 1)
+        canvas:
+            Color:
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: obj_label
+            color: app.settings['text color']
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])
+
+    # Weight field
+    AnchorLayout:
+        id: weight_lo
+        width: app.settings['weight_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
+        canvas:
+            Color:
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: weight_label
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+20, self.texture_size[1])
+
+    # Value field
+    AnchorLayout:
+        id: val_lo
+        width: app.settings['val_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
+        canvas:
+            Color:
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: val_label
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])

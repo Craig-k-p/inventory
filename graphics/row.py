@@ -115,8 +115,6 @@ class ContainerHeadingRow(GridLayout, LogMethods):
 
 
 class ContainerDataRow(GridLayout, DataRow, LogMethods):
-
-    app = ObjectProperty(None)
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
@@ -186,7 +184,6 @@ class ThingDataRow(GridLayout, DataRow, LogMethods):
     obj_label = ObjectProperty(None)
     weight_label = ObjectProperty(None)
     val_label = ObjectProperty(None)
-    opt_button = ObjectProperty(None)
     selected = BooleanProperty(False)
 
     def __init__(self, inventory_object, **kwargs):

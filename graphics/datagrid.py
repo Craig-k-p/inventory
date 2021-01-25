@@ -1,41 +1,30 @@
-from kivy.uix.anchorlayout import AnchorLayout
+from json import dumps
+
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
-from kivy.graphics import Color, Rectangle
-from kivy.graphics.instructions import InstructionGroup
-from kivy.properties import ObjectProperty
 
 from resources.utilities import LogMethods
 from resources.inventoryobjects import Thing, Container, InventoryObject
 from graphics.row import ContainerHeadingRow, ContainerDataRow
 from graphics.row import ThingHeadingRow, ThingDataRow, DataRow
-from json import dumps
 
 
 class DataGrid(GridLayout, LogMethods):
-
     categories = ('container', 'thing')
-
-    # # Store the ContainerDataRow instances here
-    # dataRows = {'containers': {}, 'things': {}}
 
     def __init__(self, **kwargs):
         '''Creates the widgets in a user-defined manner'''
         # Init the parent, ScrollView
         super().__init__(**kwargs)
-        self.__initLog__(file_str='kv_DG.py', class_str='DataGrid')
+        self.__initLog__(file_str='datagrid.py', class_str='DataGrid')
 
         self.app = None
-
-        self.heading_color = None
-        self.row_1_color = None
-        self.row_2_color = None
 
         self.category = None
         self.clicked = None
 
     def __repr__(self):
-        s = f'<<{self.category} DataGrid>>'
+        s = f'<{self.category} DataGrid>'
         return s
 
     def on_touch_down(self, touch):
@@ -113,6 +102,16 @@ class DataGrid(GridLayout, LogMethods):
             selection.delete()
 
     def fillUserData(self, app):
+        '''Populate the data rows with user data during application startup'''
+        self.logDebug(f'Filling the {self.category} DataGrid with objects')
+
+        # Get access to the application instance
+        if self.app == None:
+            self.app = app
+
+        InventoryObject.updateWidgets(self)
+
+    def fillUserData2(self, app):
         '''Populate the data rows with user data during application startup'''
         self.logDebug(f'Filling the {self.category} DataGrid with objects')
 

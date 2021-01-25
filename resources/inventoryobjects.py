@@ -424,7 +424,7 @@ class Thing(InventoryObject, LogMethods):
         '''Delete the thing object specifically when the container is deleting its
            contents'''
         container = self.container
-        self.container = None
+        # self.container = None
         del Thing.objs[self.ID]
         super(Thing, self).delete()
 
@@ -459,7 +459,6 @@ class Thing(InventoryObject, LogMethods):
         else:
             self.logWarning(f'destination was the wrong type. Got {type(destination)}')
         self.logDebug(f'Moved {self} to container {destination}')
-
 
     def updateWidget(self, data_grid=None):
         '''Make sure the widget has a Datadata_grid assigned and the widget category matches the
@@ -509,6 +508,8 @@ class Container(InventoryObject, LogMethods):
     def __init__(self, kwargs):
         '''Create a container instance, call the parent class __init__ and assign its
            attributes'''
+        super(Container, self).__init__(**kwargs)
+        self.__initLog__(file_str='inventoryobjects.py', class_str='Container')
 
         # If this is a file-loaded container
         if 'things' in kwargs.keys():
@@ -522,14 +523,8 @@ class Container(InventoryObject, LogMethods):
         else:
             self.contents = []
 
-        self.screen = InventoryScreen(name=self.ID)
-
-        self.logDebug(self.screen)
-
-
-        # Call the parent __init__ method to assign attributes and init the log
-        super(Container, self).__init__(**kwargs)
-        self.__initLog__(file_str='inventoryobjects.py', class_str='Container')
+        # Create the object's screen
+        self.screen = InventoryScreen(self, name=str(self.ID))
 
         # Add the instance to the Container.objs dict and set the category of the object
         Container.objs[self.ID] = self
@@ -580,7 +575,7 @@ class Container(InventoryObject, LogMethods):
         super(Container, self).delete()
 
     def _checkSearchTags(self):
-        '''Searches all tags for a match to the search term'''
+        '''Searches tags for a match to the search term'''
 
         # Join all tags into one string, using a newline between each tag
         tag_str = '\n'.join(self.tags)
@@ -600,10 +595,6 @@ class Container(InventoryObject, LogMethods):
             else:
                 return False
 
-    def contentChanged(self):
-        '''Set the self.content_changed flag to True'''
-        self.content_changed = True
-
     def contains(self, thing):
         '''Check if a specific Thing or ID is in the Container and return True or False'''
         if isinstance(thing, (int, str)):
@@ -622,6 +613,10 @@ class Container(InventoryObject, LogMethods):
                 return False
         else:
             raise TypeError(f'Type {type(thing)} not valid. Must be int or str')
+
+    def contentChanged(self):
+        '''Set the self.content_changed flag to True'''
+        self.content_changed = True
 
     def getValue(self):
         '''Return the total value of the container and its contents'''

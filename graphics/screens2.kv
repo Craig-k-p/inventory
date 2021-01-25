@@ -3,12 +3,12 @@
 #: include graphics/datagrid.kv
 
 
-<AccountOverviewScreen>:
-    name: 'containers'
+<InventoryOverviewScreen>:
+    name: 'inventory overview'
+    default_inventory_screen: default_inventory_screen
     # Pass these back to the class variable definitions that = ObjectProperty(None)
     toolbar: toolbar
     parent_layout: parent_layout
-    data_grid: data_grid
     app: app
 
     BoxLayout:
@@ -20,39 +20,18 @@
         Toolbar:
             id: toolbar
 
-        ScrollView:
-            id: scroll_view
-            DataGrid:
-                id: data_grid
+        InventoryScreenManager:
+            id: default_inventory_screen
 
-
-<ContainerOverviewScreen>:
-    name: 'contents'
-    # Pass these back to the class variable definitions that = ObjectProperty(None)
-    toolbar: toolbar
-    parent_layout: parent_layout
-    data_grid: data_grid
-    app: app
-
-    BoxLayout:
-        # Allows the ScreenManager instance to refer to this screen
-        id: parent_layout
-        orientation: 'vertical'
-
-        # Toolbar goes on top
-        Toolbar:
-            id: toolbar
-
-        ScrollView:
-            id: scroll_view
-            DataGrid:
-                id: data_grid
 
 <InventoryScreen>:  # Screen inheritance found in screens.py
     data_grid: data_grid
     app: app
 
     ScrollView:
+        bar_width: 20  # Make sure users know they can scroll
+        # Allow using the bar or click and drag to scroll
+        scroll_type: ['bars', 'content']
         DataGrid:
             id: data_grid
 

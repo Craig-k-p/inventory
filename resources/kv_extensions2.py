@@ -4,51 +4,52 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 
-from resources.inventoryobjects import InventoryObject
-from graphics.row import ContainerDataRow, ThingDataRow
-from graphics.popups import PopupContentThing, PopupContentContainer, PopupContentStats
-from graphics.popups import PopupContentError, PopupContentList, PopupContentWarningDelete
-from graphics.popups import PopupContentCreatePassword, PopupContentPassword
-from graphics.screens import AccountOverviewScreen, ContainerOverviewScreen
-from resources.inventoryobjects import Thing, Container
+from resources.inventory import Inventory
+from graphics.row2 import ContainerDataRow, ThingDataRow
+from graphics.popups2 import PopupContentThing, PopupContentContainer, PopupContentStats
+from graphics.popups2 import PopupContentError, PopupContentList, PopupContentWarningDelete
+from graphics.popups2 import PopupContentCreatePassword, PopupContentPassword
+from graphics.screens2 import AccountOverviewScreen, ContainerOverviewScreen
 
 
 class KivyExtensions():
     '''Used to separate the Kivy graphics methods needed in MyInventoryApp
-       from the IO methods'''
+       from the methods handling the data'''
 
-    def closePopup(self, popup_content, object_class_str):
+    def closePopup(self, popup_content):
         if popup_content.inventory_object == None:
-            self.createInventoryObject(object_class_str, popup_content)
+            self.createInventory(popup_content)
         else:
-            self.updateObjectData(popup_content, object_class_str)
+            self.updateObjectData(popup_content)
 
         self.pop.dismiss()
 
     def changeScreen(self, screen):
-        '''Change to a screen using direction.  Make sure the screen does not need
-        authentication'''
+        '''Change to a screen using direction'''
+        if isinstance(screen, int):
+            screen = str(screen)
+            self.logDebug('Changed screen from int to str')
+
         if screen == 'back':
-            InventoryObject.search_term = ''
-            if self.sm.current_screen.name == 'containers':
+            Inventory.search_term = ''
+            if self.sm.current_screen.name == 'inventory':
                 self.sm.current = 'load file'
                 self.restart()
             elif self.sm.current_screen.name == 'contents':
-                self.sm.current = 'containers'
+                self.sm.current = screen
                 #  Update the selected object to match the current screen
-                self.selection(self.selection.getLastContainer().getObj())
+                self.selection(self.selection.getLast().getObj())
                 # Update visible inventory
-                InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
+                Inventory.updateWidgets(self.sm.current_screen.data_grid)
         else:
             try:
                 self.sm.current_screen.resetTextInputs()
             except AttributeError:
                 pass
             self.sm.current = screen
-
             try:
                 # Update visible inventory widgets
-                InventoryObject.updateWidgets(self.sm.current_screen.data_grid)
+                Inventory.updateWidgets(self.sm.current_screen.data_grid)
             except AttributeError:
                 pass
 
@@ -73,15 +74,7 @@ class KivyExtensions():
 
         if move == True:
             pop_title = f'Move {selected.description}'
-            if isinstance(selected, Thing):
-                pop_title += f' from {self.selection.getLastContainer().getObj().description} to..'
-                self.logDebug(f'Popup title assigned for thing')
-            elif isinstance(selected, Container):
-                Builder.unload_file(self.settings['kv popup file'])
-                return
-            else:
-                self.logWarning(f'Selection is wrong type ({type(selected)}) to move')
-                return
+            pop_title += f' from {Inventory.getByID(selected.container).description} to..'
             popup_content = PopupContentList(self)
 
         elif merge == True:
@@ -145,9 +138,8 @@ class KivyExtensions():
     def createUserScreens(self):
         '''Create user screens after the user has been logged in to be sure the widgets are
         able to get the information they need!'''
-        self.sm.add_widget(AccountOverviewScreen(self))
-        self.sm.add_widget(ContainerOverviewScreen(self))
-        self.sm.current = 'containers'
+        self.sm.add_widget(InventoryOverviewScreen(self))
+        self.sm.current = 'inventory'
 
     def containerPopup(self, screen=None, direction=None, container=None):
         # Load the popup content from file and create an instance of PopupContent
@@ -174,41 +166,7 @@ class KivyExtensions():
         # If a container was provided to edit..
         if container != None:
             # Set the text input fields to match the saved values
-            popup_content.setContainerValues()
-
-        # Open the popup
-        self.logDebug('Opening the popup..')
-        self.pop.open()
-
-        # Make sure the file isn't loaded more than once
-        Builder.unload_file(self.settings['kv popup file'])
-
-    def thingPopup(self, screen=None, direction=None, thing=None):
-        # Load the popup content from file and create an instance of PopupContent
-        Builder.load_file(self.settings['kv popup file'])
-
-        # Create an instance of PopupThingContent found in popup.py and popups.kv
-        popup_content = PopupContentThing(thing)
-
-        # If a thing was provided, this is an edit
-        if thing != None:
-            pop_title = f'Edit {self.selection.get(suppress=True).getObj().description}'
-        else:
-            pop_title = 'Add item to container'
-
-        # Create the popup, assign the title, content, etc
-        # auto_dismiss prevents clicking outside of the popup to close the popup
-        self.pop = Popup(title=pop_title,
-                         title_size=24,
-                         content=popup_content,
-                         size_hint=(.9, .9),
-                         auto_dismiss=self.settings['popup auto_dismiss'],
-                         )
-
-        # If a thing was provided to edit..
-        if thing != None:
-            # Set the text input fields to match the saved values
-            popup_content.setThingValues()
+            popup_content.setInventoryValues()
 
         # Open the popup
         self.logDebug('Opening the popup..')
@@ -250,11 +208,9 @@ class KivyExtensions():
             return None
 
     def _getObjectCreationUserInput(self, popup_content):
-        '''Get user input text from popup fields for container and object creation
+        '''Get user input text from popup fields for inventory creation
            Takes popup_content instance as an argument to access the TextInput instances
-           Returns kwargs without empty values
-           kwargs keys must match MongoEngine.Documents' Thing or Container attributes
-             since it is being passed directly for instantiation'''
+           Returns kwargs without empty values'''
 
         # Key-word argument dictionary
         data = {}

@@ -17,8 +17,8 @@ class Toolbar(BoxLayout, LogMethods):
         self.__initLog__(file_str=__file__, class_str='Toolbar')
 
         # Import locally to avoid circular import
-        from resources.inventoryobjects import Container
-        self.container_class = Container
+        from resources.inventory import Inventory
+        self.inventory_class = Inventory
 
         self.options = None
 
@@ -27,11 +27,8 @@ class Toolbar(BoxLayout, LogMethods):
         self.logDebug(f'Current screen found to be: {self.app.sm.current}')
 
         if create_inventory == True:
-            self.logDebug(f'Opening the appropriate create item popup')
-            if self.app.sm.current == 'contents':
-                self.app.thingPopup()
-            elif self.app.sm.current == 'containers':
-                self.app.containerPopup()
+            self.logDebug(f'Opening inventoryPopup')
+            self.app.inventoryPopup()
 
         elif get_stats == True:
             self.logDebug(f'Opening a stats popup')
@@ -44,10 +41,7 @@ class Toolbar(BoxLayout, LogMethods):
 
     def editObject(self):
         '''Open a popup to edit the selected object'''
-        if self.app.sm.current == 'contents':
-            self.app.thingPopup(thing=self.app.selection.get(suppress=True).getObj())
-        elif self.app.sm.current == 'containers':
-            self.app.containerPopup(container=self.app.selection.get(suppress=True).getObj())
+        self.app.inventoryPopup(inventory=self.app.selection.get(suppress=True).getObj())
 
     def mergeObject(self):
         '''Merge the contents of this container with another'''
@@ -121,10 +115,8 @@ class Toolbar(BoxLayout, LogMethods):
                     self.toolbar_right.add_widget(widget, index=-1)
             # Add a special option for containers
             if self.option_merge not in self.toolbar_right.children:
-                if isinstance(selection, self.container_class):
+                if selection.hasContents():
                     self.toolbar_right.add_widget(self.option_merge, index=-1)
-
-            self.options_drawn = True
 
         # If an object isn't selected
         else:
@@ -138,5 +130,3 @@ class Toolbar(BoxLayout, LogMethods):
             # Remove the merge button
             if self.option_merge in self.toolbar_right.children:
                 self.toolbar_right.remove_widget(self.option_merge)
-
-            self.options_drawn = False

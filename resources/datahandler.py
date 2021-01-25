@@ -18,6 +18,8 @@ class DataHandler():
         # self.logDebug(f'Creating a container with ID {data["ID"]}:')
         new_container = Container(data)
 
+        self.logDebug(new_container.screen)
+
         if self.data_was_loaded == True or self.is_new_inventory:
             # Set the changes_made flag to True for saving purposes
             InventoryObject.changeMade()

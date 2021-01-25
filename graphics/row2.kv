@@ -1,0 +1,138 @@
+<Label>:
+    font_size: 18
+
+<HeadingRow>:
+    rows: 1
+    id: heading_row
+    # Link the ids to the kv_datagrid.py
+    item: item
+    weight: weight
+    value: value
+
+    # Object heading
+    AnchorLayout:
+        anchor_x: 'left'
+        size_hint: (1, 1)
+        canvas:
+            Color:
+                rgba: app.settings['row heading color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: item
+            text: 'Inventory'
+            bold: True
+            color: app.settings['row heading text color']
+            # This prevents the Label from taking up the whole width of the screen and subsequently
+            # centering the text
+            # size_hint_x: None allows the AnchorLayout to allign this widget along the x axis
+            # (left, center, right)
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])
+
+    # Weight heading
+    AnchorLayout:
+        width: app.settings['weight_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
+        canvas:
+            Color:
+                rgba: app.settings['row heading color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: weight
+            # This prevents the Label from taking up the whole width of the screen and subsequently
+            # centering the text
+            text: 'Weight'
+            bold: True
+            # Allows anchoring to the sides
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])
+
+    # Value heading
+    AnchorLayout:
+        width: app.settings['val_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
+        canvas:
+            Color:
+                rgba: app.settings['row heading color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: value
+            # This prevents the Label from taking up the whole width of the screen and subsequently
+            # centering the text.  Allows anchoring to the sides
+            text: 'Value'
+            bold: True
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+20, self.texture_size[1])
+
+
+<DataRow>:
+    id: data_row
+    rows: 1
+    obj_label: obj_label
+    weight: weight
+    val_lo: val_lo
+    value: value
+
+    # Object field
+    AnchorLayout:
+        # AnchorLayout allows me to allign text to one side or the other of it's field
+        anchor_x: 'left'
+        anchor_y: 'center'  # Has no effect if size_hint_y is 1
+        size_hint: (1, 1)
+        canvas:
+            Color:
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: obj_label
+            color: app.settings['text color']
+            # This prevents the Label from taking up the whole width of the screen and
+            # subsequently centering the text
+            # size_hint_x: None allows the AnchorLayout to allign this widget along the
+            # x axis (left, center, right)
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])
+
+    # Weight field
+    AnchorLayout:
+        id: weight_lo
+        width: app.settings['weight_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)  # Allows setting the width of layout
+        canvas:
+            Color:
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: weight
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])
+
+    # Value field
+    AnchorLayout:
+        id: val_lo
+        width: app.settings['val_col_width']
+        anchor_x: 'right'
+        size_hint: (None, 1)
+        canvas:
+            Color:
+                rgba: app.settings['row selected color'] if data_row.selected else app.settings['row color']
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            id: value
+            size_hint: (None, 1)
+            size: (self.texture_size[0]+15, self.texture_size[1])

@@ -132,10 +132,29 @@ class InventoryScreenManager(ScreenManager, LogMethods):
     def __init__(self, **kwargs):
         super(InventoryScreenManager, self).__init__(**kwargs)
         self.__initLog__(file_str='screens.py', class_str='InventoryScreenManager')
+        self.toolbar.search.bind(text=app.inventoryobject.applySearch)
 
 
-class AccountOverviewScreen(Screen, LogMethods):
+class InventoryScreen(Screen, LogMethods):
+    '''Overview of all containers in the user's inventory'''
+    parent_layout = ObjectProperty(None)
+    data_grid = ObjectProperty(None)
+    app = ObjectProperty(None)
 
+    def __init__(self, inventory_object, **kwargs):
+        super(InventoryScreen, self).__init__(**kwargs)
+        self.invobj = inventory_object
+        self.__initLog__(file_str='screens.py', class_str='InventoryScreen')
+
+        # Fill the user data into rows
+        # self.data_grid2.fillUserData(self.app)
+
+    # def __repr__(self):
+    #     return f'<InventoryScreen object of {self.invobj}>'
+
+
+class InventoryOverviewScreen(Screen, LogMethods):
+    default_inventory_screen = ObjectProperty(None)
     parent_layout = ObjectProperty(None)
     data_grid = ObjectProperty(None)
     app = ObjectProperty(None)
@@ -145,34 +164,6 @@ class AccountOverviewScreen(Screen, LogMethods):
         # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
         super(AccountOverviewScreen, self).__init__(**kwargs)
         self.app = app
-        self.__initLog__(file_str='screens.py', class_str='AccountOverviewScreen')
+        self.__initLog__(file_str='screens.py', class_str='InventoryOverviewScreen')
 
-        # Make sure the data_grid knows what format to follow
-        self.data_grid.setDataGridObjectType('container')
-
-        # Fill the user data into rows
-        self.data_grid.fillUserData(self.app)
-
-        self.toolbar.search.bind(text=app.inventoryobject.applySearch)
-
-
-class ContainerOverviewScreen(Screen, LogMethods):
-    '''Overview of all containers in the user's inventory'''
-
-    parent_layout = ObjectProperty(None)
-    data_grid = ObjectProperty(None)
-    app = ObjectProperty(None)
-
-    def __init__(self, app, **kwargs):
-        # Allows us to call our own AccountOverviewScreen.__init__() without overriding Kivy's Screen.__init__()
-        super(ContainerOverviewScreen, self).__init__(**kwargs)
-        # self.app = app
-        self.__initLog__(file_str='screens.py', class_str='ContainerOverviewScreen')
-
-        # Make sure the data_grid knows what format to follow
-        self.data_grid.setDataGridObjectType('thing')
-
-        # Fill the user data into rows
-        self.data_grid.fillUserData(self.app)
-
-        self.toolbar.search.bind(text=app.inventoryobject.applySearch)
+        self.toolbar.search.bind(text=app.inventory.applySearch)

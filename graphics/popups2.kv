@@ -1,0 +1,406 @@
+#: include graphics/screens.kv
+
+<AllignLayout@AnchorLayout>:
+    size_hint: (1, 1)
+    anchor_x: 'left'
+    anchor_y: 'bottom'
+
+
+<MoveButton>:
+    color: app.settings['text color']
+    size_hint: (None, None)
+    size: (250, 50)
+    background_normal: ''
+    background_color: (.79, .73, .51, 1)
+    font_size: '22sp'
+    bold: True
+    color: (0,0,0,1)
+
+
+<PasswordInput@AnchorLayout>:
+    text: text_input.text
+    text_input: text_input
+    h_text: None
+    in_focus: False
+    anchor_x: 'center'
+    anchor_y: 'center'
+    bg: (0,0,0,0)
+    TextInput:
+        id: text_input
+        hint_text: 'Type your password' if self.parent.h_text == None else self.parent.h_text
+        focus: True if self.parent.in_focus == True else False
+        size_hint: (None, None)
+        size: (300, 38)
+        password: True
+        password_mask: '*'
+        font_size: 22
+
+
+<PopLabel>:
+    bold: True
+    color: app.settings['text color']
+    # This prevents the Label from taking up the whole width of the screen and subsequently centering the text
+    # Allows the AnchorLayout to allign this widget along the x axis (left, center, right)
+    size_hint: (None, None)
+    font_size: 22
+    size: (self.texture_size[0]+10, self.texture_size[1])
+
+
+<PopInput>:
+    hint_text: 'required'
+    color: app.settings['text color']
+    # Python way: Use on_focus and on_error to call self.setBackground
+    background_color: (.8,.8,1,1) if self.focus else ((1,.8,.8,1) if self.error else (1,1,1,1))
+    size_hint: (.9, None)
+    height: self.minimum_height
+    multiline: False
+    font_size: 22
+    error: False
+
+
+<PopButton>:
+    color: app.settings['text color']
+    size_hint: (1, 1)
+    font_size: 22
+
+
+<PopPairGrid@GridLayout>:
+    size_hint: (1, 1)
+    cols: 1
+    spacing: 10
+
+
+<PopupContentError>:  # GridLayout inheritance - popups.py
+    size_hint: (1, 1)
+    padding: 20
+    spacing: 15
+    cols: 1
+    app: app
+
+
+<PopupContentInventory>:  # Scrollview inheritance
+    description: description
+    usd_value: usd_value
+    weight: weight
+    tags: tags
+    app: app
+    submit_button: submit_button
+
+    id: popup_content
+    size_hint: (1, 1)
+
+    GridLayout:
+        cols: 1
+        size_hint: (1, 1)
+        padding: 10
+        spacing: 10
+        # Allow ScrollView to scroll (next two lines)
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: 90
+        row_force_default: True
+        padding: 20
+        spacing: 20
+
+        PopPairGrid:
+            cols: 1
+            size_hint: (1, 1)
+            AllignLayout:
+                PopLabel:
+                    text: 'Description:'
+            PopInput:
+                focus: True
+                id: description
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Value (USD):'
+            PopInput:
+                id: usd_value
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Empty weight (lbs):'
+            PopInput:
+                id: weight
+
+        PopPairGrid:
+            AllignLayout:
+                PopLabel:
+                    text: 'Descriptive, searchable tags:'
+            PopInput:
+                id: tags
+                hint_text: 'Use underscores to connect multi-word tags'
+
+        PopPairGrid:
+            cols: 2
+            size_hint: (1, None)
+            AnchorLayout:
+                anchor_x: 'left'
+                anchor_y: 'center'
+                size_hint: (.5, 1)
+                PopButton:
+                    text: 'Cancel'
+                    size_hint: (None, None)
+                    size: (180, 90)
+                    on_release:
+                        app.pop.dismiss()
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'center'
+                size_hint: (.5, 1)
+                PopButton:
+                    id: submit_button
+                    size_hint: (None, None)
+                    size: (180, 90)
+                    on_release:
+                        popup_content.checkFormat(popup_content=popup_content)
+
+# Makes the submit and cancel buttons for moving inventory
+<PopupContentMove>: # GridLayout inheritance
+    submit_button: submit_button
+    size_hint: (1, 1)
+    cols: 2
+    MoveButton:
+        size_hint: (.3, .3)
+        size: (120,70)
+        text: 'Cancel'
+        on_release: app.pop.dismiss()
+    MoveButton:
+        id: submit_button
+        size_hint: (.3, .3)
+        size: (120,70)
+        text: 'Submit'
+        on_release:
+            self.move()
+            app.pop.dismiss()
+
+<PopupContentWarningDelete>: # Scrollview inheritance
+    GridLayout:
+        cols: 1
+        size_hint: (1, 1)
+        padding: 10
+
+        GridLayout:
+            cols: 1
+            spacing: 10
+            padding: 20
+
+            AllignLayout:
+                anchor_x: 'center'
+                PopLabel:
+                    text: 'All contents will be deleted'
+            AllignLayout:
+                anchor_x: 'center'
+                PopLabel:
+                    text: 'Proceed?'
+
+        GridLayout:
+            rows: 1
+            padding: 20
+            spacing: 20
+            AllignLayout:
+                anchor_x: 'center'
+                PopButton:
+                    size_hint: (None, None)
+                    size: (120,70)
+                    text: 'Cancel'
+                    on_release: app.pop.dismiss()
+            AllignLayout:
+                anchor_x: 'center'
+                PopButton:
+                    size_hint: (None, None)
+                    size: (140,70)
+                    text: 'Delete it all'
+                    on_release:
+                        app.selection.get(suppress=True).getObj().delete()
+                        app.pop.dismiss()
+
+
+<PopupContentList>:  # ScrollView inheritance - popups.py
+    pop_grid: pop_grid
+    size_hint: (1, 1)
+    bar_width: 20  # Make sure users know they can scroll
+    # Allow using the bar or click and drag to scroll
+    scroll_type: ['bars', 'content']
+
+    GridLayout:
+        id: pop_grid
+        cols: 1
+        size_hint_x: 1
+        # Allow ScrollView to scroll
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: 75
+        row_force_default: True
+        spacing: 10
+
+# Makes the password inputs, cancel button, and submit button
+<PopupContentCreatePassword>: # GridLayout inheritance
+    id: pop
+    prompt: prompt
+    prompt_b: prompt_b
+    submit_button: submit_button
+    size_hint: (1, 1)
+    padding: 20
+    spacing: 15
+    cols: 1
+
+    GridLayout:
+        cols: 1
+        spacing: 10
+        CenterAnchorLayout:
+            Label:
+                text: 'Please write this down'
+                font_size: 20
+        CenterAnchorLayout:
+            Label:
+                text: 'There is NO recovery for lost passwords'
+                font_size: 20
+                bold: True
+                underline: True
+        CenterAnchorLayout:
+            Label:
+                text: 'Password must be 8 characters or longer'
+                font_size: 20
+
+    PasswordInput:
+        id: prompt
+        h_text: 'Type a new password'
+        in_focus: True
+    PasswordInput:
+        id: prompt_b
+        h_text: 'Retype password'
+
+    GridLayout:
+        size_hint: (1, 1)
+        cols: 2
+        CenterAnchorLayout:
+            MoveButton:
+                size_hint: (None, None)
+                size: (120,70)
+                text: 'Cancel'
+                on_release: app.pop.dismiss()
+        CenterAnchorLayout:
+            MoveButton:
+                id: submit_button
+                size_hint: (None, None)
+                size: (120,70)
+                text: 'Create'
+                on_release:
+                    pop.checkFormat()
+
+# Makes the password input, cancel button, and submit button
+<PopupContentPassword>: # GridLayout inheritance
+    # submit_button: submit_button
+    prompt: prompt
+    id: pop
+    size_hint: (1, 1)
+    padding: 20
+    spacing: 15
+    cols: 1
+
+    PasswordInput:
+        in_focus: True
+        id: prompt
+
+    GridLayout:
+        size_hint: (1, 1)
+        cols: 2
+        CenterAnchorLayout:
+            Button:
+                size_hint: (None, None)
+                size: (120,70)
+                text: 'Cancel'
+                on_release: app.pop.dismiss()
+        CenterAnchorLayout:
+            Button:
+                id: submit_button
+                size_hint: (None, None)
+                size: (120,70)
+                text: 'Submit'
+                on_release:
+                    pop.checkPassword()
+
+
+<PopupContentStats>: # GridLayout inheritance - popups.py
+    cols: 1
+    size_hint: (1, 1)
+    padding: 20
+    spacing: 40
+
+    GridLayout:
+        cols: 2
+        spacing: 10
+
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Containers:'
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(container_count=True)
+
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Total items:'
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(inventory_count=True)
+
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Total value:'
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(value=True)
+
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Total weight:'
+        AllignLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(weight=True)
+
+        AllignLayout:
+            size_hint: (1, 1)
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: 'Top tags:'
+        AllignLayout:
+            size_hint: (1, 1)
+            anchor_x: 'center'
+            anchor_y: 'top'
+            PopLabel:
+                text: app.getStat(tags=True)
+
+    GridLayout:
+        rows: 1
+        size_hint: (1, None)
+        height: 100
+        AllignLayout:
+            anchor_x: 'center'
+            PopButton:
+                size_hint: (None, None)
+                size: (100,70)
+                text: 'Close'
+                on_release: app.pop.dismiss()
+

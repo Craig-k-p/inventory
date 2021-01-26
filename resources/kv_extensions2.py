@@ -17,10 +17,10 @@ class KivyExtensions():
        from the methods handling the data'''
 
     def closePopup(self, popup_content):
-        if popup_content.inventory_object == None:
+        if popup_content.inventory == None:
             self.createInventory(popup_content)
         else:
-            self.updateObjectData(popup_content)
+            self.updateInventoryData(popup_content)
 
         self.pop.dismiss()
 
@@ -207,7 +207,7 @@ class KivyExtensions():
             self._clearPopupErrors()
             return None
 
-    def _getObjectCreationUserInput(self, popup_content):
+    def _getNewInventoryUserInput(self, popup_content):
         '''Get user input text from popup fields for inventory creation
            Takes popup_content instance as an argument to access the TextInput instances
            Returns kwargs without empty values'''

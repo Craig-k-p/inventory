@@ -27,7 +27,6 @@ class Inventory():
             usd_value=0,
             weight=0,
             tags='',
-            things=None,
             container=None,
             contents=[]
             ):
@@ -39,9 +38,9 @@ class Inventory():
            usd_value - int as string
            weight - int as string
            tags - single-word or multi-word (separated by _) tags separated by a space
-           things - None; to be replaced by contents
-           container -  None; holding container for this object'''
-        self.__initLog__(file_str='Inventorys.py', class_str='Thing')
+           container -  None; Inventory holding this object
+           contents - Inventory that this Inventory instance holds'''
+        self.__initLog__(file_str='inventory.py', class_str='Inventory')
         self.ID = ID
         self._description = description
         self._usd_value = usd_value
@@ -96,7 +95,7 @@ class Inventory():
         if self.hasContents():
             usd_value = float(self.usd_value)
             for ID in self.contents:
-                usd_value += float(InventoryObject.getByID(ID).usd_value)
+                usd_value += float(Inventory.getByID(ID).usd_value)
             return int(usd_value)
         else:
             return self._usd_value
@@ -124,7 +123,7 @@ class Inventory():
         if self.hasContents():
             weight = float(self.weight)
             for ID in self.contents:
-                weight += float(InventoryObject.getByID(ID).weight)
+                weight += float(Inventory.getByID(ID).weight)
             return weight
         else:
             return self._weight
@@ -189,21 +188,22 @@ class Inventory():
     def contains(self, content):
         '''Check if Inventory is in the Container and return True or False'''
         if isinstance(content, (int, str)):
-            if str(thing) in self.things or int(thing) in self.things:
+            if str(content) in self.contents or int(content) in self.contents:
                 # self.logDebug(f'{self.description} contains {content} in {self.contents}')
                 return True
             else:
                 # self.logDebug(f'{self.description} doesn\'t contain {content} in {self.contents}')
                 return False
         elif isinstance(content, Inventory):
-            if str(content.ID) in self.things:
+            if str(content.ID) in self.contents:
                 # self.logDebug(f'{self.description} contains {content} in {self.contents}')
                 return True
             else:
                 # self.logDebug(f'{self.description} doesn\'t contain {content} in {self.contents}')
                 return False
         else:
-            raise TypeError(f'Type {type(thing)} not valid. Must be int or str')
+            self.logError(f'Receieved wrong type for content. Got: {type(content)}')
+            return False
 
     def contentChanged(self):
         '''Set the self.content_changed flag to True'''
@@ -272,29 +272,22 @@ class Inventory():
         else:
             return False
 
-    def inContainer(self):
-        '''Determine if this Thing is assigned to a Container'''
-        if self.container != None:
-            return True
-        else:
-            return False
-
     def merge(self, destination_id):
         '''Merge the contents of this container into another container. Accepts a destination
         container ID. The calling container instance will be deleted'''
 
-        destination = InventoryObject.getByID(destination_id)
+        destination = Inventory.getByID(destination_id)
 
         while len(self.contents) > 0:
             content_id = self.contents.pop()
 
-            content = InventoryObject.getByID(content_id)
-            dest = InventoryObject.getByID(destination_id)
+            content = Inventory.getByID(content_id)
+            dest = Inventory.getByID(destination_id)
 
             self.logDebug(f'Merging {content} into {dest}')
 
-            destination.addThing(content_id, merge=True)
-            InventoryObject.getByID(content_id).moveTo(destination.ID)
+            destination.addInventory(content_id, merge=True)
+            Inventory.getByID(content_id).moveTo(destination.ID)
 
         self.app.pop.dismiss()
 
@@ -310,16 +303,16 @@ class Inventory():
         self.logDebug(f'Moved {self} to container {destination}')
 
     def removeContent(self, content):
-        '''Remove the provided Thing object if it is inside the Container'''
+        '''Remove the provided Inventory if it is inside the Container'''
         if isinstance(content, (int, str)):
             if int(content) in self.contents:
-                InventoryObject.changeMade()
-                InventoryObject.getByID(content).container = None
+                Inventory.changeMade()
+                Inventory.getByID(content).container = None
                 self.contents.remove(int(content))
                 self.widget.assignValues()
             elif str(content) in self.contents:
-                InventoryObject.changeMade()
-                InventoryObject.getByID(content).container = None
+                Inventory.changeMade()
+                Inventory.getByID(content).container = None
                 self.contents.remove(str(content))
                 self.widget.assignValues()
             else:
@@ -353,7 +346,7 @@ class Inventory():
         if self.container == None:
             self.parent_widget = self.screen.parent_widget
 
-        # If the Thing has no parent_widget assigned and the category matches, assign it
+        # If the Inventory has no parent_widget assigned assign it
         if self.parent_widget == None and parent_widget != None:
             self.logDebug(f'parent_widget not found. Added parent_widget to {self.description}')
             self.parent_widget = parent_widget
@@ -405,15 +398,9 @@ class Inventory():
             self.undrawWidget()
 
         else:
-            if self.category == parent_widget.category:
-                self.drawWidget()
-            # Containers don't need to be filtered yet.  No need to undraw
-            elif self.category != parent_widget.category:
-                pass
-            else:
-                raise AttributeError('self.updateWidget was unable to resolve draw/undraw choice')
+            raise AttributeError('self.updateWidget was unable to resolve draw/undraw choice')
 
-            self.widget.setBounds()
+        self.widget.setBounds()
 
 
 
@@ -551,34 +538,26 @@ class Inventory():
     @classmethod
     def getSaveData(cls):
         '''Return a dictionary of json serializable data for saving to a file'''
-        data = {
-            'thing': {},
-            'container': {}
-        }
+        data = {}
+
         for ID in cls.objs:
             obj = cls.objs[ID]
 
-            # Save the things
-            if isinstance(obj, Thing):
-                d = data['thing']
-                d[ID] = {}
-                d[ID]['container'] = obj.container  # The container's ID
-
-            # Save the containers
-            elif isinstance(obj, Container):
-                d = data['container']
-                d[ID] = {}
-                d[ID]['things'] = list(obj.things)
+            # Save the Inventory
+            if isinstance(obj, Inventory):
+                data[ID] = {}
+                data[ID]['container'] = obj.container  # The container's ID
+                data[ID]['contents'] = list(obj.contents)
 
             else:
-                Logger.critical(
-                    ':There is an unidentified object type in Inventory.objs'
+                Logger.warning(
+                    f':getSaveData found wrong object type in Inventory.objs: {type(obj)}'
                 )
 
-            d[ID]['description'] = obj.description
-            d[ID]['usd_value'] = obj.usd_value
-            d[ID]['weight'] = obj.weight
-            d[ID]['tags'] = list(obj.tags)
+            data[ID]['description'] = obj.description
+            data[ID]['usd_value'] = obj.usd_value
+            data[ID]['weight'] = obj.weight
+            data[ID]['tags'] = list(obj.tags)
 
         return data
 

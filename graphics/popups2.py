@@ -303,10 +303,10 @@ class PopupContentList(ScrollView, LogMethods):
     #                 # Add the button to the grid widget
     #                 self.pop_grid.add_widget(layout)
 
-        else:
-            log = f'The selected object was not an Inventory instance. Got {type(item_to_move)}'
-            self.logWarning(log)
-            self.app.pop.dismiss()
+        # else:
+        #     log = f'The selected object was not an Inventory instance. Got {type(item_to_move)}'
+        #     self.logWarning(log)
+        #     self.app.pop.dismiss()
 
 
 class PopupContentStats(GridLayout, LogMethods):

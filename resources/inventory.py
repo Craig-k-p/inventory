@@ -2,12 +2,13 @@ from json import dumps
 
 from kivy.logger import Logger
 
-from resources.utilities import LogMethods
+from graphics.row2 import DataRow
 from graphics.screens2 import InventoryScreen
+from resources.utilities import LogMethods
 
 
 
-class Inventory():
+class Inventory(LogMethods):
     '''Parent class for inventory objects with base methods and class methods
        that make managing the inventory easier'''
 
@@ -19,9 +20,11 @@ class Inventory():
     _changes_made = False   # Flag to determine whether a save is needed
                             #   It is very important that this is changed using
                             #   Inventory.changeMade(), not self.changeMade()
+    _need_parent_widget_assigned = []
 
     def __init__(
             self,
+            screen_manager,
             ID='0',
             description='A void Inventory instance',
             usd_value=0,
@@ -41,6 +44,7 @@ class Inventory():
            container -  None; Inventory holding this object
            contents - Inventory that this Inventory instance holds'''
         self.__initLog__(file_str='inventory.py', class_str='Inventory')
+        self.sm = screen_manager
         self.ID = ID
         self._description = description
         self._usd_value = usd_value
@@ -52,22 +56,37 @@ class Inventory():
         self.parent_widget = None  # The DataGrid instance
         self.popup_widget = None   # The Screen widget for selecting inventory
         self.content_changed = False
+        self.contents = contents
+        self._container = None
 
-        # Handle taking this from a loaded file with a saved container..
-        try:
-            self.container = kwargs['container']
-        # ..or as a newly created instance without one
-        except KeyError:
-            self.container = str(self.app.selection.getLastContainer().getObj().ID)
+        if container == None:
+            self.container = 0
+        else:
+            self.container = container
+        self.logDebug(self.container)
+        self.logDebug(type(self.container))
 
-        # Create the object's screen
-        self.screen = InventoryScreen(self, name=str(self.ID))
+        self._createWidgets()
 
         Inventory.objs[self.ID] = self
 
     def __repr__(self):
         s = f'<Inventory object {self.description} with ID {self.ID}>'
         return s
+
+    @property
+    def container(self):
+        return self._container
+
+    @container.setter
+    def container(self, container):
+        '''This is called when "self.container = 'an example str'" is used in code'''
+        container = str(container)
+        if self._container != container:
+            self._container = container
+            Inventory.changeMade()
+            self._setParentWidget(self.container)
+
 
     @property
     def description(self):
@@ -335,72 +354,27 @@ class Inventory():
             self.parent_widget.remove_widget(self.widget)
 
 
-
-
-    def updateWidget(self, parent_widget=None):
-        '''Make sure the widget has a parent_widget assigned. Add the parent_widget if necessary.
-           Check if the widget needs to be drawn and draw if necessary.'''
-
-        self.logDebug(f'{self.description} is checking for a parent_widget')
-
-        if self.container == None:
-            self.parent_widget = self.screen.parent_widget
-
-        # If the Inventory has no parent_widget assigned assign it
-        if self.parent_widget == None and parent_widget != None:
-            self.logDebug(f'parent_widget not found. Added parent_widget to {self.description}')
-            self.parent_widget = parent_widget
-
-        # If the widget doesn't match the search, undraw it
-        if self._checkSearch() == False:
-            self.undrawWidget()
-
-        else:
-            # Get the selection
-            selection = self.app.selection.get(suppress=True)
-
-            # If something is selected and...
-            # ...if the last selected container contains this object
-            if selection != None and \
-            self.app.selection.getLastContainer().getObj().contains(self) == True:
-                # Draw the widget
-                self.logDebug(f'Drawing widget for {self}')
-                self.drawWidget()
-
-            # If something is selected and...
-            # ...if the last selected container does not contain this object
-            elif selection != None and \
-            self.app.selection.getLastContainer().getObj().contains(self) == False:
-                # self.logDebug(f'Undrawing widget for {self}')
-                self.undrawWidget()
-
-            elif selection == None:
-                pass
-
-            else:
-                raise AttributeError('self.updateWidget was unable to resolve choice draw/undraw')
-
     def updateWidget(self, parent_widget=None):
         '''Make sure the widget has a parent_widget assigned and the widget category matches the
            parent_widget's. Add the parent_widget if necessary.  Check if the widget needs to be drawn and
            draw if necessary.'''
-        if self.content_changed == True:
-            self.widget.assignValues()
-            self.content_changed = False
 
-        # self.logDebug(f'{self.description} is checking for a parent_widget')
-        if self.parent_widget == None and parent_widget != None and self.category == parent_widget.category:
-            # self.logDebug(f'No parent_widget found. Added {parent_widget} to {self.description}')
-            self.parent_widget = parent_widget
+        self.logDebug('Updating widget')
 
-        # If the widget doesn't match the search, undraw it
-        if self._checkSearch() == False:
-            self.undrawWidget()
+        if self.parent_widget == parent_widget:
 
-        else:
-            raise AttributeError('self.updateWidget was unable to resolve draw/undraw choice')
+            if self.content_changed == True:
+                self.widget.assignValues()
+                self.content_changed = False
 
-        self.widget.setBounds()
+            # If the widget doesn't match the search, undraw it
+            if self._checkSearch() == False:
+                self.undrawWidget()
+
+            else:
+                self.drawWidget()
+
+            self.widget.setBounds()
 
 
 
@@ -461,6 +435,13 @@ class Inventory():
             else:
                 return False
 
+    def _createWidgets(self):
+        '''Create the screen and DataRow widgets for this object'''
+        # Create the object's screen if it has contents
+        self.widget = DataRow(self)
+        self.screen = InventoryScreen(name=str(self.ID))
+        self.sm.add_widget(self.screen)
+
     def _fixTags(self, tags):
         '''Turn the string of tags into a set of tags'''
 
@@ -469,6 +450,21 @@ class Inventory():
         tags = tags.lower()
         tags = set(tags.split(' '))
         return tags
+
+    def _setParentWidget(self, name):
+        '''Update the inventory's screen'''
+        # Double check that the screen exists before trying to get it prom the screen manager
+        self.logDebug('Setting parent widget')
+        if self.app.inventory_sm.has_screen(name):
+            self.parent_widget = self.app.inventory_sm.get_screen(name).data_grid
+            self.logDebug(f'Parent widget {self.parent_widget} assigned.')
+        elif self.app.inventory_sm.has_screen(str(name)):
+            self.parent_widget = self.app.inventory_sm.get_screen(str(name)).data_grid
+            self.logDebug(f'Parent widget {self.parent_widget} assigned.')
+        # If it doesn't exist, save the update for later
+        else:
+            self.logDebug('Parent widget NEEDED')
+            Inventory._need_parent_widget_assigned.append(self)
 
     def _setTagSearchString(self):
         '''Turn the set of tags into a searchable string'''
@@ -500,7 +496,7 @@ class Inventory():
         # Make sure a new search term was provided so we don't waste resources
         if search_term != cls.search_term:
             cls.search_term = search_term
-            cls.updateWidgets(cls.app.sm.current_screen.parent_widget)
+            cls.updateWidgets(cls.app.inventory_sm.current_screen.data_grid)
 
     @classmethod
     def changeMade(cls):
@@ -606,9 +602,6 @@ class Inventory():
 
         # Loop through the keys in cls.objs
         for ID in cls.objs:
-            if ID not in cls.objs:
-                raise KeyError(f'Key {ID} not found in cls.objs')
-
             # Update widget
             cls.objs[ID].updateWidget(parent_widget)
 

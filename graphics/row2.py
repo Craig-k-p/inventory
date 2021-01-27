@@ -10,7 +10,7 @@ class HeadingRow(GridLayout, LogMethods):
     val = ObjectProperty(None)
 
     def __init__(self, **kwargs):
-        super(ContainerHeadingRow, self).__init__(**kwargs)
+        super(HeadingRow, self).__init__(**kwargs)
         self.__initLog__('rows_inventory.py', 'ContainerHeadingRow')
 
 
@@ -24,11 +24,9 @@ class DataRow(GridLayout, LogMethods):
         '''Get the information from the saved inventory object to put into the label widgets'''
         self.inventory = inventory
 
-        super(DataRow2, self).__init__(**kwargs)
+        super(DataRow, self).__init__(**kwargs)
         self.__initLog__('rows_inventory.py', 'ContainerDataRow')
-        # self.logDebug('Creating a ContainerDataRow instance')
-
-        self.inventory.widget = self
+        self.logDebug('Creating a ContainerDataRow instance')
 
         self.assignValues()
 

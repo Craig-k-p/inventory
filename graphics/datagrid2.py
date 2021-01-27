@@ -13,7 +13,7 @@ class DataGrid(GridLayout, LogMethods):
     def __init__(self, **kwargs):
         '''Creates the widgets in a user-defined manner'''
         # Init the parent, ScrollView
-        super().__init__(**kwargs)
+        super(DataGrid, self).__init__(**kwargs)
         self.__initLog__(file_str='datagrid.py', class_str='DataGrid')
 
         self.app = None

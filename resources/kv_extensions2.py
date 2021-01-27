@@ -3,13 +3,14 @@ from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
+from kivy.uix.screenmanager import ScreenManager
 
-from resources.inventory import Inventory
-from graphics.row2 import ContainerDataRow, ThingDataRow
-from graphics.popups2 import PopupContentThing, PopupContentContainer, PopupContentStats
+from graphics.popups2 import PopupContentInventory, PopupContentStats
 from graphics.popups2 import PopupContentError, PopupContentList, PopupContentWarningDelete
 from graphics.popups2 import PopupContentCreatePassword, PopupContentPassword
-from graphics.screens2 import AccountOverviewScreen, ContainerOverviewScreen
+from graphics.row2 import DataRow
+from graphics.screens2 import InventoryScreen
+from resources.inventory import Inventory
 
 
 class KivyExtensions():
@@ -25,33 +26,51 @@ class KivyExtensions():
         self.pop.dismiss()
 
     def changeScreen(self, screen):
-        '''Change to a screen using direction'''
-        if isinstance(screen, int):
-            screen = str(screen)
-            self.logDebug('Changed screen from int to str')
+        '''Change to a new screen
+           Screen must be an int (Inventory ID), "back", or another screen name'''
 
+        self.logDebug(f'Chinging to screen {screen}')
+
+        # Go back a screen
         if screen == 'back':
             Inventory.search_term = ''
-            if self.sm.current_screen.name == 'inventory':
-                self.sm.current = 'load file'
+
+            # Change to the load file screen
+            if self.inventory_sm.current_screen.name == '0' and \
+            self.app_sm.current_screen.name == 'inventory':
+                self.app_sm.current = 'load file'
                 self.restart()
-            elif self.sm.current_screen.name == 'contents':
-                self.sm.current = screen
+
+            # Change to the screen of the current inventory's container
+            elif self.app_sm.current_screen.name == 'inventory':
+
                 #  Update the selected object to match the current screen
-                self.selection(self.selection.getLast().getObj())
+                self.inventory_sm.current_screen.current = self._getParentScreenName(
+                                                        self.selection.goBack().getObj() )
                 # Update visible inventory
-                Inventory.updateWidgets(self.sm.current_screen.data_grid)
+                Inventory.updateWidgets(self.inventory_sm.current_screen.data_grid)
+
+            else:
+                self.logError('"back" was provided as input, but app_sm was not "inventory"!')
+
+        # Change to an Inventory object's screen
+        elif screen.isdigit():
+            self.inventory_sm.current = screen
+
+            self.logDebug('Checking if widgets need help..')
+
+            # Get the datarows into the datagrid if they aren't already added
+            for inventory in self.inventory._need_parent_widget_assigned:
+                self.logDebug('Checking if widget needs updating..')
+                if screen == str(inventory.container):
+                    self.logDebug(f'{inventory.description} needs update')
+                    inventory.updateWidget()
+
+            Inventory.updateWidgets(self.inventory_sm.current_screen.data_grid)
+
+        # Change to the load file, create file, or inventory screen
         else:
-            try:
-                self.sm.current_screen.resetTextInputs()
-            except AttributeError:
-                pass
-            self.sm.current = screen
-            try:
-                # Update visible inventory widgets
-                Inventory.updateWidgets(self.sm.current_screen.data_grid)
-            except AttributeError:
-                pass
+            self.app_sm.current = screen
 
     def createPopup(self, warn=False, merge=False, move=False, stats=False, errors=None,
                     create_password=False, prompt_password=False, file=None):
@@ -138,8 +157,9 @@ class KivyExtensions():
     def createUserScreens(self):
         '''Create user screens after the user has been logged in to be sure the widgets are
         able to get the information they need!'''
-        self.sm.add_widget(InventoryOverviewScreen(self))
-        self.sm.current = 'inventory'
+        self.inventory_sm = ScreenManager()
+        self.app_sm.get_screen('inventory').parent_layout.add_widget(self.inventory_sm)
+        self.inventory_sm.add_widget(InventoryScreen(name='0'))
 
     def containerPopup(self, screen=None, direction=None, container=None):
         # Load the popup content from file and create an instance of PopupContent
@@ -174,6 +194,10 @@ class KivyExtensions():
 
         # Make sure the file isn't loaded more than once
         Builder.unload_file(self.settings['kv popup file'])
+
+    def _getParentScreenName(self, inventory):
+        '''Return the string ID of the parent object, which is the name of its screen'''
+        return self.inventory.getByID(inventory.container).ID
 
     def _clearPopupErrors(self):
         self.popup_errors = []

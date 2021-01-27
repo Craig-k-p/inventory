@@ -1,8 +1,7 @@
 import json, os, shutil
 
 from resources.inventory import Inventory
-from graphics.row2 import DataRow
-from graphics.screens2 import InventoryOverviewScreen, InventoryScreen
+from graphics.screens2 import InventoryScreen
 
 
 class DataHandler():
@@ -26,21 +25,24 @@ class DataHandler():
         'weight_col_width': 60
     }
     def __init__(self):
-        self.data_screens = (InventoryOverviewScreen, InventoryScreen)
+        self.data_screen = InventoryScreen
         self.data_was_loaded = False
         self.is_new_inventory = False
         Inventory.app = self
         self.inventory = Inventory
 
-    def createInventoryObjects(self, data):  # createObject
+    def createInventoryObject(self, object_data):  # createObject
         '''Create a new container'''
-        # self.logDebug(f'Creating a container with ID {data["ID"]}:')
-        new_inventory = Inventory(data)
+        object_data['screen_manager'] = self.inventory_sm
+
+        self.logDebug(f'Creating {object_data}:')
+
+        new_inventory = Inventory(**object_data)
 
         self.logDebug(new_inventory.screen)
 
         if self.data_was_loaded == True or self.is_new_inventory:
-            container = self.selection.getLastContainer().getObj()
+            container = self.selection.getContainer().getObj()
             if isinstance(container, Inventory):
                 container.addInventory(new_inventory.ID)
             # Set the changes_made flag to True for saving purposes
@@ -61,7 +63,7 @@ class DataHandler():
         self.pop.dismiss()
 
         # Add a new row with the new data to the user's screen
-        self.sm.current_screen.data_grid.addDataRow(new_object)
+        self.app_sm.current_screen.data_grid.addDataRow(new_object)
 
         # Return the object's data
         return data
@@ -106,7 +108,7 @@ class DataHandler():
         '''Return information about the inventory as a string'''
 
         if inventory_count == True:
-            return str(len(Inventory.objs))
+            return 'Needs attention'
 
         elif value == True:
             value = 0
@@ -156,8 +158,6 @@ class DataHandler():
         if self._inventory == None:
             return False
 
-        self._setupExistingInventory()
-
     def loadDataEncrypted(self):
         '''Load the user's data from an encrypted save file. Changes
            self._inventory'''
@@ -166,7 +166,6 @@ class DataHandler():
             return False
         elif isinstance(returned_data, dict):
             self._inventory = returned_data
-            self._setupExistingInventory()
             self.user_file_en
             return True
         else:
@@ -203,6 +202,9 @@ class DataHandler():
                 return False
 
         self.createUserScreens()
+        self._setupExistingInventory()
+        self.changeScreen('inventory')
+        self.changeScreen('0')
 
     def select(self, selection):
         '''Set the selected object directly or by using the ID.
@@ -239,8 +241,8 @@ class DataHandler():
         Inventory.cleanup()
         self.selection.cleanup()
 
-        while len(self.sm.screens) > 0:
-           self.sm.remove_widget(self.sm.screens[0])
+        while len(self.app_sm.screens) > 0:
+           self.app_sm.remove_widget(self.app_sm.screens[0])
 
         self.data_was_loaded = False
         self.user_file_en = False
@@ -280,10 +282,7 @@ class DataHandler():
 
         for key in data:
             data[key]['ID'] = int(key)
-            self.createInventoryObjects(data[key])
-
-        for key in Inventory.objs:
-            DataRow(Inventory.objs[key])
+            self.createInventoryObject(data[key])
 
         self.data_was_loaded = True
 

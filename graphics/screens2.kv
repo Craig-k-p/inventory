@@ -1,11 +1,24 @@
-#: include graphics/toolbar.kv
-#: include graphics/row.kv
-#: include graphics/datagrid.kv
+#: include graphics/toolbar2.kv
+#: include graphics/row2.kv
+
+<DataGrid>:
+    app: app
+    cols: 1
+    size_hint_y: None  # Allow scrollview to scroll
+    row_default_height: '40dp'
+    row_force_default: True
+    # Space between widgets and borders of the layout
+    padding: 2
+    # Space between widgets inside the layout (x,y)
+    spacing: (0, 2)
+    # Allows the ScrollView to scroll
+    height: self.minimum_height
+    HeadingRow:
 
 
 <InventoryOverviewScreen>:
-    name: 'inventory overview'
-    default_inventory_screen: default_inventory_screen
+    name: 'inventory'
+    # default_inventory_screen: default_inventory_screen
     # Pass these back to the class variable definitions that = ObjectProperty(None)
     toolbar: toolbar
     parent_layout: parent_layout
@@ -20,18 +33,16 @@
         Toolbar:
             id: toolbar
 
-        InventoryScreenManager:
-            id: default_inventory_screen
-
 
 <InventoryScreen>:  # Screen inheritance found in screens.py
-    data_grid: data_grid
     app: app
+    data_grid: data_grid
 
     ScrollView:
         bar_width: 20  # Make sure users know they can scroll
         # Allow using the bar or click and drag to scroll
         scroll_type: ['bars', 'content']
+
         DataGrid:
             id: data_grid
 
@@ -261,7 +272,7 @@
                         TextInput:
                             id: file_name_input
                             font_size: 20
-                            focus: True if app.sm.current_screen == create_file_screen else False
+                            focus: True if app.app_sm.current_screen == create_file_screen else False
 
                 CenterAnchorLayout:
                     GridLayout:

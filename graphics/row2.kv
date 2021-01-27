@@ -77,8 +77,8 @@
     id: data_row
     rows: 1
     obj_label: obj_label
-    weight: weight
-    val_lo: val_lo
+    weight_label: weight_label
+    val_label: val_label
     value: value
 
     # Object field
@@ -116,13 +116,13 @@
                 pos: self.pos
                 size: self.size
         Label:
-            id: weight
+            id: weight_label
             size_hint: (None, 1)
             size: (self.texture_size[0]+15, self.texture_size[1])
 
     # Value field
     AnchorLayout:
-        id: val_lo
+        id: val_label
         width: app.settings['val_col_width']
         anchor_x: 'right'
         size_hint: (None, 1)

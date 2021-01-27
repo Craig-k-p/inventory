@@ -4,16 +4,15 @@ from kivy.config import Config
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
-from kivy.uix.screenmanager import NoTransition, SlideTransition
+from kivy.uix.screenmanager import ScreenManager, NoTransition
 
-from graphics.screens2 import LoadFileScreen, CreateFileScreen
-from graphics.screens2 import InventoryScreenManager
-# from graphics.datagrid import DataGrid2, ContainerHeadingRow
+from graphics.screens2 import LoadFileScreen, CreateFileScreen, InventoryOverviewScreen
+# from graphics.screens2 import InventoryScreenManager
 from resources.kv_extensions2 import KivyExtensions
-from resources.datahandler import DataHandler
-from resources.inventory import Inventory
+from resources.datahandler2 import DataHandler
+# from resources.inventory import Inventory
 from resources.utilities import LogMethods, Security
-from resources.selection import Selection
+from resources.selection2 import Selection
 
 
 # Without this, right clicking will leave a red circle behind
@@ -43,11 +42,11 @@ class MyInventoryApp(App, KivyExtensions, DataHandler, LogMethods):
         self.logDebug(f'Used kivy.lang.Builder to load files {self.settings["startup kv files"]}')
 
         # Allow children of the WindowManager instance to access self.settings in the App instance
-        InventoryScreenManager.app = self
+        ScreenManager.app = self
 
         # Create a ScreenManager instance with no transition movement
-        self.sm = InventoryScreenManager(transition=NoTransition())
-        log = 'Created self.sm, instance of InventoryScreenManager'
+        self.app_sm = ScreenManager(transition=NoTransition())
+        log = 'Created self.app_sm -> ScreenManager'
         self.logDebug(log)
 
         self.user_file_en = False
@@ -60,24 +59,25 @@ class MyInventoryApp(App, KivyExtensions, DataHandler, LogMethods):
         # class declaration
         lfs = LoadFileScreen(self, name='load file')
         cfs = CreateFileScreen(self, name='create file')
-        screens = [lfs, cfs]
+        ios = InventoryOverviewScreen(self, name='inventory')
+        screens = [lfs, cfs, ios]
 
         # Make sure sm knows how to handle changes to self.current
         # such as self.current = 'account screen'
         for screen in screens:
-            self.sm.add_widget(screen)
+            self.app_sm.add_widget(screen)
 
         lfs.fillFileOptions()
 
         # Set the current screen
-        self.sm.current = 'load file'
-        self.sm.transition = NoTransition()
+        self.app_sm.current = 'load file'
+        self.app_sm.transition = NoTransition()
 
     def build(self):
-        '''Without returning self.sm (ScreenManager), the app would be a blank screen.'''
+        '''Without returning self.app_sm (ScreenManager), the app would be a blank screen.'''
         self.logDebug('self.build called. building...')
         self.title = 'My Inventory'
-        return self.sm
+        return self.app_sm
 
     def on_stop(self):
         '''Execute this function when the application is closed'''

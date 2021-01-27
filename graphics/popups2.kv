@@ -1,4 +1,4 @@
-#: include graphics/screens.kv
+#: include graphics/screens2.kv
 
 <AllignLayout@AnchorLayout>:
     size_hint: (1, 1)
@@ -334,17 +334,6 @@
     GridLayout:
         cols: 2
         spacing: 10
-
-        AllignLayout:
-            anchor_x: 'center'
-            anchor_y: 'top'
-            PopLabel:
-                text: 'Containers:'
-        AllignLayout:
-            anchor_x: 'center'
-            anchor_y: 'top'
-            PopLabel:
-                text: app.getStat(container_count=True)
 
         AllignLayout:
             anchor_x: 'center'

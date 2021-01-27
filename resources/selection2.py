@@ -1,7 +1,8 @@
-from resources.history import History
-from resources.inventoryobjects import Thing, Container
-from resources.utilities import LogMethods
 from kivy.logger import Logger
+
+from resources.history import History
+from resources.inventory import Inventory
+from resources.utilities import LogMethods
 
 class Selection(LogMethods):
     _history_length = 50
@@ -12,9 +13,8 @@ class Selection(LogMethods):
            s = InventoryObject instance'''
         # super(Selection, self).__init__()
         self.__initLog__('selection.py', 'Selection')
-        self.logDebug(f'New selection')
         self._s = s
-        self.logDebug(f'Selected {self._s}')
+        self.logDebug(f'Selected: {self._s}')
 
         # Position important (before append)
         self._deselect()
@@ -56,6 +56,7 @@ class Selection(LogMethods):
     def get(cls, suppress=True):
         '''Return the most recent selection'''
         selected = cls._history.getNewest()
+        Logger.debug(selected)
         if suppress == False:
             Logger.debug(f'Selection.get()-> selected object: {selected}')
         return selected
@@ -70,7 +71,7 @@ class Selection(LogMethods):
         '''Call widget.deselect method to visually deselect the previous object for the user'''
         selection = cls.get()
         # If user's previous selection isn't None
-        if selection._isInventory():
+        if selection != None and selection._isInventory():
             selection.getObj().widget.deselect()
 
     @classmethod

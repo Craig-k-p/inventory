@@ -78,6 +78,6 @@ class Selection(LogMethods):
     def _select(cls):
         '''Call widget.select method to visually select current object for the user'''
         selection = cls.get()
-        if selection._isInventory():
+        if selection != None and selection._isInventory():
             selection.getObj().widget.select()
 

@@ -11,10 +11,13 @@ class History():
         self.default_h = False
         self.default_h_walk = True
 
+        print(self._h_walk)
+
     def add(self, new_history):
         '''Add a new history item to the history'''
         self._h.append(new_history)
-        self._h_walk.append(new_history)
+        if new_history.getObj() != None:
+            self._h_walk.append(new_history)
         if isinstance(self.max_length, int):
             # If the self._h is getting too long remove the oldest item
             if len(self._h) >= self.max_length:

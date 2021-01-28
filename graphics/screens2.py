@@ -246,9 +246,10 @@ class InventoryScreen(Screen, LogMethods):
     app = ObjectProperty(None)
     # screens = []
 
-    def __init__(self, **kwargs):
+    def __init__(self, inventory, **kwargs):
         super(InventoryScreen, self).__init__(**kwargs)
         self.__initLog__(file_str='screens.py', class_str='InventoryScreen')
+        self.inventory = inventory
 
         # InventoryScreen.screens.append(self.name)
 

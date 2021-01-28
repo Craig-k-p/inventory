@@ -60,7 +60,7 @@ class Inventory(LogMethods):
         self._container = None
 
         if container == None:
-            self.container = 0
+            self.container = '0'
         else:
             self.container = container
         self.logDebug(self.container)
@@ -112,7 +112,7 @@ class Inventory(LogMethods):
     def usd_value(self):
         '''This is called when "self.usd_value" is used in code'''
         if self.hasContents():
-            usd_value = float(self.usd_value)
+            usd_value = float(self._usd_value)
             for ID in self.contents:
                 usd_value += float(Inventory.getByID(ID).usd_value)
             return int(usd_value)
@@ -140,7 +140,7 @@ class Inventory(LogMethods):
     def weight(self):
         '''This is called when "self.weight" is used in code'''
         if self.hasContents():
-            weight = float(self.weight)
+            weight = float(self._weight)
             for ID in self.contents:
                 weight += float(Inventory.getByID(ID).weight)
             return weight
@@ -361,6 +361,15 @@ class Inventory(LogMethods):
 
         self.logDebug('Updating widget')
 
+        # Doesn't work
+        # if parent_widget != None:
+        #     self.parent_widget = parent_widget
+
+        if self.parent_widget == None:
+            self.parent_widget = Inventory.getByID(self.container).screen.data_grid
+
+        # Designed to check if this widget needs to be added to the DataGrid!!
+        # Assign self.parent_widget first somehow!
         if self.parent_widget == parent_widget:
 
             if self.content_changed == True:
@@ -439,7 +448,7 @@ class Inventory(LogMethods):
         '''Create the screen and DataRow widgets for this object'''
         # Create the object's screen if it has contents
         self.widget = DataRow(self)
-        self.screen = InventoryScreen(name=str(self.ID))
+        self.screen = InventoryScreen(self, name=str(self.ID))
         self.sm.add_widget(self.screen)
 
     def _fixTags(self, tags):

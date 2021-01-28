@@ -3,7 +3,7 @@ from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
-from kivy.uix.screenmanager import ScreenManager
+from kivy.uix.screenmanager import ScreenManager, NoTransition
 
 from graphics.popups2 import PopupContentInventory, PopupContentStats
 from graphics.popups2 import PopupContentError, PopupContentList, PopupContentWarningDelete
@@ -29,6 +29,9 @@ class KivyExtensions():
         '''Change to a new screen
            Screen must be an int (Inventory ID), "back", or another screen name'''
 
+        if isinstance(screen, int):
+            screen = str(screen)
+
         self.logDebug(f'Chinging to screen {screen}')
 
         # Go back a screen
@@ -44,9 +47,20 @@ class KivyExtensions():
             # Change to the screen of the current inventory's container
             elif self.app_sm.current_screen.name == 'inventory':
 
-                #  Update the selected object to match the current screen
-                self.inventory_sm.current_screen.current = self._getParentScreenName(
-                                                        self.selection.goBack().getObj() )
+                # InventoryScreen is given the objects ID as a name
+                # last = self.selection.goBack()
+                # self.logDebug(f'Last selection: {last}')
+                # if last == None:
+                #     self.inventory_sm.current = '0'
+                # else:
+                self.inventory_sm.current = self.inventory_sm.get_screen(
+                    self.inventory_sm.current_screen.inventory.container
+                ).name
+
+
+                # #  Update the selected object to match the current screen
+                # self.inventory_sm.current_screen.current = self._getParentScreenName(
+                #                                         self.selection.goBack().getObj() )
                 # Update visible inventory
                 Inventory.updateWidgets(self.inventory_sm.current_screen.data_grid)
 
@@ -157,9 +171,9 @@ class KivyExtensions():
     def createUserScreens(self):
         '''Create user screens after the user has been logged in to be sure the widgets are
         able to get the information they need!'''
-        self.inventory_sm = ScreenManager()
+        self.inventory_sm = ScreenManager(transition=NoTransition())
         self.app_sm.get_screen('inventory').parent_layout.add_widget(self.inventory_sm)
-        self.inventory_sm.add_widget(InventoryScreen(name='0'))
+        self.inventory_sm.add_widget(InventoryScreen(None, name='0'))
 
     def containerPopup(self, screen=None, direction=None, container=None):
         # Load the popup content from file and create an instance of PopupContent
